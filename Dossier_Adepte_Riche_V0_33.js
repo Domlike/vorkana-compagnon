@@ -5,18 +5,22 @@
   const P = window.EARTHDAWN_PLAYER_DATA && window.EARTHDAWN_PLAYER_DATA[playerId];
   if (!P) { document.body.innerHTML = "<p style='padding:30px'>Données du personnage introuvables.</p>"; return; }
 
-  const VERSION = "0.33";
+  const VERSION = "0.34";
   const STORE = `earthdawn_player_${P.characterId}_v033`;
   const PORTRAITS = {
     pj_1: "assets/portraits/kalha.png", pj_2: "assets/portraits/kalzakath.png", pj_3: "assets/portraits/barbak.png",
     pj_4: "assets/portraits/ogunta.png", pj_5: "assets/portraits/jaskar.png", pj_6: "assets/portraits/gulrak.png"
   };
   const NAV = [
-    ["home", "⌂", "Essentiel"], ["explore", "⌕", "Hors combat"], ["combat", "⚔", "Combat"],
-    ["progress", "✦", "Progression"], ["discipline", "◈", "Discipline"], ["gear", "▣", "Équipement"],
-    ["history", "⌛", "Histoire"], ["messages", "✉", "Messages"]
+    ["home", "⌂", "Essentiel"], ["combat", "⚔", "Combat"], ["gear", "▣", "Équipement"],
+    ["discipline", "◈", "Discipline"], ["progress", "✦", "Progression"], ["history", "✎", "Carnet de notes"]
   ];
   const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
+  const LANGUAGES = {
+    pj_1: "Throalique • Don des langues, rang 2", pj_2: "Throalique • Don des langues, rang 2",
+    pj_3: "Throalique", pj_4: "Throalique • Langue des esprits",
+    pj_5: "Throalique • Don des langues", pj_6: "Throalique • Don des langues, rang 2"
+  };
   const LORE = {
     pj_1: {
       physical: "1,84 m • 96 kg sans équipement • silhouette compacte et très dense, façonnée par la forge",
@@ -34,7 +38,7 @@
         "Nuit du 29 au 30 Sollus — elle défend l’option d’exfiltration ; Katsika est libéré sans alarme ni combat."
       ]
     },
-    pj_2: {
+    pj_3: {
       physical: "2,03 m • 126 kg sans équipement • très grand et massif, musculature explosive de Guerrier",
       circleTitle: "Apprendre à revenir",
       circleText: "Lorsqu’une plateforme menaça des passants à Grand-Foire, Barbak tenta d’abord d’en porter seul tout le poids. Koldar le força à demander de l’aide, à répartir l’effort et à accepter de sortir avec les autres. Il reconnut son troisième Cercle lorsque Barbak comprit qu’un Guerrier appartient aussi à ceux qu’il protège.",
@@ -47,7 +51,7 @@
         "29 Sollus — il protège Ogunta sous les tirs avec une planche arrachée à la cabane de Katsika."
       ]
     },
-    pj_3: {
+    pj_4: {
       physical: "1,87 m • 92 kg sans équipement • grande et solide, port calme et musculature discrète",
       circleTitle: "La Dernière Porte",
       circleText: "À la mort d’Helja Cendre-Basse, Ogunta transmit ses volontés sans les embellir, répartit entre les vivants les responsabilités de la défunte, puis refusa de retenir son esprit lorsqu’il choisit de partir. Doomir reconnut son troisième Cercle lorsqu’elle comprit que son pouvoir sur les morts ne lui donnait aucun droit sur leurs choix.",
@@ -60,7 +64,7 @@
         "29 Sollus — elle porte une attaque magique particulièrement violente sur la plage des Coques."
       ]
     },
-    pj_4: {
+    pj_5: {
       physical: "1,89 m • 91 kg sans équipement • ork élancé aux gestes amples et à la présence expressive",
       circleTitle: "Le récit qui n’écrase pas",
       circleText: "Le passage de Jaskar au troisième Cercle est validé dans la continuité de campagne ; son récit détaillé reste à enrichir avec le joueur. Sa Discipline l’engage déjà à porter les histoires sans masquer les vérités qui donnent leur poids aux actes.",
@@ -73,7 +77,7 @@
         "29 Sollus — il obtient un accès accéléré à la Capitainerie."
       ]
     },
-    pj_5: {
+    pj_2: {
       physical: "1,96 m • 105 kg sans équipement • grand et athlétique, longues jambes et musculature sèche",
       circleTitle: "Les trois pistes",
       circleText: "Harkan Brumepente présenta à Kal’Zakath trois pistes dont les conséquences comptaient davantage que les traces. Il démasqua un piège, alerta les bonnes personnes face à une substance dangereuse et effaça la piste d’une jeune orke qui ne voulait pas être retrouvée. Harkan reconnut son troisième Cercle lorsqu’il comprit qu’un Éclaireur suit aussi la place qu’il occupe dans le monde.",
@@ -106,6 +110,58 @@
   };
   const OPTIONS = ["Aucune", "Agressive", "Défensive", "Effort supplémentaire", "Mouvement", "Réserve / attente"];
   const COSTS = { 1: 100, 2: 200, 3: 300, 4: 500, 5: 800, 6: 1300, 7: 2100, 8: 3400 };
+  const DISCIPLINE_GUIDES = {
+    Forgeron: { attributes: "Dextérité, Volonté et Perception", restrictions: "Aucune restriction de peuple", arts: "Gravure sur bois ou métal, runes", circles: [["Cercle 1","Évaluation, Marchandage, Perfectionnement de lame, Rituel de Karma, Volonté de fer","Armes de jet, Armes de mêlée, Arme de tir, Don des langues, Parade"],["Cercle 2","Endurance, Histoire des armes","Coup de bouclier, Déplacement silencieux, Détection des armes, Lecture et écriture, Première impression, Rire encourageant, Stabilité"],["Cercle 3","Contre-malédiction","Approfondissement des talents précédents"],["Cercle 4","Évaluation d’arme et Tissage de filament de Forge","Karma de Dextérité selon les règles de Discipline"]] },
+    Guerrier: { attributes: "Dextérité, Force et Volonté", restrictions: "Aucune restriction de peuple", arts: "Gravure, sculpture, runes", circles: [["Cercle 1","Armes de mêlée, Combat à mains nues, Esquive, Peau de bois, Rituel de Karma","Attaque acrobatique, Danse des airs, Escalade, Manœuvre, Parade"],["Cercle 2","Anticipation, Endurance","Arme de jet, Arme de tir, Coup de pied rapide, Sprint, Détection des armes, Rire encourageant"],["Cercle 3","Stabilité","Approfondissement des talents précédents"],["Cercle 4","Tissage de filament de Guerre","Karma de Volonté"]] },
+    Nécromant: { attributes: "Perception et Volonté", restrictions: "Restriction habituelle : Sylphelins", arts: "Broderie et arts funéraires", circles: [["Cercle 1","Incantation, Lecture et écriture de la magie, Matrice de sort, Rituel de Karma, Tissage de filament, Vision astrale","Don des langues, Lecture et écriture, Marmonnement, Matrice supplémentaire"],["Cercle 2","Nouveau sort, Endurance, Regard terrifiant","Analyse des créatures, Domination animale, Marchandage, Partage du sang, Première impression"],["Cercle 3","Nouveau sort, Langue des esprits","Approfondissement des talents précédents"],["Cercle 4","Nouveau sort, Emprise spirituelle","Karma de Perception"]] },
+    Troubadour: { attributes: "Charisme, Dextérité et Perception", restrictions: "Aucune restriction de peuple", arts: "Chant, récit, jonglage et musique", circles: [["Cercle 1","Chant émouvant, Don des langues, Imitation de voix, Première impression, Rituel de Karma","Armes de mêlée, Histoire des objets, Lecture et écriture, Marchandage"],["Cercle 2","Déguisement magique, Endurance","Arme de jet, Diplomatie, Éloquence, Esquive, Étiquette, Sarcasme, Sourire charmeur"],["Cercle 3","Sens empathique","Approfondissement des talents précédents"],["Cercle 4","Tissage de filament de Récit","Karma de Dextérité"]] },
+    Éclaireur: { attributes: "Dextérité et Perception", restrictions: "Restrictions habituelles : Obsidien et Troll", arts: "Runes et gravure sur bois", circles: [["Cercle 1","Escalade, Natation, Pistage, Rituel de Karma, Survie, Vigilance","Analyse des créatures, Armes de mêlée, Arme de tir, Déplacement silencieux, Esquive"],["Cercle 2","Endurance, Don des langues","Anticipation, Arme de jet, Déguisement, Détection des armes et pièges, Lecture et écriture, Recherche, Sprint"],["Cercle 3","Orientation","Approfondissement des talents précédents"],["Cercle 4","Sens améliorés et Tissage de filament d’Éclaireur","Option de magie du sang selon les règles"]] },
+    Voleur: { attributes: "Dextérité et Perception", restrictions: "Restrictions habituelles : Obsidien et Troll", arts: "Comédie, danse, poésie et sculpture", circles: [["Cercle 1","Crochetage, Déplacement silencieux, Rituel de Karma, Vol à la tire, Vigilance","Arme de jet, Armes de mêlée, Escalade, Esquive, Escrime"],["Cercle 2","Endurance, Esquive des pièges","Arme de tir, Attaque surprise, Déguisement, Détection des armes, Marchandage, Sens des serrures, Sprint"],["Cercle 3","Détection des pièges","Approfondissement des talents précédents"],["Cercle 4","Langage des voleurs et Tissage de filament de Voleur","Option de magie du sang selon les règles"]] }
+  };
+  const TALENT_HELP = {
+    "Marchandage":"Négocie le prix d’un bien ou d’un service, dans les limites de sa disponibilité réelle.",
+    "Perfectionnement de lame":"Améliore temporairement une arme entretenue par le Forgeron.",
+    "Histoire des armes":"Révèle l’origine et les événements marquants liés à une arme.",
+    "Coup de bouclier":"Utilise le bouclier pour déséquilibrer ou repousser un adversaire.",
+    "Crochetage":"Ouvre une serrure mécanique avec des outils adaptés.",
+    "Déplacement silencieux":"Oppose la discrétion du personnage à la Perception des observateurs.",
+    "Escalade":"Permet de progresser sur une surface difficile selon ses prises et l’urgence.",
+    "Sens des serrures":"Aide à comprendre une serrure et les risques qu’elle recèle.",
+    "Détection des pièges":"Recherche activement les mécanismes et indices annonçant un piège.",
+    "Combat à mains nues":"Attaque sans arme grâce à la technique de la Discipline.",
+    "Anticipation":"Prépare la défense contre un adversaire désigné en lisant ses intentions.",
+    "Coup de pied rapide":"Ajoute une attaque rapide sous les conditions prévues par le talent.",
+    "Stabilité":"Résiste au renversement, au recul et à la perte d’équilibre.",
+    "Lecture et écriture magique":"Étudie les formules, grimoires et structures magiques.",
+    "Lecture et écriture de la magie":"Étudie les formules, grimoires et structures magiques.",
+    "Tissage de filament":"Tisse les filaments nécessaires aux sorts, objets à trame et capacités de Discipline.",
+    "Regard terrifiant":"Impose une présence surnaturelle susceptible d’effrayer une cible.",
+    "Langue des esprits":"Permet de communiquer avec les esprits lorsque leur nature le permet.",
+    "Chant émouvant":"Soutient ou influence un auditoire par une performance chargée d’émotion.",
+    "Don des langues":"Permet de comprendre et d’utiliser de nouvelles langues selon le rang.",
+    "Imitation de voix":"Reproduit une voix entendue ; la précision dépend du succès.",
+    "Première impression":"Façonne la première réaction sociale d’une personne rencontrée.",
+    "Déguisement magique":"Modifie l’apparence pour soutenir un déguisement sans changer la nature réelle.",
+    "Histoire des objets":"Révèle les événements et propriétaires marquants liés à un objet.",
+    "Sens empathique":"Perçoit et interprète l’état émotionnel d’autrui.",
+    "Pistage":"Suit une piste en lisant traces et perturbations du milieu.",
+    "Sprint":"Augmente brièvement la vitesse au prix de l’effort prévu.",
+    "Esquive":"Réaction défensive contre une attaque lorsque ses conditions sont réunies.",
+    "Armes de mêlée":"Permet de porter une attaque avec une arme de contact.",
+    "Arme de mêlée":"Permet de porter une attaque avec une arme de contact.",
+    "Arme de tir":"Permet d’attaquer avec un arc, une arbalète ou une autre arme à distance.",
+    "Arme de jet":"Permet d’attaquer en lançant une arme adaptée.",
+    "Vol à la tire":"Subtilise ou déplace discrètement un petit objet à portée.",
+    "Attaque surprise":"Augmente l’efficacité d’une attaque lorsque la cible ne se défend pas normalement.",
+    "Parade":"Réaction défensive utilisant une arme pour détourner une attaque.",
+    "Endurance":"Talent passif qui améliore la santé gagnée avec les Cercles.",
+    "Peau de bois":"Durcit temporairement le corps pour mieux encaisser les dommages.",
+    "Danse des airs":"Améliore l’initiative et le placement du Guerrier.",
+    "Manœuvre":"Crée une ouverture tactique contre un adversaire.",
+    "Incantation":"Lance un sort préparé dans une matrice ou par incantation brute.",
+    "Matrice spell":"Matrice qui protège et prépare un sort.",
+    "Vision astrale":"Perçoit l’espace astral, les auras et certaines traces magiques."
+  };
   const clone = value => JSON.parse(JSON.stringify(value));
   const esc = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const fmt = value => Number(value || 0).toLocaleString("fr-FR");
@@ -125,16 +181,20 @@
       page: "home",
       room: new URLSearchParams(location.search).get("room") || "",
       draft: clone(P.snapshot),
-      plan: { round: 0, option: "Aucune", target: "", note: "", actions: [], status: "Brouillon local", initiative: "" },
+      plan: { round: 0, option: "Aucune", target: "", note: "", actions: [], status: "À préparer", initiative: "" },
       combat: { active: false, round: 0, phase: "", situation: "", conditions: [] },
       proposals: [], decisions: [], messages: [], rollHistory: [], presence: [],
-      inventoryFilter: "Tous", progressionDraft: { item: "", rank: 1, note: "" }
+      inventoryFilter: "Tous", progressionDraft: { item: "", rank: 1, note: "" },
+      notes: { free: "", interludes: [] }, stateReset034: false
     };
   }
   let S = (() => { try { return { ...baseState(), ...JSON.parse(localStorage.getItem(STORE) || "{}") }; } catch (_) { return baseState(); } })();
   S.draft = { ...clone(P.snapshot), ...(S.draft || {}) };
   S.plan = { ...baseState().plan, ...(S.plan || {}) };
   S.combat = { ...baseState().combat, ...(S.combat || {}) };
+  S.notes = { ...baseState().notes, ...(S.notes || {}) };
+  if (!Array.isArray(S.notes.interludes)) S.notes.interludes = [];
+  if (!S.stateReset034) { S.draft.damage = 0; S.draft.wounds = 0; S.draft.recoveriesUsed = 0; S.stateReset034 = true; }
   S.combat.conditions = conditionLabels(S.combat.conditions);
   ["proposals", "decisions", "messages", "rollHistory", "presence"].forEach(key => { if (!Array.isArray(S[key])) S[key] = []; });
   S.presence = [];
@@ -143,13 +203,15 @@
   document.body.innerHTML = `
     <div class="app">
       <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">E</div><div><small>Prélude à la Guerre</small><strong>Dossier d’Adepte</strong></div></div>
+        <div class="brand"><img class="brand-mark-image" src="assets/illustrations/medaillon_vorkana.png" alt="Symbole de Vorkana"><div><small>Prélude à la Guerre</small><strong>Dossier d’Adepte</strong></div></div>
         <div class="side-person"><b>${esc(P.name)}</b><span>${esc(P.discipline)} • Cercle ${P.circle}</span></div>
         <nav class="nav">${NAV.map(([key, icon, label]) => `<button data-page="${key}"><span class="ico">${icon}</span><span>${label}</span></button>`).join("")}</nav>
+        <section class="side-state"><b>Blessures & états</b><div class="side-wound"><span>Blessures graves</span><strong id="sideWounds">0</strong><small id="sidePenalty">Aucun malus</small></div><div id="sideConditions" class="condition-list"></div></section>
+        <div id="messageDock" class="message-dock"></div>
         <div class="side-foot"><div><i class="sync-dot" id="syncDot"></i><b id="syncLabel">Salle locale</b></div><small id="syncRoom">Préparation…</small></div>
       </aside>
       <section class="shell">
-        <header class="topbar"><h1 id="topTitle">${esc(P.name)}</h1><div class="top-actions"><span class="badge" id="roomBadge">Salle</span><span class="badge">V${VERSION}</span></div></header>
+        <header class="topbar"><h1 id="topTitle">Essentiel</h1><button type="button" class="global-strip" id="globalStrip"><span>Vie <b id="globalLife"></b></span><i class="global-track wound"><u id="globalLifeFill"></u></i><span>Karma <b id="globalKarma"></b></span><i class="global-track karma"><u id="globalKarmaFill"></u></i><span class="global-recovery">Récup. <b id="globalRecovery"></b></span></button><div class="top-actions"><span class="badge" id="roomBadge">Salle</span><span class="badge">V${VERSION}</span></div></header>
         <main>${NAV.map(([key]) => `<section class="page" id="page-${key}"></section>`).join("")}</main>
       </section>
     </div><div class="toast" id="toast"></div>`;
@@ -174,37 +236,57 @@
   function pendingCount() { return S.proposals.filter(p => p.status === "draft" || p.status === "sent").length; }
   function heroMetric(label, value, detail, semantic) { return `<div class="metric${semantic ? ` sem-${semantic}` : ""}"><small>${label}</small><b>${value}</b><span>${detail || ""}</span></div>`; }
 
+  function remainingRecovery() { return Math.max(0, Number(P.combat.recovery.max || 0) - Number(S.draft.recoveriesUsed || 0)); }
+  function refreshPermanentState() {
+    const c = P.combat, conditions = conditionLabels(S.combat.conditions), penalty = Math.max(0, Number(S.draft.wounds || 0) - 1);
+    if ($("#globalLife")) $("#globalLife").textContent = `${S.draft.damage} / ${c.health.death}`;
+    if ($("#globalLifeFill")) $("#globalLifeFill").style.width = `${ratio(S.draft.damage, c.health.death)}%`;
+    if ($("#globalKarma")) $("#globalKarma").textContent = `${S.draft.karma} / ${c.karma.max}`;
+    if ($("#globalKarmaFill")) $("#globalKarmaFill").style.width = `${ratio(S.draft.karma, c.karma.max)}%`;
+    if ($("#globalRecovery")) $("#globalRecovery").textContent = `${remainingRecovery()} / ${c.recovery.max}`;
+    if ($("#sideWounds")) $("#sideWounds").textContent = S.draft.wounds;
+    if ($("#sidePenalty")) $("#sidePenalty").textContent = penalty ? `−${penalty} aux tests d’action` : "Aucun malus";
+    if ($("#sideConditions")) $("#sideConditions").innerHTML = conditions.length ? conditions.map(x => `<span class="condition">${esc(x)}</span>`).join("") : "<small class='subtle'>Aucun état actif</small>";
+  }
+
   function renderHome() {
-    const c = P.combat, legend = P.legend;
+    const c = P.combat;
+    const outsideTalents = (P.talents || []).filter(t => t.rollable !== false && !isCombatOnly(t));
+    const outsideSkills = (P.skills || []).filter(s => s.rollable !== false && !isCombatOnly(s));
+    const action = (item, group) => {
+      const dice = item.dice || stepDice(item.step), semantic = group === "Talent" ? "talent" : "skill";
+      return `<div class="action sem-${semantic}"><div><span class="pill ${semantic}">${group}</span> <b>${esc(item.name)}</b><small>Rang ${item.rank || "—"}${item.note ? ` • ${esc(item.note)}` : ""}</small></div><button class="btn small semantic-key sem-${semantic}" data-home-roll="${esc(dice)}" data-home-label="${esc(item.name)}">🎲 Niv. ${item.step || "?"} • ${esc(dice)}</button></div>`;
+    };
     page("home").innerHTML = `
       <div class="hero">
-        <div class="hero-portrait"><img src="${PORTRAITS[P.playerId]}" alt="Portrait de ${esc(P.name)}"></div>
+        <div class="hero-portrait portrait-${P.playerId}"><img src="${PORTRAITS[P.playerId]}" alt="Portrait de ${esc(P.name)}"></div>
         <div class="hero-copy"><span class="eyebrow">${esc(P.people)} • ${esc(P.discipline)} du Cercle ${P.circle}</span>
           <h2>${esc(P.name)}</h2><p class="lead">${esc(P.identityLine)}</p>
+          <div class="identity-grid"><div><small>Joueur</small><b>${esc(P.player)}</b></div><div><small>Naissance</small><b>${esc(P.birth)}</b></div><div><small>Origine</small><b>${esc(P.origin)}</b></div><div><small>Situation</small><b>${esc(P.location)}</b></div></div>
+          <div class="identity-languages"><small>Langues</small><b>${esc(LANGUAGES[P.playerId] || "Throalique")}</b></div>
           <div class="chips">${(P.traits || []).map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>
-          <div class="hero-stats">${heroMetric("Défenses", `${c.defenses.physical} / ${c.defenses.magical} / ${c.defenses.social}`, "Physique • Mystique • Sociale")}${heroMetric("Armure", `${c.armor.physical} / ${c.armor.mystical}`, c.armor.label)}${heroMetric("Karma", `${S.draft.karma} / ${c.karma.max}`, c.karma.dice, "karma")}${heroMetric("Légende disponible", fmt(legend.available), `${fmt(legend.spent)} dépensés`)}</div>
         </div>
       </div>
       <div class="grid three mt">
-        <article class="card sem-card sem-wound"><h3>État opérationnel</h3><div class="meters">
-          <div><div class="meter-head"><b>Dommages</b><span>${S.draft.damage} / ${c.health.death}</span></div><div class="meter wound"><i style="width:${ratio(S.draft.damage, c.health.death)}%"></i></div></div>
-          <div><div class="meter-head"><b>Karma</b><span>${S.draft.karma} / ${c.karma.max}</span></div><div class="meter karma"><i style="width:${ratio(S.draft.karma, c.karma.max)}%"></i></div></div>
-          <div><div class="meter-head"><b>Récupérations</b><span>${S.draft.recoveriesUsed} / ${c.recovery.max}</span></div><div class="meter"><i style="width:${ratio(S.draft.recoveriesUsed, c.recovery.max)}%"></i></div></div>
-        </div><div class="button-row mt"><button class="btn primary" data-health>Gérer l’état</button><button class="btn" data-page-jump="combat">Préparer le round</button></div></article>
-        <article class="card sem-card sem-player"><h3>Repères</h3><p><b>${esc(P.player)}</b> joue ${esc(P.name)}.</p><p>${esc(P.birth)} • ${esc(P.age)}<br>${esc(P.origin)}<br>${esc(P.location)}</p><p class="subtle">${esc(P.halfMagic)}</p></article>
-        <article class="card sem-card sem-gm"><h3>Salle de jeu</h3><p id="homeSyncText">Connexion en cours…</p><div class="button-row"><button class="btn blue" data-page-jump="messages">Messages</button><button class="btn" data-page-jump="combat">Vision tactique</button><button class="btn" id="openCircleHub">Ressources & marché</button></div><p class="subtle">Le dossier communique directement avec le poste du MJ. Il n’ouvre jamais le cockpit.</p></article>
+        <article class="card social-defense"><small>Défense sociale</small><strong>${c.defenses.social}</strong><span>À comparer aux tests d’influence dirigés contre ${esc(P.name)}.</span></article>
+        <article class="card"><h3>Défenses & armures</h3><div class="defense-line"><b>${c.defenses.physical}</b><span>Physique</span><b>${c.defenses.magical}</b><span>Mystique</span><b>${c.armor.physical}/${c.armor.mystical}</b><span>Armure</span></div></article>
+        <article class="card"><h3>Présence</h3><p>${esc(LORE[P.playerId]?.physical || "Non consolidée")}</p><p class="subtle">${esc(P.halfMagic)}</p></article>
       </div>
-      <article class="card mt"><h3>Caractéristiques</h3><div class="statline">${P.attributes.map(attributeCard).join("")}</div><div class="roll-output" id="homeRollOutput"><small>Cliquez sur une caractéristique pour lancer ses dés.</small></div></article>
-      <div class="grid two mt"><article class="card"><h3>Présence physique</h3><p>${esc(LORE[P.playerId]?.physical || "Non consolidée")}</p></article><article class="card"><h3>Gahad</h3>${(P.gahad || []).map(x => `<p>${esc(x)}</p>`).join("")}</article></div>`;
-    page("home").querySelector("[data-health]").onclick = () => { openPage("combat"); setTimeout(() => $("#healthWorkbench")?.scrollIntoView({ behavior: "smooth" }), 100); };
-    page("home").querySelectorAll("[data-page-jump]").forEach(btn => btn.onclick = () => openPage(btn.dataset.pageJump));
-    $("#openCircleHub").onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
+      <article class="card mt"><h3>Tests de traits / attributs</h3><p class="subtle">À utiliser quand aucun talent ou compétence plus précis ne s’applique.</p><div class="statline">${P.attributes.map(attributeCard).join("")}</div><div class="roll-output" id="homeRollOutput"><small>Cliquez sur un attribut pour lancer ses dés.</small></div></article>
+      <details class="card mt recovery-panel" open><summary><b>Tests de récupération</b><span>${remainingRecovery()} sur ${c.recovery.max} disponibles • ${esc(c.recovery.dice)}</span></summary><p>Après le repos requis, le résultat soigne autant de dommages, diminué du malus des blessures graves. Le MJ valide ensuite la modification.</p><div class="recovery-controls"><button class="btn primary" id="rollRecovery">Lancer ${esc(c.recovery.dice)}</button><div class="field"><label>Ou résultat de vos dés</label><input id="homeRecoveryManual" type="number" min="0" placeholder="Score"></div><button class="btn" id="homeRecoverySend">Transmettre</button></div><div class="roll-output" id="homeRecoveryOutput"><small>Le résultat sera proposé au MJ ; la fiche ne s’auto-soigne pas.</small></div><details class="rule-fold"><summary>Rappels de récupération</summary><p>Une récupération normale demande une minute sans dommages, combat ni activité physique, et généralement une heure entre deux tests. Chaque blessure grave retire 1 au test ; au-delà de la première, les blessures imposent aussi un malus aux tests d’action.</p></details></details>
+      <div class="grid two mt"><article class="card sem-card sem-talent"><h3>Talents utiles hors combat</h3><div class="action-list">${outsideTalents.map(t => action(t, "Talent")).join("")}</div></article><article class="card sem-card sem-skill"><h3>Compétences utiles hors combat</h3><div class="action-list">${outsideSkills.map(s => action(s, "Compétence")).join("")}</div></article></div>`;
     page("home").querySelectorAll("[data-home-roll]").forEach(btn => btn.onclick = () => {
       const r = rollDice(btn.dataset.homeRoll), label = btn.dataset.homeLabel;
       S.rollHistory.unshift({ at: now(), label, total: r.total, dn: 0 }); S.rollHistory = S.rollHistory.slice(0, 20); save();
       $("#homeRollOutput").innerHTML = `<strong>${r.total}</strong> — ${esc(label)}<br><small>${esc(btn.dataset.homeRoll)} • ${r.rolls.map(x => `d${x.sides}:${x.roll}${x.exploded ? "↻" : ""}`).join(" · ")}</small>`;
     });
-    refreshSyncLabels();
+    $("#rollRecovery").onclick = () => { const r = rollDice(c.recovery.dice); $("#homeRecoveryManual").value = r.total; $("#homeRecoveryOutput").innerHTML = `<strong>${r.total}</strong> — Récupération<br><small>${esc(c.recovery.dice)} • ${r.rolls.map(x => `d${x.sides}:${x.roll}${x.exploded ? "↻" : ""}`).join(" · ")}</small>`; };
+    $("#homeRecoverySend").onclick = () => {
+      const score = Math.max(0, Number($("#homeRecoveryManual").value) || 0); if (!score) return toast("Indiquez ou lancez un résultat.");
+      const penalty = Math.max(0, Number(S.draft.wounds || 0)), healed = Math.max(0, score - penalty);
+      proposal([{ field: "damage", from: Number(S.draft.damage) || 0, to: Math.max(0, (Number(S.draft.damage) || 0) - healed) }, { field: "recoveriesUsed", from: Number(S.draft.recoveriesUsed) || 0, to: (Number(S.draft.recoveriesUsed) || 0) + 1 }], `Récupération : ${score} − ${penalty} = ${healed}`, "recovery");
+    };
+    refreshPermanentState(); refreshSyncLabels();
   }
 
   const COMBAT_ONLY = /^(armes? de mêlée|arme de tir|arme de jet|combat à mains nues|esquive|parade|peau de bois|danse des airs|anticipation|coup de pied rapide|coup de bouclier|stabilité|manœuvre|sprint|attaque surprise|attaque critique|deuxième attaque|deuxième tir|charge dévastatrice|saut de géant)$/i;
@@ -282,18 +364,11 @@
     const initiativeOptions = c.initiative.options || [{ label: "Initiative", step: c.initiative.step, dice: c.initiative.dice }];
     const initiativeChooser = initiativeOptions.length > 1 ? `<select id="initiativeMode">${initiativeOptions.map((option, index) => `<option value="${index}">${esc(option.label)} • niv. ${option.step} (${esc(option.dice)})${option.effort ? ` • Effort ${option.effort}` : ""}</option>`).join("")}</select>` : "";
     page("combat").innerHTML = `<div class="page-head"><div><h2>Combat</h2><p>Le plan du round fait office de déclaration.</p></div></div>
-      <div class="combat-banner"><div><strong>${active ? `Round ${S.combat.round} — ${esc(S.combat.phase || "combat")}` : "Aucun combat actif"}</strong><small>${esc(S.combat.situation || "Le brouillon reste disponible hors combat.")}</small>${(S.combat.conditions || []).length ? `<div class="condition-list">${S.combat.conditions.map(x => `<span class="condition">${esc(typeof x === "string" ? x : x.label || x.id)}</span>`).join("")}</div>` : ""}</div><button class="btn" id="openVision">Ouvrir ma vision tactique</button></div>
-      <div class="grid two mt"><article class="card sem-card sem-wound" id="healthWorkbench"><h3>État du personnage</h3><div class="form-grid"><div class="field sem-wound"><label>Dommages</label><input id="damage" type="number" min="0" max="${c.health.death}" value="${S.draft.damage}"></div><div class="field sem-wound"><label>Blessures graves</label><input id="wounds" type="number" min="0" value="${S.draft.wounds}"></div><div class="field sem-karma"><label>Karma</label><input id="karma" type="number" min="0" max="${c.karma.max}" value="${S.draft.karma}"></div><div class="field"><label>Récupérations utilisées</label><input id="recoveries" type="number" min="0" max="${c.recovery.max}" value="${S.draft.recoveriesUsed}"></div></div><div class="notice red mt">Inconscience ${c.health.unconscious} • Mort ${c.health.death} • Seuil de blessure ${c.health.woundThreshold} • Récupération ${c.recovery.dice}</div><div class="button-row mt"><button class="btn primary" id="proposeHealth">Proposer ces changements au MJ</button><button class="btn" id="rollRecovery">Jet de récupération</button></div><div class="roll-output" id="combatRoll"><small>Les jets de combat apparaissent ici.</small></div></article>
-        <article class="card sem-card sem-gm"><h3>Plan du round ${S.combat.round || "—"}</h3><div class="form-grid"><div class="field"><label>Option de combat</label><select id="planOption">${OPTIONS.map(x => `<option ${S.plan.option === x ? "selected" : ""}>${x}</option>`).join("")}</select></div><div class="field"><label>Cible / objectif</label><input id="planTarget" value="${esc(S.plan.target)}" placeholder="Nom ou intention"></div><div class="field wide sem-gm"><label>Note au MJ</label><textarea id="planNote">${esc(S.plan.note)}</textarea></div></div><h4>Séquence prévue</h4><div class="sequence" id="planSequence">${S.plan.actions.length ? S.plan.actions.map((a, i) => `<div class="sequence-row"><span>${esc(a.label)}</span><button class="btn small danger" data-remove="${i}">Retirer</button></div>`).join("") : "<p class='subtle'>Ajoutez une action depuis la liste ci-dessous.</p>"}</div><div class="button-row mt"><button class="btn primary" id="sendPlan">Transmettre le plan</button><span class="pill ${S.plan.status.includes("Pris") ? "ok" : ""}">${esc(S.plan.status)}</span></div></article></div>
+      <div class="combat-banner"><div><strong>${active ? `Round ${S.combat.round} — ${esc(S.combat.phase || "combat")}` : "Consultation hors combat"}</strong><small>${active ? esc(S.combat.situation || "Situation transmise par le MJ.") : "Les actions restent consultables. Le plan pourra être transmis lorsque le MJ ouvrira un combat."}</small>${(S.combat.conditions || []).length ? `<div class="condition-list">${S.combat.conditions.map(x => `<span class="condition">${esc(typeof x === "string" ? x : x.label || x.id)}</span>`).join("")}</div>` : ""}</div><button class="btn" id="openVision">Ouvrir ma vision tactique</button></div>
+      <div class="grid two mt"><article class="card"><h3>Déroulé du combat</h3><p>Le MJ ouvre le combat, transmet la situation et les états, puis ouvre chaque round. Le plan ci-contre constitue la déclaration du joueur.</p><div class="notice">Les dommages, blessures, états et situations restent visibles dans les jauges permanentes ; ils sont synchronisés depuis le poste MJ.</div></article>
+        <article class="card sem-card sem-gm"><h3>Plan du round ${S.combat.round || "—"}</h3><div class="form-grid"><div class="field"><label>Option de combat</label><select id="planOption">${OPTIONS.map(x => `<option ${S.plan.option === x ? "selected" : ""}>${x}</option>`).join("")}</select></div><div class="field"><label>Cible / objectif</label><input id="planTarget" value="${esc(S.plan.target)}" placeholder="Nom ou intention"></div><div class="field wide sem-gm"><label>Note au MJ</label><textarea id="planNote">${esc(S.plan.note)}</textarea></div></div><h4>Séquence prévue</h4><div class="sequence" id="planSequence">${S.plan.actions.length ? S.plan.actions.map((a, i) => `<div class="sequence-row"><span>${esc(a.label)}</span><button class="btn small danger" data-remove="${i}">Retirer</button></div>`).join("") : "<p class='subtle'>Ajoutez une action depuis la liste ci-dessous.</p>"}</div><div class="button-row mt"><button class="btn primary" id="sendPlan" ${active ? "" : "disabled"}>Transmettre le plan</button><span class="pill ${S.plan.status.includes("Pris") ? "ok" : ""}">${esc(S.plan.status)}</span></div></article></div>
       <article class="card mt sem-card sem-talent"><h3>Actions disponibles</h3><div class="action-list">${actionRows()}</div></article>${combatAbilityBlock}
-      <div class="grid two mt"><article class="card sem-card sem-talent"><h3>Réactions</h3>${(P.reactions || []).map(r => `<div class="action sem-talent"><div><b>${esc(r.name)}</b><small>Rang ${r.rank} • Effort ${r.effort || 0} • ${esc(r.limit || "")}</small></div><button class="btn small semantic-key sem-talent" data-roll="${esc(r.dice)}" data-label="${esc(r.name)}">${r.step} • ${esc(r.dice)}</button></div>`).join("")}</article><article class="card"><h3>Paramètres défensifs</h3><div class="statline" style="grid-template-columns:repeat(3,1fr)">${[['Déf. physique',c.defenses.physical],['Déf. mystique',c.defenses.magical],['Déf. sociale',c.defenses.social],['Armure physique',c.armor.physical],['Armure mystique',c.armor.mystical],['Initiative',c.initiative.step]].map(([l,v])=>`<div class="stat"><small>${l}</small><strong>${v}</strong></div>`).join("")}</div><div class="field mt"><label>Initiative du round</label>${initiativeChooser}<div class="button-row"><input id="initiative" type="number" value="${esc(S.plan.initiative)}" style="width:110px"><button class="btn" id="rollInitiative">Lancer ${esc(initiativeOptions[0].dice)}</button><button class="btn primary" id="sendInitiative">Transmettre</button></div></div></article></div>`;
-    $("#proposeHealth").onclick = () => {
-      const next = { damage: Number($("#damage").value), wounds: Number($("#wounds").value), karma: Number($("#karma").value), recoveriesUsed: Number($("#recoveries").value) };
-      const changes = Object.keys(next).filter(k => next[k] !== Number(S.draft[k])).map(k => ({ field: k, from: Number(S.draft[k]), to: next[k] }));
-      if (!changes.length) return toast("Aucun changement à proposer.");
-      Object.assign(S.draft, next); proposal(changes, "État du personnage", "healthState");
-    };
-    $("#rollRecovery").onclick = () => showCombatRoll("Récupération", c.recovery.dice);
+      <div class="grid two mt"><article class="card sem-card sem-talent"><h3>Réactions</h3>${(P.reactions || []).map(r => `<div class="action sem-talent"><div><b>${esc(r.name)}</b><small>Rang ${r.rank} • Effort ${r.effort || 0} • ${esc(r.limit || "")}</small></div><button class="btn small semantic-key sem-talent" data-roll="${esc(r.dice)}" data-label="${esc(r.name)}">${r.step} • ${esc(r.dice)}</button></div>`).join("")}</article><article class="card"><h3>Paramètres défensifs</h3><div class="statline" style="grid-template-columns:repeat(3,1fr)">${[['Déf. physique',c.defenses.physical],['Déf. mystique',c.defenses.magical],['Déf. sociale',c.defenses.social],['Armure physique',c.armor.physical],['Armure mystique',c.armor.mystical],['Initiative',c.initiative.step]].map(([l,v])=>`<div class="stat"><small>${l}</small><strong>${v}</strong></div>`).join("")}</div><div class="field mt"><label>Initiative du round</label>${initiativeChooser}<div class="button-row"><input id="initiative" type="number" value="${esc(S.plan.initiative)}" style="width:110px"><button class="btn" id="rollInitiative">Lancer ${esc(initiativeOptions[0].dice)}</button><button class="btn primary" id="sendInitiative" ${active ? "" : "disabled"}>Transmettre</button></div></div><div class="roll-output" id="combatRoll"><small>Les jets de combat apparaissent ici.</small></div></article></div>`;
     const selectedInitiative = () => initiativeOptions[Number($("#initiativeMode")?.value || 0)] || initiativeOptions[0];
     if ($("#initiativeMode")) $("#initiativeMode").onchange = () => { const option = selectedInitiative(); $("#rollInitiative").textContent = `Lancer ${option.dice}`; };
     $("#rollInitiative").onclick = () => { const option = selectedInitiative(), r = rollDice(option.dice); S.plan.initiative = r.total; save(); $("#initiative").value = r.total; showCombatRoll(option.label, option.dice, r); };
@@ -338,8 +413,13 @@
 
   function renderDiscipline() {
     const circleText = [LORE[P.playerId]?.circleTitle || "Passage au troisième Cercle", LORE[P.playerId]?.circleText || "Passage validé dans la continuité de campagne."];
+    const guide = DISCIPLINE_GUIDES[P.discipline] || { attributes: "À consolider", restrictions: "À consolider", arts: "À consolider", circles: [] };
     const spellBlock = (P.spells || []).length ? `<div class="grid two mt"><article class="card sem-card sem-magic"><h3>Sorts connus</h3><div class="chips">${P.spells.map(spell => `<span class="pill magic">${esc(spell)}</span>`).join("")}</div></article><article class="card sem-card sem-thread"><h3>Matrices et filaments préparés</h3><div class="table-wrap"><table><thead><tr><th>Cercle maximal</th><th>Type</th><th>Sort placé</th></tr></thead><tbody>${(P.matrices || []).map(matrix => `<tr><td>${matrix.rank}</td><td><span class="pill thread">${esc(matrix.type)}</span></td><td><b>${esc(matrix.spell)}</b></td></tr>`).join("")}</tbody></table></div></article></div>` : "";
-    page("discipline").innerHTML = `<div class="page-head"><div><h2>${esc(P.discipline)} — Cercle ${P.circle}</h2><p>Talents, identité et lecture de la Discipline.</p></div></div><div class="grid two"><article class="card sem-card sem-talent"><h3>Talents connus</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Note</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><span class="pill talent">Talent</span> <b>${esc(t.name)}</b></td><td>${t.rank}</td><td>${esc(t.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><article class="card sem-card sem-talent"><h3>Demi-magie</h3><p>${esc(P.halfMagic)}</p><h3>Passage au troisième Cercle</h3><h4>${circleText[0]}</h4><p>${circleText[1]}</p><div class="notice green">Ce passage est un fait de continuité validé, pas une proposition mécanique supplémentaire.</div></article></div>${spellBlock}<article class="card mt"><h3>Traits et tensions</h3><div class="chips">${(P.traits || []).map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>${(P.gahad || []).length ? `<h4>Gahad</h4>${P.gahad.map(x => `<p>${esc(x)}</p>`).join("")}` : ""}</article>`;
+    const help = t => TALENT_HELP[t.name] || t.note || "Description détaillée à consulter avec les règles de la Discipline.";
+    page("discipline").innerHTML = `<div class="page-head"><div><h2>${esc(P.discipline)} — Cercle ${P.circle}</h2><p>La Voie, ses talents et les choix de progression.</p></div></div>
+      <div class="discipline-intro"><div><span class="eyebrow">Attributs importants</span><h3>${esc(guide.attributes)}</h3><p>${esc(guide.restrictions)} • Arts : ${esc(guide.arts)}</p></div><div><span class="eyebrow">Demi-magie</span><p>${esc(P.halfMagic)}</p></div></div>
+      <div class="circle-grid mt">${guide.circles.map(([circle, essential, optional]) => `<article class="circle-card"><span>${circle}</span><h4>Talents essentiels</h4><p>${esc(essential)}</p><h4>Options</h4><p>${esc(optional)}</p></article>`).join("")}</div>
+      <div class="grid two mt"><article class="card sem-card sem-talent"><h3>Talents connus</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Jet / effet</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><span class="talent-help" tabindex="0" data-help="${esc(help(t))}"><span class="pill talent">Talent</span> <b>${esc(t.name)}</b><i>?</i></span></td><td>${t.rank}</td><td>${t.rollable === false ? esc(t.note || "Passif") : `Niv. ${t.step || "?"} • ${esc(t.dice || stepDice(t.step))}`}</td></tr>`).join("")}</tbody></table></div></article><article class="card"><h3>Passage au troisième Cercle</h3><h4>${circleText[0]}</h4><p>${circleText[1]}</p><div class="notice green">Passage validé dans la continuité de campagne.</div><h3 class="mt">Objet intime</h3><p>${esc(LORE[P.playerId]?.intimateObject || "Aucun objet intime distinct n’est encore consolidé.")}</p></article></div>${spellBlock}`;
   }
 
   function renderGear() {
@@ -352,8 +432,15 @@
 
   function splitRelation(text) { const parts = String(text).split(/\s+[—–-]\s+/); return [parts.shift(), parts.join(" — ")]; }
   function renderHistory() {
-    const timeline = [...P.history, ...(LORE[P.playerId]?.timeline || [])];
-    page("history").innerHTML = `<div class="page-head"><div><h2>Histoire et relations</h2><p>La continuité connue du personnage, sans révélation réservée au MJ.</p></div></div><div class="grid two"><article class="card"><h3>Repères de parcours</h3><div class="timeline">${timeline.map((text, i) => `<div class="timeline-item"><h4>${i === 0 ? "Origines" : i === timeline.length - 1 ? "Situation actuelle" : `Repère ${i + 1}`}</h4><p>${esc(text)}</p></div>`).join("")}</div></article><article class="card"><h3>Relations</h3><div class="relations">${P.relationships.map(text => { const [name, relation] = splitRelation(text); return `<div class="relation"><b>${esc(name)}</b><span>${esc(relation || "Relation connue")}</span></div>`; }).join("")}</div><h3 class="mt">Origine et présence actuelle</h3><p><b>${esc(P.origin)}</b><br>${esc(P.location)}</p><h3 class="mt">Objet intime</h3><p>${esc(LORE[P.playerId]?.intimateObject || "Aucun objet intime distinct n’est encore consolidé.")}</p></article></div><article class="card mt"><h3>Illustration collective</h3><img src="assets/illustrations/groupe.png" alt="Illustration collective des personnages" style="display:block;width:100%;max-height:620px;object-fit:contain;border-radius:10px;background:#efe8dc"></article>`;
+    const timeline = [...(LORE[P.playerId]?.timeline || []), ...P.history];
+    const interludes = [...S.notes.interludes].sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+    page("history").innerHTML = `<div class="page-head"><div><h2>Carnet de notes</h2><p>Mémoire personnelle, histoire connue et échanges d’interlude.</p></div></div>
+      <article class="card notes-card"><h3>Notes libres</h3><textarea id="freeNotes" placeholder="Vos notes de séance, pistes, noms et questions…">${esc(S.notes.free)}</textarea><small id="noteSaved" class="subtle">Enregistrement local automatique.</small></article>
+      <div class="grid two mt"><article class="card"><h3>Repères de parcours</h3><div class="timeline">${timeline.map((text, i) => `<div class="timeline-item"><h4>Repère ${i + 1}</h4><p>${esc(text)}</p></div>`).join("")}</div></article><article class="card"><h3>Relations</h3><div class="relations">${P.relationships.map(text => { const [name, relation] = splitRelation(text); return `<div class="relation"><b>${esc(name)}</b><span>${esc(relation || "Relation connue")}</span></div>`; }).join("")}</div><h3 class="mt">Origine et présence actuelle</h3><p><b>${esc(P.origin)}</b><br>${esc(P.location)}</p></article></div>
+      <article class="card mt"><h3>Interludes</h3><p class="subtle">Du plus récent au plus ancien. Le texte joueur apparaît en noir ; les réponses validées du MJ en or sombre.</p><div class="interlude-compose"><input id="interludeTitle" placeholder="Titre"><textarea id="interludeText" placeholder="Question, intention ou récit à transmettre au MJ…"></textarea><button class="btn primary" id="sendInterlude">Transmettre</button></div><div class="interlude-list mt">${interludes.length ? interludes.map(x => `<article class="interlude-card"><header><b>${esc(x.title || "Interlude")}</b><time>${new Date(x.at).toLocaleDateString("fr-FR")}</time></header><p class="interlude-player">${esc(x.text)}</p>${x.gm ? `<p class="interlude-gm">${esc(x.gm)}</p>` : ""}</article>`).join("") : "<p class='subtle'>Aucun interlude enregistré.</p>"}</div></article>`;
+    let timer;
+    $("#freeNotes").oninput = e => { S.notes.free = e.target.value; clearTimeout(timer); timer = setTimeout(() => { save(); $("#noteSaved").textContent = "Enregistré."; setTimeout(() => { if ($("#noteSaved")) $("#noteSaved").textContent = "Enregistrement local automatique."; }, 1200); }, 300); };
+    $("#sendInterlude").onclick = () => { const text = $("#interludeText").value.trim(); if (!text) return toast("Écrivez votre message."); const item = { id: id("interlude"), title: $("#interludeTitle").value.trim() || "Interlude", text, at: now(), gm: "" }; S.notes.interludes.push(item); save(); Sync.sendToGM({ type: "earthdawn-player-interlude", interlude: item }); renderHistory(); toast("Interlude transmis au MJ."); };
   }
 
   function addMessage(payload, mine) {
@@ -381,14 +468,14 @@
     return [["gm", "MJ"], ["all", "Tout le monde"], ...[...unique.values()].map(m => [m.playerId, m.name || participantName(m.playerId)])];
   }
   function renderMessages() {
-    const target = page("messages"); if (!target) return;
+    const target = $("#messageDock"); if (!target) return;
     const livePresence = dedupePresence(S.presence);
-    target.innerHTML = `<div class="page-head"><div><h2>Messages</h2><p>Les murmures entre joueurs restent visibles par le MJ.</p></div></div><div class="chat-layout"><article class="card sem-card sem-player"><h3>Présences</h3><div class="presence">${livePresence.length ? livePresence.map(m => `<div class="member ${m.role === "gm" ? "gm" : "player"}"><i></i><span>${esc(m.name || (m.role === "gm" ? "MJ" : participantName(m.playerId) || "Invité"))}</span></div>`).join("") : "<p class='subtle'>Présences visibles après connexion à la salle.</p>"}</div><div class="notice mt">Sans mot de passe : le lien identifie la salle et le personnage. Le MJ reçoit une copie de chaque murmure.</div></article><article class="card sem-card sem-gm"><h3>Fil de la salle</h3><div class="messages" id="messageList">${S.messages.length ? S.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="message ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper ? "whisper" : ""}"><b>${esc(m.from)}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text)}</div><small>${new Date(m.at).toLocaleString("fr-FR")} ${m.whisper ? "• murmure visible MJ" : "• groupe"}</small></div>`; }).join("") : "<p class='subtle'>Aucun message pour le moment.</p>"}</div><div class="chat-compose"><select id="messageTo">${recipients().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="messageText" placeholder="Votre message…"><button class="btn primary" id="sendMessage">Envoyer</button></div></article></div>`;
+    target.innerHTML = `<details class="dock-panel" open><summary><span>Messages</span><small>${livePresence.length} connecté${livePresence.length > 1 ? "s" : ""}</small></summary><div class="dock-presence">${livePresence.map(m => `<span class="${m.role === "gm" ? "gm" : "player"}">${esc(m.name || participantName(m.playerId))}</span>`).join("")}</div><div class="messages" id="messageList">${S.messages.length ? S.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="message ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper ? "whisper" : ""}"><b>${esc(m.from)}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text)}</div><small>${new Date(m.at).toLocaleString("fr-FR")}</small></div>`; }).join("") : "<p class='subtle'>Aucun message.</p>"}</div><div class="dock-compose"><select id="messageTo">${recipients().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="messageText" placeholder="Votre message…"><button id="sendMessage">Envoyer</button></div></details>`;
     const list = $("#messageList"); if (list) list.scrollTop = list.scrollHeight;
     $("#sendMessage").onclick = () => { const text = $("#messageText").value.trim(); if (!text) return; const to = $("#messageTo").value, label = recipients().find(x => x[0] === to)?.[1] || to; const payload = { type: "earthdawn-whisper", messageId: id("whisper"), sentAt: now(), from: P.name, fromId: P.playerId, to, toLabel: label, text, whisper: to !== "all", visibility: "gm_and_recipients" }; const targets = to === "all" ? ["all"] : to === "gm" ? ["gm"] : [to, "gm"]; Sync.send(payload, { targets }); addMessage(payload, true); };
   }
 
-  function renderAll() { renderHome(); renderExplore(); renderCombat(); renderProgress(); renderDiscipline(); renderGear(); renderHistory(); renderMessages(); openPage(location.hash.slice(1) || S.page || "home", false); }
+  function renderAll() { renderHome(); renderCombat(); renderGear(); renderDiscipline(); renderProgress(); renderHistory(); renderMessages(); refreshPermanentState(); openPage(location.hash.slice(1) || S.page || "home", false); }
 
   const Sync = window.EarthdawnSync || { configure: () => Sync, start: () => Sync, send: () => false, sendToGM: () => false, status: () => ({ room: "locale", status: "local", presence: [] }) };
   function refreshSyncLabels(detail) {
@@ -406,12 +493,13 @@
     if (d.type === "earthdawn-cockpit-state" || d.type === "earthdawn-cockpit-hello") {
       if (d.runtime) Object.keys(S.draft).forEach(k => { if (Number.isFinite(Number(d.runtime[k]))) S.draft[k] = Number(d.runtime[k]); });
       if (d.combat) { S.combat = { ...S.combat, ...d.combat, conditions: conditionLabels(d.combat.conditions) }; if (S.plan.round !== S.combat.round) S.plan = { ...baseState().plan, round: S.combat.round }; }
-      if (Array.isArray(d.decisions)) applyDecisions(d.decisions); save(); renderHome(); renderCombat();
+      if (Array.isArray(d.decisions)) applyDecisions(d.decisions); save(); renderHome(); renderCombat(); refreshPermanentState();
     } else if (d.type === "earthdawn-player-plan-ack") {
       S.plan.status = d.accepted ? "Pris en compte par le MJ" : `Refusé : ${d.note || "round incompatible"}`; save(); renderCombat();
     } else if (d.type === "earthdawn-player-proposal-decisions") { applyDecisions(d.decisions || []); }
     else if (d.type === "earthdawn-player-view-render" && visionWindow && !visionWindow.closed && d.html) { visionWindow.document.open(); visionWindow.document.write(d.html); visionWindow.document.close(); }
     else if (d.type === "earthdawn-whisper") addMessage(d, false);
+    else if (d.type === "earthdawn-interlude-response" && d.interlude) { const item = S.notes.interludes.find(x => x.id === d.interlude.id); if (item) { item.gm = d.interlude.gm || d.interlude.response || ""; save(); renderHistory(); } }
   });
   function darknessLabel(value) {
     const rules = { partial: ["Obscurité partielle", -1, 25], consequent: ["Obscurité conséquente", -3, 50], total: ["Obscurité totale", -5, 75] }, rule = rules[value?.darkness];
@@ -441,6 +529,7 @@
 
   Sync.configure({ role: "player", playerId: P.playerId, name: P.name }).start();
   S.presence = dedupePresence(Sync.status().presence); save();
+  $("#globalStrip").onclick = () => openPage("home");
   renderAll(); refreshSyncLabels();
   setTimeout(() => Sync.sendToGM({ type: "earthdawn-player-ready", characterId: P.characterId, characterName: P.name, clientVersion: VERSION }), 250);
   setInterval(() => Sync.sendToGM({ type: "earthdawn-player-ping" }), 10000);

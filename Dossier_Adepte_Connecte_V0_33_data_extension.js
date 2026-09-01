@@ -204,7 +204,7 @@
         "Dans la nuit du 29 au 30 Sollus, il a participé à l’exfiltration de Katsika et revendiqué le sauvetage au nom de Vorkana."
       ],
       relationships: ["Kalha — petite sœur", "Doomir Vent de Glace — père mort qu’il croit disparu", "Barbak et Ogunta — cousins", "Mâche-Fer — chien de guerre harmonisé", "Le groupe — éclaireur et lecteur des dangers"],
-      snapshot: { karma: 9, damage: 10, wounds: 0, recoveriesUsed: 0 }
+      snapshot: { karma: 9, damage: 0, wounds: 0, recoveriesUsed: 0 }
     }
   });
 })();

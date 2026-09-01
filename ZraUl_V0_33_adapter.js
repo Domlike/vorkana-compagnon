@@ -13,31 +13,10 @@
   if (portrait) portrait.src = "assets/portraits/zraul.png";
 
   const style = document.createElement("style");
-  style.textContent = `.zmsg-layout{display:grid;grid-template-columns:250px 1fr;gap:14px}.zmsg-card{border:1px solid #d8d1c6;background:#fff;border-radius:8px;padding:15px}.zmsg-layout .zmsg-card:first-child{border-left:5px solid var(--player)}.zmsg-layout .zmsg-card:last-child{border-left:5px solid var(--gm)}.zmsg-presence{display:grid;gap:7px}.zmsg-member{padding:8px;background:#f3f0ea;border-radius:6px}.zmsg-member.player{border-left:4px solid var(--player)}.zmsg-member.gm{border-left:4px solid var(--gm)}.zmsg-member:before{content:'●';color:#6e9a60;margin-right:7px}.zmsg-feed{height:360px;overflow:auto;padding:10px;background:#f1ede6;border-radius:7px;display:flex;flex-direction:column;gap:7px}.zmsg-item{max-width:78%;padding:8px 10px;background:white;border:1px solid #d8d0c4;border-left:5px solid var(--player);border-radius:8px}.zmsg-item.from-gm{border-left-color:var(--gm);background:#fff9ec}.zmsg-item.whisper{box-shadow:inset 0 -3px var(--specialization)}.zmsg-item.mine{align-self:flex-end;background:#f1f1ef}.zmsg-item small{display:block;color:#777;margin-top:3px}.zmsg-compose{display:grid;grid-template-columns:180px 1fr auto;gap:7px;margin-top:8px}.zmsg-compose select,.zmsg-compose input{border:1px solid #cfc7bc;border-radius:6px;padding:9px;background:white}.zra-situation{margin-bottom:14px;padding:12px 14px;border:1px solid #d8c8a9;border-left:5px solid var(--gm);border-radius:7px;background:#f3ead9}.zra-situation b{display:block;margin-bottom:5px}.zra-situation span{display:inline-block;margin:3px 5px 0 0;padding:3px 7px;border-radius:999px;background:#4f3a31;color:white;font-size:12px}@media(max-width:800px){.zmsg-layout,.zmsg-compose{grid-template-columns:1fr}}`;
+  style.textContent = `.zmsg-dock{border:1px solid #3f5b4b;border-left:4px solid var(--gm);border-radius:8px;background:#132019;color:#eee9dc;overflow:hidden}.zmsg-dock summary{cursor:pointer;padding:9px 10px;color:#dec99d;font-weight:800;list-style:none;display:flex;justify-content:space-between}.zmsg-dock summary::-webkit-details-marker{display:none}.zmsg-online{font-size:11px;color:#95c28f}.zmsg-presence{display:flex;gap:4px;flex-wrap:wrap;padding:0 8px 7px}.zmsg-member{padding:2px 6px;background:#203129;border-radius:99px;font-size:10px}.zmsg-member:before{content:'●';color:#78ad70;margin-right:4px}.zmsg-member.gm{border:1px solid var(--gm)}.zmsg-feed{height:170px;overflow:auto;padding:7px;background:#0e1713;display:flex;flex-direction:column;gap:5px}.zmsg-item{max-width:92%;padding:6px 7px;background:#203129;border-left:4px solid var(--player);border-radius:6px;font-size:11px}.zmsg-item.from-gm{border-left-color:var(--gm);background:#2a261c;color:#f1dfba}.zmsg-item.whisper{box-shadow:inset 0 -2px var(--specialization)}.zmsg-item.mine{align-self:flex-end}.zmsg-item small{display:block;color:#aeb7b1;margin-top:2px;font-size:9px}.zmsg-compose{display:grid;grid-template-columns:1fr auto;gap:5px;padding:7px}.zmsg-compose select{grid-column:1/-1}.zmsg-compose select,.zmsg-compose input{min-width:0;border:1px solid #4a6556;border-radius:5px;padding:6px;background:#0f1914;color:#f2eee3}.zmsg-compose button{border:1px solid #876b36;border-radius:5px;background:#745326;color:white;padding:6px 8px}.zra-situation{margin-bottom:14px;padding:12px 14px;border:1px solid #d8c8a9;border-left:5px solid var(--gm);border-radius:7px;background:#f3ead9}.zra-situation b{display:block;margin-bottom:5px}.zra-situation span{display:inline-block;margin:3px 5px 0 0;padding:3px 7px;border-radius:999px;background:#4f3a31;color:white;font-size:12px}@media(max-width:700px){.zmsg-feed{height:220px}}`;
   document.head.appendChild(style);
 
-  const nav = document.getElementById("nav");
-  function circleHubUrl() {
-    const url = new URL("Vorkana_Cercle_V0_33.html", location.href);
-    url.searchParams.set("player", P.playerId);
-    const room = new URLSearchParams(location.search).get("room");
-    if (room) url.searchParams.set("room", room);
-    return url.href;
-  }
-  const messageButton = document.createElement("button");
-  messageButton.dataset.page = "messages";
-  messageButton.innerHTML = '<span class="dot player"></span>Messages';
-  nav.insertBefore(messageButton, nav.querySelector("details"));
-  const messagePage = document.createElement("section");
-  messagePage.className = "view";
-  messagePage.id = "page-messages";
-  document.querySelector("main > div")?.appendChild(messagePage);
-  titles.messages = "Messages";
-  messageButton.onclick = () => openPage("messages");
-  const circleButton = document.createElement("button");
-  circleButton.innerHTML = '<span class="dot"></span>Ressources & marché';
-  nav.insertBefore(circleButton, nav.querySelector("details"));
-  circleButton.onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
+  const messageDock = document.getElementById("playerMessageDock");
 
   function syncState() { return Sync.status(); }
   renderCockpitStatus = function () {
@@ -75,10 +54,10 @@
     return [["gm", "MJ"], ["all", "Tout le monde"], ...players.entries()];
   }
   function renderMessages() {
-    if (!messagePage) return;
+    if (!messageDock) return;
     const members = presence.length ? presence.map(m => `<div class="zmsg-member ${m.role === "gm" ? "gm" : "player"}">${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</div>`).join("") : `<p class="muted">Présences visibles après connexion.</p>`;
     const feed = L.messages.length ? L.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="zmsg-item ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper === false ? "" : "whisper"}"><b>${esc(m.from || "MJ")}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`; }).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
-    messagePage.innerHTML = `<div class="head"><h2>Messages</h2><p>Les murmures entre joueurs restent visibles par le MJ.</p></div><div class="zmsg-layout"><div class="zmsg-card"><h3>Présences</h3><div class="zmsg-presence">${members}</div><p class="notice">L’invitation ne demande aucun mot de passe. Elle identifie seulement la salle et votre personnage.</p></div><div class="zmsg-card"><h3>Fil de la salle</h3><div class="zmsg-feed" id="zmsgFeed">${feed}</div><div class="zmsg-compose"><select id="zmsgTo">${recipientList().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="zmsgText" placeholder="Votre message…"><button class="btn primary" id="zmsgSend">Envoyer</button></div></div></div>`;
+    messageDock.innerHTML = `<details class="zmsg-dock" open><summary><span>Messages</span><span class="zmsg-online">${presence.length} connecté${presence.length > 1 ? "s" : ""}</span></summary><div class="zmsg-presence">${members}</div><div class="zmsg-feed" id="zmsgFeed">${feed}</div><div class="zmsg-compose"><select id="zmsgTo">${recipientList().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="zmsgText" placeholder="Votre message…"><button id="zmsgSend">Envoyer</button></div></details>`;
     const feedEl = document.getElementById("zmsgFeed"); if (feedEl) feedEl.scrollTop = feedEl.scrollHeight;
     document.getElementById("zmsgSend").onclick = () => {
       const input = document.getElementById("zmsgText"), text = input.value.trim(); if (!text) return;
