@@ -7,9 +7,9 @@
  * Ne jamais placer de clé "secret" ou "service_role" dans ce fichier.
  */
 window.EARTHDAWN_REALTIME_CONFIG = Object.freeze({
-  enabled: false,
-  supabaseUrl: "",
-  supabasePublishableKey: "",
+  enabled: true,
+  supabaseUrl: "https://jggbmctycesgxcrrfwxk.supabase.co",
+  supabasePublishableKey: "sb_publishable_duiEIFAdeWgLh5pzBQhgKQ_6uF-N0Ym",
   defaultRoom: "cale-chaos",
-  playerBaseUrl: ""
+  playerBaseUrl: "https://domlike.github.io/vorkana-compagnon/"
 });
