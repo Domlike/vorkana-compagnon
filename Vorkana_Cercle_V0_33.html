@@ -24,7 +24,7 @@
   (function(){
     "use strict";
     const params=new URLSearchParams(location.search), role=params.get("role")==="gm"?"gm":"player", playerId=params.get("player")||"pj_0";
-    const NAMES={pj_0:"Zra’Ul",pj_1:"Kalha",pj_2:"Barbak",pj_3:"Ogunta",pj_4:"Jaskar",pj_5:"Kal’Zakath",pj_6:"Gul’Rak"};
+    const NAMES={pj_0:"Zra’Ul",pj_1:"Kalha",pj_2:"Kal’Zakath",pj_3:"Barbak",pj_4:"Ogunta",pj_5:"Jaskar",pj_6:"Gul’Rak"};
     const Sync=window.EarthdawnSync, room=()=>Sync.status().room, key=()=>`vorkana_circle_${room()}_v033`;
     const CATALOG=[
       {id:"rations",name:"Rations de voyage",category:"Voyage",status:"available",stock:18,price:"1 PA / semaine",note:"Disponibles à Rocnoir ; quantité indicative."},

@@ -351,7 +351,7 @@
     S.messages = S.messages.slice(-150); save(); renderMessages();
   }
   function recipients() {
-    const known = [["pj_0", "Zra’Ul"], ["pj_1", "Kalha"], ["pj_2", "Barbak"], ["pj_3", "Ogunta"], ["pj_4", "Jaskar"], ["pj_5", "Kal’Zakath"], ["pj_6", "Gul’Rak"]].filter(([id]) => id !== P.playerId);
+    const known = [["pj_0", "Zra’Ul"], ["pj_1", "Kalha"], ["pj_2", "Kal’Zakath"], ["pj_3", "Barbak"], ["pj_4", "Ogunta"], ["pj_5", "Jaskar"], ["pj_6", "Gul’Rak"]].filter(([id]) => id !== P.playerId);
     const online = S.presence.filter(m => m && m.playerId && m.playerId !== P.playerId);
     const unique = new Map(known.map(([id, name]) => [id, { playerId: id, name }]));
     online.forEach(m => unique.set(m.playerId, m));
