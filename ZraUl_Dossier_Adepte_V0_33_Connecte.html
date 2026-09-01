@@ -3047,7 +3047,7 @@ function writePlayerVision(html){
 function requestPlayerVision(){
  playerVisionWin=window.open("","EarthdawnPlayerView","width=1280,height=800");
  if(!playerVisionWin){alert("Le navigateur a bloqué la fenêtre Vision joueur.");return}
- writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">La Carte Tactique prépare la vue. Si elle n’est pas encore ouverte, lance le combat ou ouvre-la depuis le Cockpit.</p></body></html>');
+ writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p></body></html>');
  if(!cockpitConnected){connectToCockpit();setTimeout(()=>playerPost({type:"earthdawn-player-view-request"}),1700);return}
  playerPost({type:"earthdawn-player-view-request"});
 }

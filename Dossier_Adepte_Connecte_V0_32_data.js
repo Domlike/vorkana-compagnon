@@ -13,19 +13,19 @@ window.EARTHDAWN_PLAYER_DATA={
     combat:{initiative:{step:3,dice:"D4",note:"Dextérité 6 − malus d’armure 3"},defenses:{physical:8,magical:9,social:5},armor:{physical:8,mystical:1,label:"Cotte de mailles et targe"},health:{unconscious:42,death:53,woundThreshold:10},recovery:{max:3,step:6,dice:"D10"},movement:{combat:30,run:60},balance:{step:6,dice:"D10"},karma:{current:10,max:40,step:5,dice:"D8"}},
     actions:[
       {id:"kalha_mace",label:"Masse d’armes",kind:"Attaque de mêlée",testStep:9,testDice:"D8+D6",damageStep:14,damageDice:"2D12",karma:"Non",effort:0,note:"Masse reforgée deux fois ; le Cockpit conserve le niveau de dommages total 14."},
-      {id:"kalha_shield",label:"Coup de bouclier",kind:"Action simple",testStep:7,testDice:"D12",damageStep:7,damageDice:"D12",karma:"Non",effort:1,note:"Attaque au bouclier ; Effort 1."}
+      {id:"kalha_shield",label:"Coup de bouclier",kind:"Action simple",testStep:9,testDice:"D8+D6",damageStep:7,damageDice:"D12",karma:"Non",effort:1,note:"Attaque avec Armes de mêlée ; dommages Force + rang de Coup de bouclier."}
     ],
     reactions:[
       {name:"Parade",rank:4,step:10,dice:"D10+D6",effort:1,limit:"Contact"},
       {name:"Volonté de fer",rank:4,step:10,dice:"D10+D6",effort:1,limit:"Attaques visant la Défense magique",karma:true}
     ],
     talents:[
-      {name:"Armes de mêlée",rank:3},{name:"Évaluation",rank:2},{name:"Marchandage",rank:1},{name:"Perfectionnement de lame",rank:4,note:"Spécialisation : Renforcement de flèche"},
-      {name:"Rituel de Karma",rank:2},{name:"Volonté de fer",rank:4},{name:"Parade",rank:4},{name:"Endurance",rank:4},{name:"Histoire des armes",rank:4},{name:"Coup de bouclier",rank:1}
+      {name:"Armes de mêlée",rank:3,step:9,dice:"D8+D6"},{name:"Évaluation",rank:2,step:9,dice:"D8+D6"},{name:"Marchandage",rank:1,step:5,dice:"D8"},{name:"Perfectionnement de lame",rank:4,step:11,dice:"D10+D8",note:"Spécialisation : Renforcement de flèche"},
+      {name:"Rituel de Karma",rank:2,rollable:false,note:"Rituel sans test d’action standard."},{name:"Volonté de fer",rank:4,step:10,dice:"D10+D6"},{name:"Parade",rank:4,step:10,dice:"D10+D6"},{name:"Endurance",rank:4,rollable:false,note:"Effet passif."},{name:"Histoire des armes",rank:4,step:11,dice:"D10+D8"},{name:"Coup de bouclier",rank:1,rollable:false,note:"Jet de dommages intégré à l’action de combat."}
     ],
     skills:[
-      {name:"Connaissance : Histoire de Barsaive",rank:1},{name:"Connaissance : Légendes et héros",rank:2},{name:"Inscriptions runiques",rank:1},{name:"Don des langues",rank:2},
-      {name:"Médecine",rank:1},{name:"Attaque critique",rank:1},{name:"Cuisine",rank:1},{name:"Lecture et écriture",rank:1}
+      {name:"Connaissance : Histoire de Barsaive",rank:1,step:8,dice:"2D6"},{name:"Connaissance : Légendes et héros",rank:2,step:9,dice:"D8+D6"},{name:"Inscriptions runiques",rank:1,step:5,dice:"D8"},{name:"Don des langues",rank:2,step:9,dice:"D8+D6"},
+      {name:"Médecine",rank:1,step:8,dice:"2D6"},{name:"Attaque critique",rank:1,rollable:false,note:"Bonus conditionnel aux dommages, sans jet autonome."},{name:"Cuisine",rank:1,step:5,dice:"D8"},{name:"Lecture et écriture",rank:1,step:8,dice:"2D6"}
     ],
     halfMagic:"Création et réparation d’armes ou d’armures, avec Perception lorsque la Demi-magie de Forgeron s’applique.",
     equipment:[
@@ -64,12 +64,12 @@ window.EARTHDAWN_PLAYER_DATA={
     ],
     reactions:[{name:"Esquive",rank:3,step:11,dice:"D10+D8",effort:1,limit:"Résultat Bon requis contre une attaque à distance"}],
     talents:[
-      {name:"Arme de mêlée",rank:4},{name:"Crochetage",rank:3},{name:"Déplacement silencieux",rank:4},{name:"Escalade",rank:3},{name:"Rituel de Karma",rank:1},
-      {name:"Vol à la tire",rank:4},{name:"Attaque surprise",rank:3},{name:"Endurance",rank:4},{name:"Sens des serrures",rank:3},{name:"Détection des pièges",rank:2},{name:"Esquive",rank:3}
+      {name:"Arme de mêlée",rank:4,step:12,dice:"2D10"},{name:"Crochetage",rank:3,step:11,dice:"D10+D8"},{name:"Déplacement silencieux",rank:4,step:12,dice:"2D10"},{name:"Escalade",rank:3,step:11,dice:"D10+D8"},{name:"Rituel de Karma",rank:1,rollable:false,note:"Rituel sans test d’action standard."},
+      {name:"Vol à la tire",rank:4,step:12,dice:"2D10"},{name:"Attaque surprise",rank:3,rollable:false,note:"Dommages intégrés à l’action Attaque surprise."},{name:"Endurance",rank:4,rollable:false,note:"Effet passif."},{name:"Sens des serrures",rank:3,step:9,dice:"D8+D6"},{name:"Détection des pièges",rank:2,step:8,dice:"2D6"},{name:"Esquive",rank:3,step:11,dice:"D10+D8"}
     ],
     skills:[
-      {name:"Connaissance : Légendes et héros",rank:1},{name:"Connaissance : Routes commerciales de Barsaive",rank:1},{name:"Art : Danse",rank:1},{name:"Don des langues",rank:2},
-      {name:"Connaissance de la rue",rank:2},{name:"Analyse des indices",rank:1},{name:"Deuxième attaque",rank:1},{name:"Lecture et écriture throallique",rank:1}
+      {name:"Connaissance : Légendes et héros",rank:1,step:7,dice:"D12"},{name:"Connaissance : Routes commerciales de Barsaive",rank:1,step:7,dice:"D12"},{name:"Art : Danse",rank:1,step:6,dice:"D10"},{name:"Don des langues",rank:2,step:8,dice:"2D6"},
+      {name:"Connaissance de la rue",rank:2,step:8,dice:"2D6"},{name:"Analyse des indices",rank:1,step:7,dice:"D12"},{name:"Deuxième attaque",rank:1,step:9,dice:"D8+D6"},{name:"Lecture et écriture throallique",rank:1,step:7,dice:"D12"}
     ],
     halfMagic:"Mettre en place ou contourner les mesures empêchant une intrusion ; reconnaître les serrures ; repérer pièges et passages secrets lorsque la Demi-magie de Voleur s’applique.",
     equipment:[

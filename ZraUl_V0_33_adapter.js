@@ -16,6 +16,13 @@
   document.head.appendChild(style);
 
   const nav = document.getElementById("nav");
+  function circleHubUrl() {
+    const url = new URL("Vorkana_Cercle_V0_33.html", location.href);
+    url.searchParams.set("player", P.playerId);
+    const room = new URLSearchParams(location.search).get("room");
+    if (room) url.searchParams.set("room", room);
+    return url.href;
+  }
   const messageButton = document.createElement("button");
   messageButton.dataset.page = "messages";
   messageButton.innerHTML = '<span class="dot k"></span>Messages';
@@ -26,6 +33,10 @@
   document.querySelector("main > div")?.appendChild(messagePage);
   titles.messages = "Messages";
   messageButton.onclick = () => openPage("messages");
+  const circleButton = document.createElement("button");
+  circleButton.innerHTML = '<span class="dot t"></span>Ressources & marché';
+  nav.insertBefore(circleButton, nav.querySelector("details"));
+  circleButton.onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
 
   function syncState() { return Sync.status(); }
   renderCockpitStatus = function () {
@@ -46,7 +57,7 @@
     L.messages.push({ ...payload, mine: !!mine }); L.messages = L.messages.slice(-150); save(); renderMessages();
   }
   function recipientList() {
-    const players = new Map([["pj_1", "Kalha"], ["pj_6", "Gul’Rak"]]);
+    const players = new Map([["pj_1", "Kalha"], ["pj_2", "Barbak"], ["pj_3", "Ogunta"], ["pj_4", "Jaskar"], ["pj_5", "Kal’Zakath"], ["pj_6", "Gul’Rak"]]);
     presence.filter(m => m.playerId && m.playerId !== P.playerId).forEach(m => players.set(m.playerId, m.name || m.playerId));
     return [["gm", "MJ"], ["all", "Tout le groupe"], ...players.entries()];
   }
@@ -63,6 +74,15 @@
       Sync.send(payload, { targets: to === "all" ? ["all"] : to === "gm" ? ["gm"] : [to, "gm"] }); addMessage(payload, true);
     };
   }
+  function darknessLabel(value) {
+    const rules = { partial: ["Obscurité partielle", -1, 25], consequent: ["Obscurité conséquente", -3, 50], total: ["Obscurité totale", -5, 75] }, rule = rules[value?.darkness];
+    if (!rule) return "";
+    let penalty = rule[1];
+    if (value.visionSense === "other") penalty = null;
+    else if (!value.darknessBypassesVision && (value.visionSense === "thermographic" || (value.visionSense === "night" && value.darkness !== "total"))) penalty = 0;
+    const effect = penalty === null ? "effet visuel à arbitrer" : penalty === 0 ? "aucun malus visuel" : `${penalty} aux tests basés sur la vue`;
+    return `${rule[0]} — ${effect} • déplacement possiblement réduit de ${rule[2]}% (MJ)`;
+  }
   function conditionLabels(value) {
     if (!value || typeof value !== "object") return [];
     const labels = [];
@@ -73,6 +93,7 @@
     if (value.cover === "substantial") labels.push("Couvert important");
     if (Number(value.actionMod)) labels.push(`Actions ${Number(value.actionMod) > 0 ? "+" : ""}${Number(value.actionMod)}`);
     if (Number(value.defenseMod)) labels.push(`Défenses ${Number(value.defenseMod) > 0 ? "+" : ""}${Number(value.defenseMod)}`);
+    if (value.darkness && value.darkness !== "none") labels.push(darknessLabel(value));
     if (value.note) labels.push(String(value.note));
     return labels;
   }

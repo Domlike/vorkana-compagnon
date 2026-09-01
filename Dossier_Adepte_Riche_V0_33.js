@@ -7,7 +7,10 @@
 
   const VERSION = "0.33";
   const STORE = `earthdawn_player_${P.characterId}_v033`;
-  const PORTRAITS = { pj_1: "assets/portraits/kalha.png", pj_6: "assets/portraits/gulrak.png" };
+  const PORTRAITS = {
+    pj_1: "assets/portraits/kalha.png", pj_2: "assets/portraits/barbak.png", pj_3: "assets/portraits/ogunta.png",
+    pj_4: "assets/portraits/jaskar.png", pj_5: "assets/portraits/kalzakath.png", pj_6: "assets/portraits/gulrak.png"
+  };
   const NAV = [
     ["home", "⌂", "Essentiel"], ["explore", "⌕", "Hors combat"], ["combat", "⚔", "Combat"],
     ["progress", "✦", "Progression"], ["discipline", "◈", "Discipline"], ["gear", "▣", "Équipement"],
@@ -18,6 +21,7 @@
       physical: "1,84 m • 96 kg sans équipement • silhouette compacte et très dense, façonnée par la forge",
       circleTitle: "Le Cercle qui tient",
       circleText: "À Rocheville, Kalha dut réparer l’arbre fendu du moulin communal. Après avoir échoué en voulant travailler seule, elle réunit charpentier, charron, charbonnier et habitants, puis dirigea leurs gestes malgré sa timidité. Marda Braise-Sourde reconnut son troisième Cercle lorsqu’elle comprit qu’une œuvre pouvait rester sienne sans lui appartenir seule.",
+      intimateObject: "Les médaillons de Vorkana matérialisent la mémoire artisanale et collective de Kalha.",
       timeline: [
         "30 Strassa 1448 — les deux reforgements de sa masse d’armes sont placés à cette date en hommage à Astendar.",
         "28 Rua — voyage avec Barbak, Ogunta et Kal’Zakath vers Grand-Foire, dans l’ombre des menaces liées à Mordom.",
@@ -29,10 +33,63 @@
         "Nuit du 29 au 30 Sollus — elle défend l’option d’exfiltration ; Katsika est libéré sans alarme ni combat."
       ]
     },
+    pj_2: {
+      physical: "2,03 m • 126 kg sans équipement • très grand et massif, musculature explosive de Guerrier",
+      circleTitle: "Apprendre à revenir",
+      circleText: "Lorsqu’une plateforme menaça des passants à Grand-Foire, Barbak tenta d’abord d’en porter seul tout le poids. Koldar le força à demander de l’aide, à répartir l’effort et à accepter de sortir avec les autres. Il reconnut son troisième Cercle lorsque Barbak comprit qu’un Guerrier appartient aussi à ceux qu’il protège.",
+      intimateObject: "La vieille boucle du baudrier de Kash, remise par Koldar avec ces mots : « Apprends-lui à revenir. »",
+      timeline: [
+        "28 Rua 1448 — il rejoint la route de Koldar et découvre les traces de violences liées à Mordom.",
+        "26 Mawag — Koldar lui enseigne qu’un Guerrier peut aussi poser son arme, tendre la main ou accepter la fuite.",
+        "6 Gahmil — il affronte Nargal, dit le Taureau, et l’emporte par KO.",
+        "19–28 Sollus — il achève son harmonisation avec Brise-Tibia.",
+        "29 Sollus — il protège Ogunta sous les tirs avec une planche arrachée à la cabane de Katsika."
+      ]
+    },
+    pj_3: {
+      physical: "1,87 m • 92 kg sans équipement • grande et solide, port calme et musculature discrète",
+      circleTitle: "La Dernière Porte",
+      circleText: "À la mort d’Helja Cendre-Basse, Ogunta transmit ses volontés sans les embellir, répartit entre les vivants les responsabilités de la défunte, puis refusa de retenir son esprit lorsqu’il choisit de partir. Doomir reconnut son troisième Cercle lorsqu’elle comprit que son pouvoir sur les morts ne lui donnait aucun droit sur leurs choix.",
+      intimateObject: "Aucun objet intime matériel distinct n’est consolidé. Son bâton reste un symbole visuel sans effet particulier.",
+      timeline: [
+        "28 Rua 1448 — elle accompagne Barbak, Kalha et Kal’Zakath vers Grand-Foire.",
+        "26 Mawag — elle avertit un messager ork menacé, attirant l’attention d’Elroën Vélaris.",
+        "6 Gahmil — elle résout l’épreuve des runes de vie, mort et renaissance.",
+        "18 Sollus — le mot « deuil » touche juste avec Voluptia ; elle emploie une lance spectrale contre les brigands.",
+        "29 Sollus — elle porte une attaque magique particulièrement violente sur la plage des Coques."
+      ]
+    },
+    pj_4: {
+      physical: "1,89 m • 91 kg sans équipement • ork élancé aux gestes amples et à la présence expressive",
+      circleTitle: "Le récit qui n’écrase pas",
+      circleText: "Le passage de Jaskar au troisième Cercle est validé dans la continuité de campagne ; son récit détaillé reste à enrichir avec le joueur. Sa Discipline l’engage déjà à porter les histoires sans masquer les vérités qui donnent leur poids aux actes.",
+      intimateObject: "Aucun objet intime distinct n’est encore consolidé ; ses instruments, ses cartes et son matériel d’écriture sont ses outils de mémoire.",
+      timeline: [
+        "26 Mawag 1448 — il transforme les retrouvailles, le chaos, le serment et le feu en matière de légende.",
+        "28 Mawag — il recueille l’histoire d’Ysillia, l’Aiguille sur sang.",
+        "18 Sollus — il gagne 5 PA avec ses chansons et accompagne la charge de Barbak de notes lugubres.",
+        "21–28 Sollus — il mémorise avec Zra’Ul Le Fleuve garde les Noms.",
+        "29 Sollus — il obtient un accès accéléré à la Capitainerie."
+      ]
+    },
+    pj_5: {
+      physical: "1,96 m • 105 kg sans équipement • grand et athlétique, longues jambes et musculature sèche",
+      circleTitle: "Les trois pistes",
+      circleText: "Harkan Brumepente présenta à Kal’Zakath trois pistes dont les conséquences comptaient davantage que les traces. Il démasqua un piège, alerta les bonnes personnes face à une substance dangereuse et effaça la piste d’une jeune orke qui ne voulait pas être retrouvée. Harkan reconnut son troisième Cercle lorsqu’il comprit qu’un Éclaireur suit aussi la place qu’il occupe dans le monde.",
+      intimateObject: "Aucun objet intime distinct n’est consolidé. Ses armes nommées et l’Œil de Dragon traduisent sa manière de lire et de façonner sa route.",
+      timeline: [
+        "28 Rua 1448 — il lit les signes de danger liés à Mordom sur la route de Grand-Foire.",
+        "Épreuves des Écorcheurs — il retrouve le furet grâce à son pistage.",
+        "18 Raquas — il obtient un croquis lié à Tilport Cœurance en échange d’une part du trésor.",
+        "Kelpoya — il déclenche un nuage vert empoisonné en manipulant une rune du coffre.",
+        "Nuit du 29 au 30 Sollus — il participe à l’exfiltration de Katsika et revendique le sauvetage au nom de Vorkana."
+      ]
+    },
     pj_6: {
       physical: "1,82 m • 88 kg sans équipement • cheveux noirs épais, peau légèrement verdâtre, yeux orangés ou dorés",
       circleTitle: "J’ai volé leur destination",
       circleText: "Au Chardon Creux, Gul’Rak comprit que l’agrafe d’argent désignée par Miraq Tresse-Sombre était un appât. Il la laissa en place, falsifia le registre, modifia l’itinéraire et déplaça les marques de route afin de détourner des chercheurs dangereux. Miraq reconnut son troisième Cercle lorsqu’il déclara : « Je n’ai pas pris l’agrafe. J’ai volé leur destination. »",
+      intimateObject: "Le mouchoir noir brodé « Gullûz » porte trois points d’argent ajoutés par Miraq. Il n’est pas un objet à trame.",
       timeline: [
         "Né en 1431 de Vargan Zug-Rak, convoyeur et négociateur de routes, et de Sura Fil-d’Argent, brodeuse et petite marchande itinérante.",
         "En 1442, il remplace les faux poids d’un marchand, subtilise son sceau et conserve une pièce d’argent pour ses frais ; Miraq reconnaît son potentiel de Voleur.",
@@ -53,6 +110,13 @@
   const fmt = value => Number(value || 0).toLocaleString("fr-FR");
   const now = () => new Date().toISOString();
   const id = prefix => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  function circleHubUrl() {
+    const url = new URL("Vorkana_Cercle_V0_33.html", location.href);
+    url.searchParams.set("player", P.playerId);
+    const room = new URLSearchParams(location.search).get("room");
+    if (room) url.searchParams.set("room", room);
+    return url.href;
+  }
 
   function baseState() {
     return {
@@ -103,7 +167,7 @@
   document.querySelectorAll("[data-page]").forEach(el => el.addEventListener("click", () => openPage(el.dataset.page)));
   addEventListener("hashchange", () => openPage(location.hash.slice(1) || S.page, false));
 
-  function attributeCard(a) { return `<div class="stat"><small>${esc(a.name)}</small><strong>${a.value}</strong><span>Niveau ${a.step}</span><div class="dice">${esc(a.dice)}</div></div>`; }
+  function attributeCard(a) { return `<button type="button" class="stat rollable-stat" data-home-roll="${esc(a.dice)}" data-home-label="${esc(a.name)}" title="Lancer ${esc(a.name)}"><small>${esc(a.name)}</small><strong>${a.value}</strong><span>Niveau ${a.step}</span><div class="dice">🎲 ${esc(a.dice)}</div></button>`; }
   function ratio(current, max) { return Math.max(0, Math.min(100, (Number(current || 0) / Math.max(1, Number(max || 1))) * 100)); }
   function pendingCount() { return S.proposals.filter(p => p.status === "draft" || p.status === "sent").length; }
   function heroMetric(label, value, detail) { return `<div class="metric"><small>${label}</small><b>${value}</b><span>${detail || ""}</span></div>`; }
@@ -126,27 +190,33 @@
           <div><div class="meter-head"><b>Récupérations</b><span>${S.draft.recoveriesUsed} / ${c.recovery.max}</span></div><div class="meter"><i style="width:${ratio(S.draft.recoveriesUsed, c.recovery.max)}%"></i></div></div>
         </div><div class="button-row mt"><button class="btn primary" data-health>Gérer l’état</button><button class="btn" data-page-jump="combat">Préparer le round</button></div></article>
         <article class="card"><h3>Repères</h3><p><b>${esc(P.player)}</b> joue ${esc(P.name)}.</p><p>${esc(P.birth)} • ${esc(P.age)}<br>${esc(P.origin)}<br>${esc(P.location)}</p><p class="subtle">${esc(P.halfMagic)}</p></article>
-        <article class="card"><h3>Salle de jeu</h3><p id="homeSyncText">Connexion en cours…</p><div class="button-row"><button class="btn blue" data-page-jump="messages">Messages</button><button class="btn" data-page-jump="combat">Vision tactique</button></div><p class="subtle">Le dossier communique directement avec le poste du MJ. Il n’ouvre jamais le cockpit.</p></article>
+        <article class="card"><h3>Salle de jeu</h3><p id="homeSyncText">Connexion en cours…</p><div class="button-row"><button class="btn blue" data-page-jump="messages">Messages</button><button class="btn" data-page-jump="combat">Vision tactique</button><button class="btn" id="openCircleHub">Ressources & marché</button></div><p class="subtle">Le dossier communique directement avec le poste du MJ. Il n’ouvre jamais le cockpit.</p></article>
       </div>
-      <article class="card mt"><h3>Caractéristiques</h3><div class="statline">${P.attributes.map(attributeCard).join("")}</div></article>
+      <article class="card mt"><h3>Caractéristiques</h3><div class="statline">${P.attributes.map(attributeCard).join("")}</div><div class="roll-output" id="homeRollOutput"><small>Cliquez sur une caractéristique pour lancer ses dés.</small></div></article>
       <div class="grid two mt"><article class="card"><h3>Passions</h3>${(Array.isArray(P.passions) ? P.passions.map(v => `<p><b>${esc(v)}</b></p>`) : Object.entries(P.passions || {}).map(([k, v]) => `<p><b>${esc(k)}</b> — ${esc(v)}</p>`)).join("") || "<p class='subtle'>Aucune passion chiffrée consignée.</p>"}<h4>Présence physique</h4><p>${esc(LORE[P.playerId]?.physical || "Non consolidée")}</p></article><article class="card"><h3>Gahad</h3>${(P.gahad || []).map(x => `<p>${esc(x)}</p>`).join("")}</article></div>`;
     page("home").querySelector("[data-health]").onclick = () => { openPage("combat"); setTimeout(() => $("#healthWorkbench")?.scrollIntoView({ behavior: "smooth" }), 100); };
     page("home").querySelectorAll("[data-page-jump]").forEach(btn => btn.onclick = () => openPage(btn.dataset.pageJump));
+    $("#openCircleHub").onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
+    page("home").querySelectorAll("[data-home-roll]").forEach(btn => btn.onclick = () => {
+      const r = rollDice(btn.dataset.homeRoll), label = btn.dataset.homeLabel;
+      S.rollHistory.unshift({ at: now(), label, total: r.total, dn: 0 }); S.rollHistory = S.rollHistory.slice(0, 20); save();
+      $("#homeRollOutput").innerHTML = `<strong>${r.total}</strong> — ${esc(label)}<br><small>${esc(btn.dataset.homeRoll)} • ${r.rolls.map(x => `d${x.sides}:${x.roll}${x.exploded ? "↻" : ""}`).join(" · ")}</small>`;
+    });
     refreshSyncLabels();
   }
 
   function allRollables() {
     const attributes = P.attributes.map(a => ({ label: a.name, step: a.step, dice: a.dice, group: "Caractéristique" }));
-    const talents = (P.talents || []).map(t => {
+    const talents = (P.talents || []).filter(t => t.rollable !== false).map(t => {
       const attr = P.attributes.find(a => /mêlée|parade|esquive|vol|déplacement|escalade|attaque/i.test(t.name) ? a.name === "Dextérité" : /évaluation|histoire|serrure|piège/i.test(t.name) ? a.name === "Perception" : false);
       const step = t.step || ((attr && t.rank) ? attr.step + t.rank : t.rank || 0);
       return { label: t.name, step, dice: stepDice(step), group: "Talent", rank: t.rank };
     });
-    const skills = (P.skills || []).map(s => ({ label: s.name, step: s.step || Math.max(1, (P.attributes.find(a => a.name === "Perception")?.step || 0) + (s.rank || 0)), dice: s.dice || stepDice(s.step || 0), group: "Compétence", rank: s.rank }));
+    const skills = (P.skills || []).filter(s => s.rollable !== false).map(s => { const step = s.step || Math.max(1, (P.attributes.find(a => a.name === "Perception")?.step || 0) + (s.rank || 0)); return { label: s.name, step, dice: s.dice || stepDice(step), group: "Compétence", rank: s.rank }; });
     return [...attributes, ...talents, ...skills].filter(x => x.step > 0);
   }
   function stepDice(step) {
-    const table = { 1: "D4-2", 2: "D4-1", 3: "D4", 4: "D6", 5: "D8", 6: "D10", 7: "D12", 8: "2D6", 9: "D8+D6", 10: "D10+D6", 11: "D10+D8", 12: "2D10", 13: "D12+D10", 14: "2D12", 15: "D12+2D6", 16: "D12+D8+D6", 17: "D12+D10+D6", 18: "D12+2D8", 19: "D12+D10+D8", 20: "2D12+D6" };
+    const table = { 1: "D4-2", 2: "D4-1", 3: "D4", 4: "D6", 5: "D8", 6: "D10", 7: "D12", 8: "2D6", 9: "D8+D6", 10: "D10+D6", 11: "D10+D8", 12: "2D10", 13: "D12+D10", 14: "2D12", 15: "D20+D6", 16: "D20+D8", 17: "D20+D10", 18: "D20+D12", 19: "D20+2D6", 20: "D20+D8+D6" };
     return table[Number(step)] || `Niveau ${step}`;
   }
   function parseDice(text) {
@@ -171,17 +241,22 @@
   function degree(total, difficulty) { const dn = Number(difficulty); if (!dn) return "Résultat brut"; const margin = total - dn; return margin < 0 ? "Échec" : margin < 5 ? "Succès moyen" : margin < 10 ? "Bon succès" : margin < 15 ? "Excellent succès" : "Succès extraordinaire"; }
   function renderExplore() {
     const rolls = allRollables();
+    const rollIndex = (group, name) => rolls.findIndex(item => item.group === group && item.label === name);
+    const rollCell = (group, item) => { const index = rollIndex(group, item.name); return index >= 0 ? `<button class="btn small" data-explore-roll="${index}">🎲 Niv. ${rolls[index].step} • ${esc(rolls[index].dice)}</button>` : `<span class="subtle">Effet passif ou intégré</span>`; };
     page("explore").innerHTML = `<div class="page-head"><div><h2>Hors combat</h2><p>Choisir une approche, lancer les dés et conserver les résultats utiles.</p></div></div>
       <article class="card"><h3>Lanceur contextuel</h3><div class="roller"><div class="field"><label>Action</label><select id="rollChoice">${rolls.map((r, i) => `<option value="${i}">${esc(r.group)} — ${esc(r.label)} • niv. ${r.step} (${esc(r.dice)})</option>`).join("")}</select></div><div class="field"><label>Difficulté</label><input id="rollDifficulty" type="number" min="0" placeholder="Facultative"></div><div class="field"><label>Karma / bonus</label><select id="rollBonus"><option value="">Aucun</option><option value="${P.combat.karma.dice}">Karma ${P.combat.karma.dice}</option><option value="D6">Bonus D6</option></select></div><button class="btn primary" id="rollNow">Lancer</button></div><div class="roll-output" id="rollOutput"><small>Le résultat apparaîtra ici. Les dés maximaux sont relancés automatiquement.</small></div></article>
-      <div class="grid two mt"><article class="card"><h3>Talents</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Repère</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><span class="pill talent">Talent</span> <b>${esc(t.name)}</b></td><td>${t.rank}</td><td>${esc(t.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><article class="card"><h3>Compétences</h3><div class="table-wrap"><table><thead><tr><th>Compétence</th><th>Rang</th></tr></thead><tbody>${(P.skills || []).map(s => `<tr><td><span class="pill skill">Compétence</span> ${esc(s.name)}</td><td>${s.rank}</td></tr>`).join("")}</tbody></table></div></article></div>
+      <div class="grid two mt"><article class="card"><h3>Talents</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Jet</th><th>Repère</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><span class="pill talent">Talent</span> <b>${esc(t.name)}</b></td><td>${t.rank}</td><td>${rollCell("Talent", t)}</td><td>${esc(t.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><article class="card"><h3>Compétences</h3><div class="table-wrap"><table><thead><tr><th>Compétence</th><th>Rang</th><th>Jet</th></tr></thead><tbody>${(P.skills || []).map(s => `<tr><td><span class="pill skill">Compétence</span> ${esc(s.name)}</td><td>${s.rank}</td><td>${rollCell("Compétence", s)}</td></tr>`).join("")}</tbody></table></div></article></div>
       <article class="card mt"><h3>Demi-magie de ${esc(P.discipline)}</h3><p>${esc(P.halfMagic)}</p><div class="notice">Une application inhabituelle reste une proposition au MJ ; la fiche ne crée pas automatiquement un nouveau pouvoir.</div></article>`;
-    $("#rollNow").onclick = () => {
-      const chosen = rolls[Number($("#rollChoice").value)], bonus = $("#rollBonus").value;
+    const launch = index => {
+      const chosen = rolls[Number(index)], bonus = $("#rollBonus").value; if (!chosen) return;
+      $("#rollChoice").value = String(index);
       const first = rollDice(chosen.dice), second = bonus ? rollDice(bonus) : { total: 0, rolls: [] }, total = first.total + second.total;
       const all = [...first.rolls, ...second.rolls]; const dn = Number($("#rollDifficulty").value || 0);
       S.rollHistory.unshift({ at: now(), label: chosen.label, total, dn }); S.rollHistory = S.rollHistory.slice(0, 20); save();
       $("#rollOutput").innerHTML = `<strong>${total}</strong> — ${degree(total, dn)}<br><small>${esc(chosen.label)} : ${esc(chosen.dice)}${bonus ? ` + ${esc(bonus)}` : ""} • ${all.map(x => `<span class="${x.exploded ? "explode" : ""}">d${x.sides}:${x.roll}${x.exploded ? "↻" : ""}</span>`).join(" · ")}</small>`;
     };
+    $("#rollNow").onclick = () => launch(Number($("#rollChoice").value));
+    page("explore").querySelectorAll("[data-explore-roll]").forEach(btn => btn.onclick = () => launch(Number(btn.dataset.exploreRoll)));
   }
 
   function actionRows() {
@@ -193,12 +268,14 @@
   }
   function renderCombat() {
     const c = P.combat, active = S.combat.active;
+    const initiativeOptions = c.initiative.options || [{ label: "Initiative", step: c.initiative.step, dice: c.initiative.dice }];
+    const initiativeChooser = initiativeOptions.length > 1 ? `<select id="initiativeMode">${initiativeOptions.map((option, index) => `<option value="${index}">${esc(option.label)} • niv. ${option.step} (${esc(option.dice)})${option.effort ? ` • Effort ${option.effort}` : ""}</option>`).join("")}</select>` : "";
     page("combat").innerHTML = `<div class="page-head"><div><h2>Combat</h2><p>Le plan du round fait office de déclaration.</p></div></div>
       <div class="combat-banner"><div><strong>${active ? `Round ${S.combat.round} — ${esc(S.combat.phase || "combat")}` : "Aucun combat actif"}</strong><small>${esc(S.combat.situation || "Le brouillon reste disponible hors combat.")}</small>${(S.combat.conditions || []).length ? `<div class="condition-list">${S.combat.conditions.map(x => `<span class="condition">${esc(typeof x === "string" ? x : x.label || x.id)}</span>`).join("")}</div>` : ""}</div><button class="btn" id="openVision">Ouvrir ma vision tactique</button></div>
       <div class="grid two mt"><article class="card" id="healthWorkbench"><h3>État du personnage</h3><div class="form-grid"><div class="field"><label>Dommages</label><input id="damage" type="number" min="0" max="${c.health.death}" value="${S.draft.damage}"></div><div class="field"><label>Blessures graves</label><input id="wounds" type="number" min="0" value="${S.draft.wounds}"></div><div class="field"><label>Karma</label><input id="karma" type="number" min="0" max="${c.karma.max}" value="${S.draft.karma}"></div><div class="field"><label>Récupérations utilisées</label><input id="recoveries" type="number" min="0" max="${c.recovery.max}" value="${S.draft.recoveriesUsed}"></div></div><div class="notice mt">Inconscience ${c.health.unconscious} • Mort ${c.health.death} • Seuil de blessure ${c.health.woundThreshold} • Récupération ${c.recovery.dice}</div><div class="button-row mt"><button class="btn primary" id="proposeHealth">Proposer ces changements au MJ</button><button class="btn" id="rollRecovery">Jet de récupération</button></div><div class="roll-output" id="combatRoll"><small>Les jets de combat apparaissent ici.</small></div></article>
         <article class="card"><h3>Plan du round ${S.combat.round || "—"}</h3><div class="form-grid"><div class="field"><label>Option de combat</label><select id="planOption">${OPTIONS.map(x => `<option ${S.plan.option === x ? "selected" : ""}>${x}</option>`).join("")}</select></div><div class="field"><label>Cible / objectif</label><input id="planTarget" value="${esc(S.plan.target)}" placeholder="Nom ou intention"></div><div class="field wide"><label>Note au MJ</label><textarea id="planNote">${esc(S.plan.note)}</textarea></div></div><h4>Séquence prévue</h4><div class="sequence" id="planSequence">${S.plan.actions.length ? S.plan.actions.map((a, i) => `<div class="sequence-row"><span>${esc(a.label)}</span><button class="btn small danger" data-remove="${i}">Retirer</button></div>`).join("") : "<p class='subtle'>Ajoutez une action depuis la liste ci-dessous.</p>"}</div><div class="button-row mt"><button class="btn primary" id="sendPlan">Transmettre le plan</button><span class="pill ${S.plan.status.includes("Pris") ? "ok" : ""}">${esc(S.plan.status)}</span></div></article></div>
       <article class="card mt"><h3>Actions disponibles</h3><div class="action-list">${actionRows()}</div></article>
-      <div class="grid two mt"><article class="card"><h3>Réactions</h3>${(P.reactions || []).map(r => `<div class="action"><div><b>${esc(r.name)}</b><small>Rang ${r.rank} • Effort ${r.effort || 0} • ${esc(r.limit || "")}</small></div><button class="btn small" data-roll="${esc(r.dice)}" data-label="${esc(r.name)}">${r.step} • ${esc(r.dice)}</button></div>`).join("")}</article><article class="card"><h3>Paramètres défensifs</h3><div class="statline" style="grid-template-columns:repeat(3,1fr)">${[['Déf. physique',c.defenses.physical],['Déf. mystique',c.defenses.magical],['Déf. sociale',c.defenses.social],['Armure physique',c.armor.physical],['Armure mystique',c.armor.mystical],['Initiative',c.initiative.step]].map(([l,v])=>`<div class="stat"><small>${l}</small><strong>${v}</strong></div>`).join("")}</div><div class="field mt"><label>Initiative du round</label><div class="button-row"><input id="initiative" type="number" value="${esc(S.plan.initiative)}" style="width:110px"><button class="btn" id="rollInitiative">Lancer ${esc(c.initiative.dice)}</button><button class="btn primary" id="sendInitiative">Transmettre</button></div></div></article></div>`;
+      <div class="grid two mt"><article class="card"><h3>Réactions</h3>${(P.reactions || []).map(r => `<div class="action"><div><b>${esc(r.name)}</b><small>Rang ${r.rank} • Effort ${r.effort || 0} • ${esc(r.limit || "")}</small></div><button class="btn small" data-roll="${esc(r.dice)}" data-label="${esc(r.name)}">${r.step} • ${esc(r.dice)}</button></div>`).join("")}</article><article class="card"><h3>Paramètres défensifs</h3><div class="statline" style="grid-template-columns:repeat(3,1fr)">${[['Déf. physique',c.defenses.physical],['Déf. mystique',c.defenses.magical],['Déf. sociale',c.defenses.social],['Armure physique',c.armor.physical],['Armure mystique',c.armor.mystical],['Initiative',c.initiative.step]].map(([l,v])=>`<div class="stat"><small>${l}</small><strong>${v}</strong></div>`).join("")}</div><div class="field mt"><label>Initiative du round</label>${initiativeChooser}<div class="button-row"><input id="initiative" type="number" value="${esc(S.plan.initiative)}" style="width:110px"><button class="btn" id="rollInitiative">Lancer ${esc(initiativeOptions[0].dice)}</button><button class="btn primary" id="sendInitiative">Transmettre</button></div></div></article></div>`;
     $("#proposeHealth").onclick = () => {
       const next = { damage: Number($("#damage").value), wounds: Number($("#wounds").value), karma: Number($("#karma").value), recoveriesUsed: Number($("#recoveries").value) };
       const changes = Object.keys(next).filter(k => next[k] !== Number(S.draft[k])).map(k => ({ field: k, from: Number(S.draft[k]), to: next[k] }));
@@ -206,7 +283,9 @@
       Object.assign(S.draft, next); proposal(changes, "État du personnage", "healthState");
     };
     $("#rollRecovery").onclick = () => showCombatRoll("Récupération", c.recovery.dice);
-    $("#rollInitiative").onclick = () => { const r = rollDice(c.initiative.dice); S.plan.initiative = r.total; save(); $("#initiative").value = r.total; showCombatRoll("Initiative", c.initiative.dice, r); };
+    const selectedInitiative = () => initiativeOptions[Number($("#initiativeMode")?.value || 0)] || initiativeOptions[0];
+    if ($("#initiativeMode")) $("#initiativeMode").onchange = () => { const option = selectedInitiative(); $("#rollInitiative").textContent = `Lancer ${option.dice}`; };
+    $("#rollInitiative").onclick = () => { const option = selectedInitiative(), r = rollDice(option.dice); S.plan.initiative = r.total; save(); $("#initiative").value = r.total; showCombatRoll(option.label, option.dice, r); };
     $("#sendInitiative").onclick = () => { S.plan.initiative = Number($("#initiative").value); save(); Sync.sendToGM({ type: "earthdawn-player-initiative", round: S.combat.round, initiative: S.plan.initiative }); toast("Initiative transmise."); };
     $("#planOption").onchange = e => { S.plan.option = e.target.value; save(); };
     $("#planTarget").oninput = e => { S.plan.target = e.target.value; save(); };
@@ -248,12 +327,14 @@
 
   function renderDiscipline() {
     const circleText = [LORE[P.playerId]?.circleTitle || "Passage au troisième Cercle", LORE[P.playerId]?.circleText || "Passage validé dans la continuité de campagne."];
-    page("discipline").innerHTML = `<div class="page-head"><div><h2>${esc(P.discipline)} — Cercle ${P.circle}</h2><p>Talents, identité et lecture de la Discipline.</p></div></div><div class="grid two"><article class="card"><h3>Talents connus</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Note</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><b>${esc(t.name)}</b></td><td>${t.rank}</td><td>${esc(t.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><article class="card"><h3>Demi-magie</h3><p>${esc(P.halfMagic)}</p><h3>Passage au troisième Cercle</h3><h4>${circleText[0]}</h4><p>${circleText[1]}</p><div class="notice green">Ce passage est un fait de continuité validé, pas une proposition mécanique supplémentaire.</div></article></div><article class="card mt"><h3>Traits et tensions</h3><div class="chips">${(P.traits || []).map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>${(P.gahad || []).length ? `<h4>Gahad</h4>${P.gahad.map(x => `<p>${esc(x)}</p>`).join("")}` : ""}</article>`;
+    const spellBlock = (P.spells || []).length ? `<div class="grid two mt"><article class="card"><h3>Sorts connus</h3><div class="chips">${P.spells.map(spell => `<span class="chip">${esc(spell)}</span>`).join("")}</div></article><article class="card"><h3>Matrices préparées</h3><div class="table-wrap"><table><thead><tr><th>Cercle maximal</th><th>Type</th><th>Sort placé</th></tr></thead><tbody>${(P.matrices || []).map(matrix => `<tr><td>${matrix.rank}</td><td>${esc(matrix.type)}</td><td><b>${esc(matrix.spell)}</b></td></tr>`).join("")}</tbody></table></div></article></div>` : "";
+    page("discipline").innerHTML = `<div class="page-head"><div><h2>${esc(P.discipline)} — Cercle ${P.circle}</h2><p>Talents, identité et lecture de la Discipline.</p></div></div><div class="grid two"><article class="card"><h3>Talents connus</h3><div class="table-wrap"><table><thead><tr><th>Talent</th><th>Rang</th><th>Note</th></tr></thead><tbody>${(P.talents || []).map(t => `<tr><td><b>${esc(t.name)}</b></td><td>${t.rank}</td><td>${esc(t.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><article class="card"><h3>Demi-magie</h3><p>${esc(P.halfMagic)}</p><h3>Passage au troisième Cercle</h3><h4>${circleText[0]}</h4><p>${circleText[1]}</p><div class="notice green">Ce passage est un fait de continuité validé, pas une proposition mécanique supplémentaire.</div></article></div>${spellBlock}<article class="card mt"><h3>Traits et tensions</h3><div class="chips">${(P.traits || []).map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>${(P.gahad || []).length ? `<h4>Gahad</h4>${P.gahad.map(x => `<p>${esc(x)}</p>`).join("")}` : ""}</article>`;
   }
 
   function renderGear() {
     const locations = ["Tous", ...new Set((P.equipment || []).map(x => x.location))], filtered = S.inventoryFilter === "Tous" ? P.equipment : P.equipment.filter(x => x.location === S.inventoryFilter);
-    page("gear").innerHTML = `<div class="page-head"><div><h2>Équipement</h2><p>Objets, emplacements et disponibilité réelle.</p></div></div><div class="grid three">${heroMetric("Armure", `${P.combat.armor.physical} / ${P.combat.armor.mystical}`, P.combat.armor.label)}${heroMetric("Mouvement", `${P.combat.movement.combat} / ${P.combat.movement.run}`, "combat / course")}${heroMetric("Ressources", P.resources.length, "repères consignés")}</div><article class="card mt"><div class="page-head" style="margin:0 0 12px"><div><h3>Inventaire opérationnel</h3></div><div class="field"><label>Emplacement</label><select id="gearFilter">${locations.map(x => `<option ${S.inventoryFilter === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div></div><div class="table-wrap"><table><thead><tr><th>Objet</th><th>Qté</th><th>Emplacement</th><th>État</th><th>Note</th></tr></thead><tbody>${filtered.map(x => `<tr><td><b>${esc(x.name)}</b></td><td>${x.quantity || 1}</td><td>${esc(x.location)}</td><td><span class="pill ${/équip|dispon/i.test(x.status) ? "ok" : ""}">${esc(x.status)}</span></td><td>${esc(x.note || "—")}</td></tr>`).join("")}</tbody></table></div></article><div class="grid two mt"><article class="card"><h3>Ressources confirmées</h3>${P.resources.map(x => `<p>${esc(x)}</p>`).join("")}</article><article class="card"><h3>Proposer un changement</h3><div class="form-grid"><div class="field"><label>Objet</label><input id="gearItem" placeholder="Objet concerné"></div><div class="field"><label>Opération</label><select id="gearOperation"><option>Acquérir</option><option>Vendre</option><option>Déplacer</option><option>Consommer</option><option>Réparer</option></select></div><div class="field wide"><label>Détail</label><textarea id="gearNote" placeholder="Quantité, prix, nouvel emplacement, circonstance…"></textarea></div></div><button class="btn primary mt" id="gearProposal">Ajouter comme proposition</button></article></div>`;
+    const companion = P.companion ? `<article class="card mt"><h3>Compagnon animal — ${esc(P.companion.name)}</h3><div class="grid four">${heroMetric("État", esc(P.companion.state), "état actuel")}${heroMetric("Défenses", esc(P.companion.defenses), "physique / mystique / sociale")}${heroMetric("Santé", esc(P.companion.health), "inconscience / mort")}${heroMetric("Morsure", esc(P.companion.attack), `initiative ${P.companion.initiative}`)}</div><p>${esc(P.companion.note)}</p><div class="notice">Déplacement ${esc(P.companion.movement)}. Sur une réussite supérieure ou une blessure grave par morsure : test d’Équilibre DN 7 ou chute.</div></article>` : "";
+    page("gear").innerHTML = `<div class="page-head"><div><h2>Équipement</h2><p>Objets, emplacements et disponibilité réelle.</p></div></div><div class="grid three">${heroMetric("Armure", `${P.combat.armor.physical} / ${P.combat.armor.mystical}`, P.combat.armor.label)}${heroMetric("Mouvement", `${P.combat.movement.combat} / ${P.combat.movement.run}`, "combat / course")}${heroMetric("Ressources", P.resources.length, "repères consignés")}</div><article class="card mt"><div class="page-head" style="margin:0 0 12px"><div><h3>Inventaire opérationnel</h3></div><div class="field"><label>Emplacement</label><select id="gearFilter">${locations.map(x => `<option ${S.inventoryFilter === x ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div></div><div class="table-wrap"><table><thead><tr><th>Objet</th><th>Qté</th><th>Emplacement</th><th>État</th><th>Note</th></tr></thead><tbody>${filtered.map(x => `<tr><td><b>${esc(x.name)}</b></td><td>${x.quantity || 1}</td><td>${esc(x.location)}</td><td><span class="pill ${/équip|dispon/i.test(x.status) ? "ok" : ""}">${esc(x.status)}</span></td><td>${esc(x.note || "—")}</td></tr>`).join("")}</tbody></table></div></article>${companion}<div class="grid two mt"><article class="card"><h3>Ressources confirmées</h3>${P.resources.map(x => `<p>${esc(x)}</p>`).join("")}</article><article class="card"><h3>Proposer un changement</h3><div class="form-grid"><div class="field"><label>Objet</label><input id="gearItem" placeholder="Objet concerné"></div><div class="field"><label>Opération</label><select id="gearOperation"><option>Acquérir</option><option>Vendre</option><option>Déplacer</option><option>Consommer</option><option>Réparer</option></select></div><div class="field wide"><label>Détail</label><textarea id="gearNote" placeholder="Quantité, prix, nouvel emplacement, circonstance…"></textarea></div></div><button class="btn primary mt" id="gearProposal">Ajouter comme proposition</button></article></div>`;
     $("#gearFilter").onchange = e => { S.inventoryFilter = e.target.value; save(); renderGear(); };
     $("#gearProposal").onclick = () => { const item = $("#gearItem").value.trim(); if (!item) return toast("Indiquez l’objet concerné."); S.proposals.push({ id: id("inventory"), playerId: P.playerId, kind: "inventory", label: `${$("#gearOperation").value} — ${item}`, note: $("#gearNote").value, status: "draft", createdAt: now() }); save(); toast("Proposition ajoutée à la file de progression."); };
   }
@@ -261,7 +342,7 @@
   function splitRelation(text) { const parts = String(text).split(/\s+[—–-]\s+/); return [parts.shift(), parts.join(" — ")]; }
   function renderHistory() {
     const timeline = [...P.history, ...(LORE[P.playerId]?.timeline || [])];
-    page("history").innerHTML = `<div class="page-head"><div><h2>Histoire et relations</h2><p>La continuité connue du personnage, sans révélation réservée au MJ.</p></div></div><div class="grid two"><article class="card"><h3>Repères de parcours</h3><div class="timeline">${timeline.map((text, i) => `<div class="timeline-item"><h4>${i === 0 ? "Origines" : i === timeline.length - 1 ? "Situation actuelle" : `Repère ${i + 1}`}</h4><p>${esc(text)}</p></div>`).join("")}</div></article><article class="card"><h3>Relations</h3><div class="relations">${P.relationships.map(text => { const [name, relation] = splitRelation(text); return `<div class="relation"><b>${esc(name)}</b><span>${esc(relation || "Relation connue")}</span></div>`; }).join("")}</div><h3 class="mt">Origine et présence actuelle</h3><p><b>${esc(P.origin)}</b><br>${esc(P.location)}</p><h3 class="mt">Objet intime</h3><p>${P.playerId === "pj_6" ? "Le mouchoir noir brodé « Gullûz » porte trois points d’argent ajoutés par Miraq. Il n’est pas un objet à trame." : "Les médaillons de Vorkana matérialisent la mémoire artisanale et collective de Kalha."}</p></article></div><article class="card mt"><h3>Illustration collective</h3><img src="assets/illustrations/groupe.png" alt="Illustration collective des personnages" style="display:block;width:100%;max-height:620px;object-fit:contain;border-radius:10px;background:#efe8dc"></article>`;
+    page("history").innerHTML = `<div class="page-head"><div><h2>Histoire et relations</h2><p>La continuité connue du personnage, sans révélation réservée au MJ.</p></div></div><div class="grid two"><article class="card"><h3>Repères de parcours</h3><div class="timeline">${timeline.map((text, i) => `<div class="timeline-item"><h4>${i === 0 ? "Origines" : i === timeline.length - 1 ? "Situation actuelle" : `Repère ${i + 1}`}</h4><p>${esc(text)}</p></div>`).join("")}</div></article><article class="card"><h3>Relations</h3><div class="relations">${P.relationships.map(text => { const [name, relation] = splitRelation(text); return `<div class="relation"><b>${esc(name)}</b><span>${esc(relation || "Relation connue")}</span></div>`; }).join("")}</div><h3 class="mt">Origine et présence actuelle</h3><p><b>${esc(P.origin)}</b><br>${esc(P.location)}</p><h3 class="mt">Objet intime</h3><p>${esc(LORE[P.playerId]?.intimateObject || "Aucun objet intime distinct n’est encore consolidé.")}</p></article></div><article class="card mt"><h3>Illustration collective</h3><img src="assets/illustrations/groupe.png" alt="Illustration collective des personnages" style="display:block;width:100%;max-height:620px;object-fit:contain;border-radius:10px;background:#efe8dc"></article>`;
   }
 
   function addMessage(payload, mine) {
@@ -270,7 +351,7 @@
     S.messages = S.messages.slice(-150); save(); renderMessages();
   }
   function recipients() {
-    const known = P.playerId === "pj_1" ? [["pj_0", "Zra’Ul"], ["pj_6", "Gul’Rak"]] : [["pj_0", "Zra’Ul"], ["pj_1", "Kalha"]];
+    const known = [["pj_0", "Zra’Ul"], ["pj_1", "Kalha"], ["pj_2", "Barbak"], ["pj_3", "Ogunta"], ["pj_4", "Jaskar"], ["pj_5", "Kal’Zakath"], ["pj_6", "Gul’Rak"]].filter(([id]) => id !== P.playerId);
     const online = S.presence.filter(m => m && m.playerId && m.playerId !== P.playerId);
     const unique = new Map(known.map(([id, name]) => [id, { playerId: id, name }]));
     online.forEach(m => unique.set(m.playerId, m));
@@ -309,6 +390,15 @@
     else if (d.type === "earthdawn-player-view-render" && visionWindow && !visionWindow.closed && d.html) { visionWindow.document.open(); visionWindow.document.write(d.html); visionWindow.document.close(); }
     else if (d.type === "earthdawn-whisper") addMessage(d, false);
   });
+  function darknessLabel(value) {
+    const rules = { partial: ["Obscurité partielle", -1, 25], consequent: ["Obscurité conséquente", -3, 50], total: ["Obscurité totale", -5, 75] }, rule = rules[value?.darkness];
+    if (!rule) return "";
+    let penalty = rule[1];
+    if (value.visionSense === "other") penalty = null;
+    else if (!value.darknessBypassesVision && (value.visionSense === "thermographic" || (value.visionSense === "night" && value.darkness !== "total"))) penalty = 0;
+    const effect = penalty === null ? "effet visuel à arbitrer" : penalty === 0 ? "aucun malus visuel" : `${penalty} aux tests basés sur la vue`;
+    return `${rule[0]} — ${effect} • déplacement possiblement réduit de ${rule[2]}% (MJ)`;
+  }
   function conditionLabels(value) {
     if (Array.isArray(value)) return value.map(item => typeof item === "string" ? item : item.label || item.id || "Situation").filter(Boolean);
     if (!value || typeof value !== "object") return [];
@@ -320,6 +410,7 @@
     if (value.cover === "substantial") labels.push("Couvert important");
     if (Number(value.actionMod)) labels.push(`Actions ${Number(value.actionMod) > 0 ? "+" : ""}${Number(value.actionMod)}`);
     if (Number(value.defenseMod)) labels.push(`Défenses ${Number(value.defenseMod) > 0 ? "+" : ""}${Number(value.defenseMod)}`);
+    if (value.darkness && value.darkness !== "none") labels.push(darknessLabel(value));
     if (value.note) labels.push(String(value.note));
     return labels;
   }
