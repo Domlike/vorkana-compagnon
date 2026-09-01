@@ -19,26 +19,28 @@
     <section class="view" id="view-availability"></section>
   </main>
   <script src="earthdawn-realtime-config.js"></script>
-  <script src="earthdawn-sync.js"></script>
+  <script src="earthdawn-sync.js?v=0.33.2"></script>
   <script>
   (function(){
     "use strict";
     const params=new URLSearchParams(location.search), role=params.get("role")==="gm"?"gm":"player", playerId=params.get("player")||"pj_0";
     const NAMES={pj_0:"Zra’Ul",pj_1:"Kalha",pj_2:"Kal’Zakath",pj_3:"Barbak",pj_4:"Ogunta",pj_5:"Jaskar",pj_6:"Gul’Rak"};
     const Sync=window.EarthdawnSync, room=()=>Sync.status().room, key=()=>`vorkana_circle_${room()}_v033`;
+    const MARKET_REVISION="keltanap-10-riag";
     const CATALOG=[
-      {id:"rations",name:"Rations de voyage",category:"Voyage",status:"available",stock:18,price:"1 PA / semaine",note:"Disponibles à Rocnoir ; quantité indicative."},
-      {id:"torches",name:"Torches et huile",category:"Voyage",status:"available",stock:12,price:"À confirmer",note:"Matériel courant."},
-      {id:"rope",name:"Corde",category:"Voyage",status:"available",stock:4,price:"À confirmer",note:"Longueur et poids à préciser avant achat."},
-      {id:"arrows",name:"Flèches ordinaires",category:"Projectiles",status:"limited",stock:30,price:"À confirmer",note:"Stock de départ à valider par le MJ selon le lieu."},
-      {id:"healing",name:"Applications de kit de soigneur",category:"Soins",status:"limited",stock:6,price:"À confirmer",note:"Disponibilité conditionnée par un soigneur ou un marchand adapté."},
+      {id:"rations",name:"Rations de voyage",category:"Voyage",status:"available",stock:10,price:"1 PA / semaine",note:"Vivres simples disponibles au village, dans la limite des réserves locales."},
+      {id:"torches",name:"Torches et huile",category:"Voyage",status:"available",stock:8,price:"À confirmer",note:"Matériel courant disponible à Keltanap."},
+      {id:"rope",name:"Corde",category:"Voyage",status:"limited",stock:2,price:"À confirmer",note:"Peu de pièces prêtes à la vente ; longueur à préciser avant achat."},
+      {id:"arrows",name:"Flèches ordinaires",category:"Projectiles",status:"limited",stock:15,price:"À confirmer",note:"Petit stock local destiné surtout à la chasse."},
+      {id:"healing",name:"Applications de kit de soigneur",category:"Soins",status:"limited",stock:3,price:"À confirmer",note:"Quelques fournitures seulement ; disponibilité à confirmer à l’arrivée."},
       {id:"silvermoss",name:"Mousse d’argent",category:"Soins",status:"unavailable",stock:0,price:"—",note:"Aucune source de vente confirmée à l’instant présent."},
-      {id:"weapons",name:"Armes courantes",category:"Armement",status:"limited",stock:null,price:"Selon arme",note:"Commande ou offre locale à arbitrer."},
-      {id:"armor",name:"Armures courantes",category:"Armement",status:"limited",stock:null,price:"Selon armure",note:"Taille, délai et artisan à confirmer."},
-      {id:"repairs",name:"Réparation / entretien",category:"Service",status:"available",stock:null,price:"Selon travail",note:"Un PJ peut aussi proposer un travail de groupe ; validation MJ requise."}
+      {id:"weapons",name:"Armes courantes",category:"Armement",status:"limited",stock:null,price:"Selon arme",note:"Quelques outils ou armes simples ; toute pièce particulière demande un délai."},
+      {id:"armor",name:"Armures courantes",category:"Armement",status:"unavailable",stock:0,price:"Selon armure",note:"Aucune armure prête à la vente n’est confirmée dans ce village."},
+      {id:"repairs",name:"Réparation / entretien",category:"Service",status:"limited",stock:null,price:"Selon travail",note:"Travaux simples possibles selon l’artisan et le temps disponible."},
+      {id:"lodging",name:"Repas et couchage simples",category:"Service",status:"available",stock:null,price:"À confirmer",note:"Accueil villageois modeste ; capacité limitée pour un groupe nombreux."}
     ];
-    const fresh=()=>({context:{date:"30 Sollus 1448",location:"Rocnoir / l’Insoumise",note:"Peu après l’aube, après le retour de Katsika."},catalog:JSON.parse(JSON.stringify(CATALOG)),proposals:[]});
-    function load(){try{const saved=JSON.parse(localStorage.getItem(key())||"null");return saved&&saved.catalog?saved:fresh()}catch(_){return fresh()}}
+    const fresh=()=>({revision:MARKET_REVISION,context:{date:"Vers le 10 Riag 1448 TH",location:"Keltanap — village d’environ 300 habitants",note:"Prochaine occasion d’achat prévue à l’arrivée à Keltanap."},catalog:JSON.parse(JSON.stringify(CATALOG)),proposals:[]});
+    function load(){try{const saved=JSON.parse(localStorage.getItem(key())||"null");if(saved&&saved.revision===MARKET_REVISION&&saved.catalog)return saved;const next=fresh();if(saved&&Array.isArray(saved.proposals))next.proposals=saved.proposals;return next}catch(_){return fresh()}}
     let state=load();
     const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const id=()=>`market-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
@@ -55,7 +57,7 @@
       <div class="notice" style="margin-top:14px">Cet espace ne révèle que des informations connues des joueurs. Les vérités, horloges et préparations réservées au MJ restent dans le cockpit.</div>`;
     }
     function renderCalendar(){
-      const events=[["18 Sollus 1448","Voyage vers Throal, rencontre avec Voluptia, entrée contrôlée et premiers échanges avec la Grande Bibliothèque."],["19–20 Sollus","Deux jours à Grand-Foire : préparatifs personnels, harmonisation des chiens et apprentissages joués."],["21–28 Sollus","Voyage d’environ une semaine ; arrivée à Rocnoir le 28 au soir."],["29 Sollus","Enquête auprès de Nicodémus et M’rok, Capitainerie, plage des Coques et localisation de Katsika."],["Nuit du 29 au 30","Reconnaissance de l’île des Naufrageurs, libération et exfiltration de Katsika sans alarme ni combat."],["30 Sollus — actuel",state.context.note||"Peu après l’aube."]];
+      const events=[["18 Sollus 1448","Voyage vers Throal, rencontre avec Voluptia, entrée contrôlée et premiers échanges avec la Grande Bibliothèque."],["19–20 Sollus","Deux jours à Grand-Foire : préparatifs personnels, harmonisation des chiens et apprentissages joués."],["21–28 Sollus","Voyage d’environ une semaine ; arrivée à Rocnoir le 28 au soir."],["29 Sollus","Enquête auprès de Nicodémus et M’rok, Capitainerie, plage des Coques et localisation de Katsika."],["Nuit du 29 au 30","Reconnaissance de l’île des Naufrageurs, libération et exfiltration de Katsika sans alarme ni combat."],["30 Sollus","Peu après l’aube, après le retour de Katsika."],["Vers le 10 Riag 1448",state.context.note||"Arrivée prévue à Keltanap."]];
       document.getElementById("view-calendar").innerHTML=`<article class="card"><h2>Calendrier public de campagne</h2><div class="timeline">${events.map(([date,text])=>`<article><b>${esc(date)}</b><p>${esc(text)}</p></article>`).join("")}</div></article>`;
     }
     function catalogRows(items){return items.map(item=>`<tr><td><b>${esc(item.name)}</b><br><small class="muted">${esc(item.category)}</small></td><td><span class="state ${esc(item.status)}">${esc(stateLabel(item.status))}</span></td><td>${Number.isFinite(Number(item.stock))&&item.stock!==null?esc(item.stock):"—"}</td><td>${esc(item.price||"—")}</td><td>${esc(item.note||"—")}</td></tr>`).join("")}

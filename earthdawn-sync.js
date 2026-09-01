@@ -2,6 +2,7 @@
   "use strict";
 
   const VERSION = "0.33";
+  const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   const LOCAL_KEY = "earthdawn-room-envelope-v033";
   const CONFIG = window.EARTHDAWN_REALTIME_CONFIG || {};
   const params = new URLSearchParams(location.search);
@@ -85,17 +86,28 @@
     } else sendRemote(envelope);
     return true;
   }
+  function normalizedPresence(members) {
+    const unique = new Map();
+    (Array.isArray(members) ? members : []).forEach(member => {
+      if (!member) return;
+      const normalized = { ...member, name: member.name || PLAYER_NAMES[member.playerId] || (member.role === "gm" ? "MJ" : "Invité") };
+      const identity = normalized.playerId ? `player:${normalized.playerId}` : normalized.role === "gm" ? "role:gm" : `client:${normalized.clientId || normalized.name}`;
+      const previous = unique.get(identity);
+      if (!previous || Date.parse(normalized.onlineAt || 0) >= Date.parse(previous.onlineAt || 0)) unique.set(identity, normalized);
+    });
+    return [...unique.values()].sort((a, b) => (a.role === "gm" ? -1 : 0) - (b.role === "gm" ? -1 : 0) || String(a.name).localeCompare(String(b.name), "fr"));
+  }
   function updatePresence() {
     if (!state.remoteChannel) {
-      state.presence = [{ role: state.role, playerId: state.playerId, name: state.name, clientId: state.clientId, local: true }];
+      state.presence = normalizedPresence([{ role: state.role, playerId: state.playerId, name: state.name, clientId: state.clientId, local: true }]);
       emit("earthdawn-sync-presence", { room: state.room, members: state.presence });
       return;
     }
     const raw = state.remoteChannel.presenceState ? state.remoteChannel.presenceState() : {};
     const members = [];
     Object.values(raw || {}).forEach(list => (Array.isArray(list) ? list : []).forEach(member => members.push(member)));
-    state.presence = members;
-    emit("earthdawn-sync-presence", { room: state.room, members });
+    state.presence = normalizedPresence(members);
+    emit("earthdawn-sync-presence", { room: state.room, members: state.presence });
   }
   function loadSupabaseScript() {
     if (window.supabase && window.supabase.createClient) return Promise.resolve();

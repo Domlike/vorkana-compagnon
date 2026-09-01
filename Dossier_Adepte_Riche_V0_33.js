@@ -16,11 +16,7 @@
     ["progress", "✦", "Progression"], ["discipline", "◈", "Discipline"], ["gear", "▣", "Équipement"],
     ["history", "⌛", "Histoire"], ["messages", "✉", "Messages"]
   ];
-  const SEMANTICS = [
-    ["attribute", "Attributs"], ["talent", "Talents"], ["specialization", "Spécialisations"],
-    ["skill", "Compétences"], ["thread", "Filaments"], ["karma", "Karma"],
-    ["magic", "Objets magiques"], ["wound", "Blessures"], ["player", "Joueurs"], ["gm", "MJ"]
-  ];
+  const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   const LORE = {
     pj_1: {
       physical: "1,84 m • 96 kg sans équipement • silhouette compacte et très dense, façonnée par la forge",
@@ -141,6 +137,7 @@
   S.combat = { ...baseState().combat, ...(S.combat || {}) };
   S.combat.conditions = conditionLabels(S.combat.conditions);
   ["proposals", "decisions", "messages", "rollHistory", "presence"].forEach(key => { if (!Array.isArray(S[key])) S[key] = []; });
+  S.presence = [];
   function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (_) { /* mode privé */ } }
 
   document.body.innerHTML = `
@@ -153,7 +150,7 @@
       </aside>
       <section class="shell">
         <header class="topbar"><h1 id="topTitle">${esc(P.name)}</h1><div class="top-actions"><span class="badge" id="roomBadge">Salle</span><span class="badge">V${VERSION}</span></div></header>
-        <main>${semanticLegend()}${NAV.map(([key]) => `<section class="page" id="page-${key}"></section>`).join("")}</main>
+        <main>${NAV.map(([key]) => `<section class="page" id="page-${key}"></section>`).join("")}</main>
       </section>
     </div><div class="toast" id="toast"></div>`;
 
@@ -172,7 +169,6 @@
   document.querySelectorAll("[data-page]").forEach(el => el.addEventListener("click", () => openPage(el.dataset.page)));
   addEventListener("hashchange", () => openPage(location.hash.slice(1) || S.page, false));
 
-  function semanticLegend() { return `<details class="semantic-legend"><summary>Repères de couleur</summary><div class="semantic-legend-grid">${SEMANTICS.map(([key, label]) => `<span class="semantic-key sem-${key}">${label}</span>`).join("")}</div></details>`; }
   function attributeCard(a) { return `<button type="button" class="stat rollable-stat sem-attribute" data-home-roll="${esc(a.dice)}" data-home-label="${esc(a.name)}" title="Lancer ${esc(a.name)}"><small>${esc(a.name)}</small><strong>${a.value}</strong><span>Niveau ${a.step}</span><div class="dice">🎲 ${esc(a.dice)}</div></button>`; }
   function ratio(current, max) { return Math.max(0, Math.min(100, (Number(current || 0) / Math.max(1, Number(max || 1))) * 100)); }
   function pendingCount() { return S.proposals.filter(p => p.status === "draft" || p.status === "sent").length; }
@@ -199,7 +195,7 @@
         <article class="card sem-card sem-gm"><h3>Salle de jeu</h3><p id="homeSyncText">Connexion en cours…</p><div class="button-row"><button class="btn blue" data-page-jump="messages">Messages</button><button class="btn" data-page-jump="combat">Vision tactique</button><button class="btn" id="openCircleHub">Ressources & marché</button></div><p class="subtle">Le dossier communique directement avec le poste du MJ. Il n’ouvre jamais le cockpit.</p></article>
       </div>
       <article class="card mt"><h3>Caractéristiques</h3><div class="statline">${P.attributes.map(attributeCard).join("")}</div><div class="roll-output" id="homeRollOutput"><small>Cliquez sur une caractéristique pour lancer ses dés.</small></div></article>
-      <div class="grid two mt"><article class="card"><h3>Passions</h3>${(Array.isArray(P.passions) ? P.passions.map(v => `<p><b>${esc(v)}</b></p>`) : Object.entries(P.passions || {}).map(([k, v]) => `<p><b>${esc(k)}</b> — ${esc(v)}</p>`)).join("") || "<p class='subtle'>Aucune passion chiffrée consignée.</p>"}<h4>Présence physique</h4><p>${esc(LORE[P.playerId]?.physical || "Non consolidée")}</p></article><article class="card"><h3>Gahad</h3>${(P.gahad || []).map(x => `<p>${esc(x)}</p>`).join("")}</article></div>`;
+      <div class="grid two mt"><article class="card"><h3>Présence physique</h3><p>${esc(LORE[P.playerId]?.physical || "Non consolidée")}</p></article><article class="card"><h3>Gahad</h3>${(P.gahad || []).map(x => `<p>${esc(x)}</p>`).join("")}</article></div>`;
     page("home").querySelector("[data-health]").onclick = () => { openPage("combat"); setTimeout(() => $("#healthWorkbench")?.scrollIntoView({ behavior: "smooth" }), 100); };
     page("home").querySelectorAll("[data-page-jump]").forEach(btn => btn.onclick = () => openPage(btn.dataset.pageJump));
     $("#openCircleHub").onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
@@ -361,20 +357,33 @@
   }
 
   function addMessage(payload, mine) {
-    const msg = { id: payload.messageId || id("message"), at: payload.sentAt || now(), from: payload.from || (mine ? P.name : "MJ"), fromId: payload.fromId || "", to: payload.to || "", text: payload.text || "", whisper: payload.whisper !== false, mine: !!mine };
+    const msg = { id: payload.messageId || id("message"), at: payload.sentAt || now(), from: payload.from || (mine ? P.name : "MJ"), fromId: payload.fromId || "", to: payload.to || "", toLabel: payload.toLabel || participantName(payload.to), text: payload.text || "", whisper: payload.whisper !== false, mine: !!mine };
     if (!S.messages.some(x => x.id === msg.id)) S.messages.push(msg);
     S.messages = S.messages.slice(-150); save(); renderMessages();
   }
+  function participantName(value) { return value === "gm" ? "MJ" : value === "all" ? "Tout le monde" : PLAYER_NAMES[value] || value || ""; }
+  function dedupePresence(members) {
+    const unique = new Map();
+    (Array.isArray(members) ? members : []).forEach(member => {
+      if (!member) return;
+      const normalized = { ...member, name: member.name || participantName(member.playerId) || (member.role === "gm" ? "MJ" : "Invité") };
+      const identity = normalized.playerId ? `player:${normalized.playerId}` : normalized.role === "gm" ? "role:gm" : `client:${normalized.clientId || normalized.name}`;
+      const previous = unique.get(identity);
+      if (!previous || Date.parse(normalized.onlineAt || 0) >= Date.parse(previous.onlineAt || 0)) unique.set(identity, normalized);
+    });
+    return [...unique.values()];
+  }
   function recipients() {
-    const known = [["pj_0", "Zra’Ul"], ["pj_1", "Kalha"], ["pj_2", "Kal’Zakath"], ["pj_3", "Barbak"], ["pj_4", "Ogunta"], ["pj_5", "Jaskar"], ["pj_6", "Gul’Rak"]].filter(([id]) => id !== P.playerId);
-    const online = S.presence.filter(m => m && m.playerId && m.playerId !== P.playerId);
+    const known = Object.entries(PLAYER_NAMES).filter(([id]) => id !== P.playerId);
+    const online = dedupePresence(S.presence).filter(m => m && m.playerId && m.playerId !== P.playerId);
     const unique = new Map(known.map(([id, name]) => [id, { playerId: id, name }]));
     online.forEach(m => unique.set(m.playerId, m));
-    return [["gm", "MJ"], ["all", "Tout le groupe"], ...[...unique.values()].map(m => [m.playerId, m.name || m.playerId])];
+    return [["gm", "MJ"], ["all", "Tout le monde"], ...[...unique.values()].map(m => [m.playerId, m.name || participantName(m.playerId)])];
   }
   function renderMessages() {
     const target = page("messages"); if (!target) return;
-    target.innerHTML = `<div class="page-head"><div><h2>Messages</h2><p>Joueurs en noir, MJ en or sombre ; les murmures entre joueurs restent visibles par le MJ.</p></div></div><div class="chat-layout"><article class="card sem-card sem-player"><h3>Présences</h3><div class="presence">${S.presence.length ? S.presence.map(m => `<div class="member ${m.role === "gm" ? "gm" : "player"}"><i></i><span>${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</span></div>`).join("") : "<p class='subtle'>Présences visibles après connexion à la salle.</p>"}</div><div class="notice mt">Sans mot de passe : le lien identifie la salle et le personnage. Le MJ reçoit une copie de chaque murmure.</div></article><article class="card sem-card sem-gm"><h3>Fil de la salle</h3><div class="messages" id="messageList">${S.messages.length ? S.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""); return `<div class="message ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper ? "whisper" : ""}"><b>${esc(m.from)}</b>${m.to ? ` → ${esc(m.to)}` : ""}<div>${esc(m.text)}</div><small>${new Date(m.at).toLocaleString("fr-FR")} ${m.whisper ? "• murmure visible MJ" : "• groupe"}</small></div>`; }).join("") : "<p class='subtle'>Aucun message pour le moment.</p>"}</div><div class="chat-compose"><select id="messageTo">${recipients().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="messageText" placeholder="Votre message…"><button class="btn primary" id="sendMessage">Envoyer</button></div></article></div>`;
+    const livePresence = dedupePresence(S.presence);
+    target.innerHTML = `<div class="page-head"><div><h2>Messages</h2><p>Les murmures entre joueurs restent visibles par le MJ.</p></div></div><div class="chat-layout"><article class="card sem-card sem-player"><h3>Présences</h3><div class="presence">${livePresence.length ? livePresence.map(m => `<div class="member ${m.role === "gm" ? "gm" : "player"}"><i></i><span>${esc(m.name || (m.role === "gm" ? "MJ" : participantName(m.playerId) || "Invité"))}</span></div>`).join("") : "<p class='subtle'>Présences visibles après connexion à la salle.</p>"}</div><div class="notice mt">Sans mot de passe : le lien identifie la salle et le personnage. Le MJ reçoit une copie de chaque murmure.</div></article><article class="card sem-card sem-gm"><h3>Fil de la salle</h3><div class="messages" id="messageList">${S.messages.length ? S.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="message ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper ? "whisper" : ""}"><b>${esc(m.from)}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text)}</div><small>${new Date(m.at).toLocaleString("fr-FR")} ${m.whisper ? "• murmure visible MJ" : "• groupe"}</small></div>`; }).join("") : "<p class='subtle'>Aucun message pour le moment.</p>"}</div><div class="chat-compose"><select id="messageTo">${recipients().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="messageText" placeholder="Votre message…"><button class="btn primary" id="sendMessage">Envoyer</button></div></article></div>`;
     const list = $("#messageList"); if (list) list.scrollTop = list.scrollHeight;
     $("#sendMessage").onclick = () => { const text = $("#messageText").value.trim(); if (!text) return; const to = $("#messageTo").value, label = recipients().find(x => x[0] === to)?.[1] || to; const payload = { type: "earthdawn-whisper", messageId: id("whisper"), sentAt: now(), from: P.name, fromId: P.playerId, to, toLabel: label, text, whisper: to !== "all", visibility: "gm_and_recipients" }; const targets = to === "all" ? ["all"] : to === "gm" ? ["gm"] : [to, "gm"]; Sync.send(payload, { targets }); addMessage(payload, true); };
   }
@@ -382,7 +391,6 @@
   function renderAll() { renderHome(); renderExplore(); renderCombat(); renderProgress(); renderDiscipline(); renderGear(); renderHistory(); renderMessages(); openPage(location.hash.slice(1) || S.page || "home", false); }
 
   const Sync = window.EarthdawnSync || { configure: () => Sync, start: () => Sync, send: () => false, sendToGM: () => false, status: () => ({ room: "locale", status: "local", presence: [] }) };
-  Sync.configure({ role: "player", playerId: P.playerId, name: P.name }).start();
   function refreshSyncLabels(detail) {
     const status = detail || Sync.status(), online = status.status === "online", connecting = status.status === "connecting";
     $("#syncDot")?.classList.toggle("online", online); $("#syncDot")?.classList.toggle("connecting", connecting);
@@ -392,7 +400,7 @@
     if ($("#homeSyncText")) $("#homeSyncText").innerHTML = online ? "<b>Synchronisation distante active.</b><br>Le MJ et les joueurs peuvent utiliser des appareils séparés." : "<b>Mode local actif.</b><br>La configuration distante est prête mais pas encore activée.";
   }
   addEventListener("earthdawn-sync-status", e => refreshSyncLabels(e.detail));
-  addEventListener("earthdawn-sync-presence", e => { S.presence = e.detail.members || []; save(); renderMessages(); });
+  addEventListener("earthdawn-sync-presence", e => { S.presence = dedupePresence(e.detail.members); save(); renderMessages(); });
   addEventListener("earthdawn-sync-message", e => {
     const d = e.detail.payload || {};
     if (d.type === "earthdawn-cockpit-state" || d.type === "earthdawn-cockpit-hello") {
@@ -431,6 +439,8 @@
   }
   function applyDecisions(decisions) { decisions.forEach(decision => { const p = S.proposals.find(x => x.id === decision.id); if (p) p.status = decision.decision === "approved" ? "approved" : "rejected"; }); save(); renderProgress(); }
 
+  Sync.configure({ role: "player", playerId: P.playerId, name: P.name }).start();
+  S.presence = dedupePresence(Sync.status().presence); save();
   renderAll(); refreshSyncLabels();
   setTimeout(() => Sync.sendToGM({ type: "earthdawn-player-ready", characterId: P.characterId, characterName: P.name, clientVersion: VERSION }), 250);
   setInterval(() => Sync.sendToGM({ type: "earthdawn-player-ping" }), 10000);

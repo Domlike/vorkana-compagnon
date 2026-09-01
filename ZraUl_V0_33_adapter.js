@@ -3,6 +3,7 @@
   if (!window.EarthdawnSync || typeof P === "undefined") return;
 
   const Sync = window.EarthdawnSync;
+  const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   let presence = [];
   if (!Array.isArray(L.messages)) L.messages = [];
 
@@ -52,6 +53,18 @@
   connectToCockpit = function () { cockpitConnected = true; renderCockpitStatus(); announcePlayerReady(); };
 
   function id() { return `zra-msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`; }
+  function participantName(value) { return value === "gm" ? "MJ" : value === "all" ? "Tout le monde" : PLAYER_NAMES[value] || value || ""; }
+  function dedupePresence(members) {
+    const unique = new Map();
+    (Array.isArray(members) ? members : []).forEach(member => {
+      if (!member) return;
+      const normalized = { ...member, name: member.name || participantName(member.playerId) || (member.role === "gm" ? "MJ" : "Invité") };
+      const identity = normalized.playerId ? `player:${normalized.playerId}` : normalized.role === "gm" ? "role:gm" : `client:${normalized.clientId || normalized.name}`;
+      const previous = unique.get(identity);
+      if (!previous || Date.parse(normalized.onlineAt || 0) >= Date.parse(previous.onlineAt || 0)) unique.set(identity, normalized);
+    });
+    return [...unique.values()];
+  }
   function addMessage(payload, mine) {
     if (!payload.messageId || L.messages.some(item => item.messageId === payload.messageId)) return;
     L.messages.push({ ...payload, mine: !!mine }); L.messages = L.messages.slice(-150); save(); renderMessages();
@@ -59,12 +72,12 @@
   function recipientList() {
     const players = new Map([["pj_1", "Kalha"], ["pj_2", "Kal’Zakath"], ["pj_3", "Barbak"], ["pj_4", "Ogunta"], ["pj_5", "Jaskar"], ["pj_6", "Gul’Rak"]]);
     presence.filter(m => m.playerId && m.playerId !== P.playerId).forEach(m => players.set(m.playerId, m.name || m.playerId));
-    return [["gm", "MJ"], ["all", "Tout le groupe"], ...players.entries()];
+    return [["gm", "MJ"], ["all", "Tout le monde"], ...players.entries()];
   }
   function renderMessages() {
     if (!messagePage) return;
     const members = presence.length ? presence.map(m => `<div class="zmsg-member ${m.role === "gm" ? "gm" : "player"}">${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</div>`).join("") : `<p class="muted">Présences visibles après connexion.</p>`;
-    const feed = L.messages.length ? L.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""); return `<div class="zmsg-item ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper === false ? "" : "whisper"}"><b>${esc(m.from || "MJ")}</b>${m.toLabel ? ` → ${esc(m.toLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`; }).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
+    const feed = L.messages.length ? L.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="zmsg-item ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper === false ? "" : "whisper"}"><b>${esc(m.from || "MJ")}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`; }).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
     messagePage.innerHTML = `<div class="head"><h2>Messages</h2><p>Les murmures entre joueurs restent visibles par le MJ.</p></div><div class="zmsg-layout"><div class="zmsg-card"><h3>Présences</h3><div class="zmsg-presence">${members}</div><p class="notice">L’invitation ne demande aucun mot de passe. Elle identifie seulement la salle et votre personnage.</p></div><div class="zmsg-card"><h3>Fil de la salle</h3><div class="zmsg-feed" id="zmsgFeed">${feed}</div><div class="zmsg-compose"><select id="zmsgTo">${recipientList().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="zmsgText" placeholder="Votre message…"><button class="btn primary" id="zmsgSend">Envoyer</button></div></div></div>`;
     const feedEl = document.getElementById("zmsgFeed"); if (feedEl) feedEl.scrollTop = feedEl.scrollHeight;
     document.getElementById("zmsgSend").onclick = () => {
@@ -106,10 +119,11 @@
     banner.innerHTML = `<b>${combat?.active ? `Situation attribuée par le MJ — round ${Number(combat.round) || 1}` : "Aucune situation de combat active"}</b>${labels.length ? labels.map(label => `<span>${esc(label)}</span>`).join("") : `<small>${combat?.active ? "Aucun modificateur initial particulier." : "Le dossier reste prêt à recevoir le prochain combat."}</small>`}`;
   }
 
-  Sync.configure({ role: "player", playerId: P.playerId, name: P.name }).start();
   window.addEventListener("earthdawn-sync-status", renderCockpitStatus);
-  window.addEventListener("earthdawn-sync-presence", event => { presence = event.detail.members || []; renderMessages(); });
+  window.addEventListener("earthdawn-sync-presence", event => { presence = dedupePresence(event.detail.members); renderMessages(); });
   window.addEventListener("earthdawn-sync-message", event => { const d = event.detail.payload || {}; if (d.type === "earthdawn-whisper") addMessage(d, false); if (d.type === "earthdawn-cockpit-state" || d.type === "earthdawn-cockpit-hello") renderSituationBanner(d.combat); });
+  Sync.configure({ role: "player", playerId: P.playerId, name: P.name }).start();
+  presence = dedupePresence(Sync.status().presence);
   renderMessages(); renderSituationBanner(null); renderCockpitStatus(); announcePlayerReady();
   setInterval(() => { cockpitConnected = true; playerPost({ type: "earthdawn-player-ping" }); renderCockpitStatus(); }, 10000);
 })();
