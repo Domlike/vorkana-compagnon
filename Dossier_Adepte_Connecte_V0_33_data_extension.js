@@ -3,8 +3,8 @@
 
   const data = window.EARTHDAWN_PLAYER_DATA || (window.EARTHDAWN_PLAYER_DATA = {});
   Object.assign(data, {
-    pj_2: {
-      playerId: "pj_2", characterId: "barbak", name: "Barbak", player: "Fred", people: "Ork", discipline: "Guerrier", circle: 3,
+    pj_3: {
+      playerId: "pj_3", characterId: "barbak", name: "Barbak", player: "Fred", people: "Ork", discipline: "Guerrier", circle: 3,
       portrait: "assets/portraits/barbak.png", birth: "1437 TH", age: "10 ou 11 ans", origin: "Rocheville", location: "Rocnoir — à bord de l’Insoumise",
       identityLine: "Le Mur de la famille • Guerrier immense, crédule et profondément loyal",
       traits: ["Crédule", "Sympathique", "Courageux", "Violence protectrice à maîtriser"], passions: ["Thystonius 25", "Garlen 10"],
@@ -63,8 +63,8 @@
       snapshot: { karma: 9, damage: 0, wounds: 0, recoveriesUsed: 0 }
     },
 
-    pj_3: {
-      playerId: "pj_3", characterId: "ogunta", name: "Ogunta", player: "Erik", people: "Ork", discipline: "Nécromant", circle: 3,
+    pj_4: {
+      playerId: "pj_4", characterId: "ogunta", name: "Ogunta", player: "Erik", people: "Ork", discipline: "Nécromant", circle: 3,
       portrait: "assets/portraits/ogunta.png", birth: "1435 TH", age: "12 ou 13 ans", origin: "Rocheville", location: "Rocnoir — à bord de l’Insoumise",
       identityLine: "La Mémoire des morts • Nécromancienne sarcastique, réaliste et protectrice",
       traits: ["Sarcastique", "Cynique", "Protectrice", "Réaliste"], passions: ["Mynbruje 25", "Thystonius 15"],
@@ -113,8 +113,8 @@
       snapshot: { karma: 8, damage: 0, wounds: 0, recoveriesUsed: 0 }
     },
 
-    pj_4: {
-      playerId: "pj_4", characterId: "jaskar", name: "Jaskar", player: "Stéphane", people: "Ork", discipline: "Troubadour", circle: 3,
+    pj_5: {
+      playerId: "pj_5", characterId: "jaskar", name: "Jaskar", player: "Stéphane", people: "Ork", discipline: "Troubadour", circle: 3,
       portrait: "assets/portraits/jaskar.png", birth: "1434 TH", age: "13 ou 14 ans", origin: "Routes de Rocheville", location: "Rocnoir — à bord de l’Insoumise",
       identityLine: "La Voix du groupe • Conteur de route, cartographe et passeur d’histoires",
       traits: ["Curieux", "Sociable", "Intolérant à l’injustice"], passions: ["Floranuus 10"],
@@ -155,8 +155,8 @@
       snapshot: { karma: 9, damage: 0, wounds: 0, recoveriesUsed: 0 }
     },
 
-    pj_5: {
-      playerId: "pj_5", characterId: "kalzakath", name: "Kal’Zakath", player: "Loïc", people: "Ork", discipline: "Éclaireur", circle: 3,
+    pj_2: {
+      playerId: "pj_2", characterId: "kalzakath", name: "Kal’Zakath", player: "Loïc", people: "Ork", discipline: "Éclaireur", circle: 3,
       portrait: "assets/portraits/kalzakath.png", birth: "1434 TH", age: "13 ou 14 ans", origin: "Rocheville", location: "Rocnoir — à bord de l’Insoumise",
       identityLine: "Le Regard des routes • Éclaireur attentif, inventif et protecteur de Kalha",
       traits: ["Inventif", "Créatif", "Logique", "Attentif", "Patient", "Sarcastique", "Destin supérieur discret"], passions: ["Upandal 25", "Lochost 50"],
