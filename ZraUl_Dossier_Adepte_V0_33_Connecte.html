@@ -4,7 +4,7 @@
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
---thread:#7eaa7e;--karma:#8fc46d;--magic:#bfe2ae;--wound:#ff5b4d;--gm:#b79249}
+--thread:#7eaa7e;--karma:#8fc46d;--magic:#bfe2ae;--wound:#ff5b4d;--player:#111111;--gm:#b79249}
 *{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Segoe UI",Arial,sans-serif}
 button,input{font:inherit}.app{display:grid;grid-template-columns:275px 1fr;min-height:100vh}
 aside{position:sticky;top:0;height:100vh;overflow:auto;background:var(--side);border-right:1px solid #d1d1cd}
@@ -1819,6 +1819,19 @@ body.ed-stunned .topbar{box-shadow:0 3px 16px rgba(104,83,125,.18)}
 .cr-plan-sync-status{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#776856}
 .cr-plan-sync-status.acknowledged{color:#3f704c}.cr-plan-sync-status.sent{color:#40677a}.cr-plan-sync-status.rejected{color:#904f3e}
 
+/* ===== V0.33 — repères sémantiques restaurés ===== */
+.dot.player{background:var(--player)}
+.semantic-legend-panel{margin:8px 9px 2px;border:1px solid #d1d1cd;border-radius:6px;background:rgba(255,255,255,.55)}
+.semantic-legend-panel>summary{cursor:pointer;padding:8px 9px;color:#666;font-size:11px;font-weight:800;list-style:none}.semantic-legend-panel>summary::-webkit-details-marker{display:none}.semantic-legend-panel>summary:after{content:"＋";float:right}.semantic-legend-panel[open]>summary:after{content:"−"}
+.semantic-legend-panel .legendchips{padding:0 8px 9px;gap:4px}.semantic-legend-panel .chip{font-size:10px;padding:3px 5px}.chip.player{border-left-color:var(--player)}.chip.g{border-left-color:var(--gm)}
+.nc-quick>div.sem-attribute{border-top:4px solid var(--attribute)}.nc-quick>div.sem-attribute b{color:#326b9b}.nc-quick>div.sem-talent{border-top:4px solid var(--talent)}.nc-quick>div.sem-talent b{color:#536a80}.nc-quick>div.sem-karma{border-top:4px solid var(--karma)}.nc-quick>div.sem-karma b{color:#4e8334}
+.trait-test-btn{border-top:4px solid var(--attribute)!important}.trait-test-btn b{color:#326b9b!important}
+.nc-action.sem-attribute{border-left:5px solid var(--attribute)}.nc-action.sem-talent{border-left:5px solid var(--talent)}.nc-action.sem-skill{border-left:5px solid var(--skill)}.nc-action.sem-attribute .nc-action-roll b{color:#326b9b}.nc-action.sem-talent .nc-action-roll b{color:#536a80}.nc-action.sem-skill .nc-action-roll b{color:#8b6414}
+.health-zone{border-top:5px solid var(--wound)!important}.health-vital.damage,.health-vital.death,.health-vital.wound{border-top-color:var(--wound)!important}.health-vital.damage b,.health-vital.death b,.health-vital.wound b,.wound-care-card .nc-eyebrow{color:#b52f25!important}
+.discipline-section:has(#talents),.halfmagic-card{border-left:5px solid var(--talent)}.specializations-section{border-left:5px solid var(--specialization)}
+.magic-workbench{border-left:5px solid var(--magic)!important}.magic-workbench h3{color:#548b49!important}.magic-item-card,.magic-status-banner{border-left-color:var(--magic)!important}
+.tools #exportProposal{border-left:5px solid var(--gm)}
+
 </style>
 <script src="earthdawn-realtime-config.js"></script>
 <script src="earthdawn-sync.js"></script>
@@ -1828,7 +1841,7 @@ body.ed-stunned .topbar{box-shadow:0 3px 16px rgba(104,83,125,.18)}
 <div class="brand"><b id="fileNameLabel">Zra’Ul</b><small>Dossier d’Adepte • V0.33 connecté</small></div>
 <div class="search"><input id="navSearch" placeholder="Rechercher une page…"></div>
 <nav id="nav">
-<button data-page="home"><span class="dot"></span><span id="homeNavName">Zra’Ul</span></button>
+<button data-page="home"><span class="dot player"></span><span id="homeNavName">Zra’Ul</span></button>
 <button data-page="combat"><span class="dot w"></span>Combat</button>
 <button data-page="progression"><span class="dot k"></span>Progression</button>
 <button data-page="archer"><span class="dot t"></span>Archer Cercle 3</button>
@@ -1838,6 +1851,14 @@ body.ed-stunned .topbar{box-shadow:0 3px 16px rgba(104,83,125,.18)}
 <div class="sub"><button data-page="tardim" class="muted">Histoire de Tardim • à venir</button></div>
 <div class="sub"><button data-page="interludes" class="muted">Interludes entre les aventures • à venir</button></div>
 </details></nav>
+<details class="semantic-legend-panel">
+  <summary>Repères de couleur</summary>
+  <div class="legendchips">
+    <span class="chip a">Attributs</span><span class="chip t">Talents</span><span class="chip sp">Spécialisations</span><span class="chip sk">Compétences</span>
+    <span class="chip th">Filaments</span><span class="chip k">Karma</span><span class="chip m">Objets magiques</span><span class="chip w">Blessures</span>
+    <span class="chip player">Joueurs</span><span class="chip g">MJ</span>
+  </div>
+</details>
 <div class="tools">
   <span id="connectCockpit" hidden></span>
   <button id="openPlayerVision" class="player-link-map">Ouvrir la Vision joueur</button>
@@ -1898,12 +1919,12 @@ body.ed-stunned .topbar{box-shadow:0 3px 16px rgba(104,83,125,.18)}
   </div>
 
   <div class="nc-quick">
-    <div><small>Perception</small><b>7 / D12</b></div>
-    <div><small>Charisme</small><b>5 / D8</b></div>
-    <div><small>Volonté</small><b>5 / D8</b></div>
-    <div><small>Défense sociale</small><b>7</b></div>
-    <div><small>Demi-magie Archer</small><b>9 / D8+D6</b></div>
-    <div><small>Karma disponible</small><b id="ncKarmaStock">19 / 25</b></div>
+    <div class="sem-attribute"><small>Perception</small><b>7 / D12</b></div>
+    <div class="sem-attribute"><small>Charisme</small><b>5 / D8</b></div>
+    <div class="sem-attribute"><small>Volonté</small><b>5 / D8</b></div>
+    <div class="sem-attribute"><small>Défense sociale</small><b>7</b></div>
+    <div class="sem-talent"><small>Demi-magie Archer</small><b>9 / D8+D6</b></div>
+    <div class="sem-karma"><small>Karma disponible</small><b id="ncKarmaStock">19 / 25</b></div>
   </div>
 
   <section class="health-zone" id="healthZone" aria-labelledby="healthTitle">
@@ -4226,11 +4247,17 @@ function ncActionText(v){
 function ncKarmaText(v){
   return v==="required"?"Karma : obligatoire":v==="optional"?"Karma : possible":"Karma : non";
 }
+function ncSemanticClass(a){
+  const source=String(a?.source||"");
+  if(/talent|discipline/i.test(source))return "sem-talent";
+  if(/compétence|connaissance/i.test(source))return "sem-skill";
+  return "sem-attribute";
+}
 function ncRenderActionList(){
   const box=document.getElementById("ncActionList"); if(!box)return;
   const rows=NC_ACTIONS.filter(a=>ncFilter==="all"||a.cats.includes(ncFilter));
   box.innerHTML=rows.map(a=>`
-    <button type="button" class="nc-action ${a.id===ncSelectedId?"selected":""}" data-nc-action="${a.id}">
+    <button type="button" class="nc-action ${ncSemanticClass(a)} ${a.id===ncSelectedId?"selected":""}" data-nc-action="${a.id}">
       <span class="nc-action-main">
         <b>${esc(a.label)}</b>
         <small>${esc(a.source)}${a.variants?.length?" • approche au choix":""}</small>
@@ -6285,5 +6312,5 @@ if(document.readyState==="loading"){
 }
 
 </script>
-<script src="ZraUl_V0_33_adapter.js"></script>
+<script src="ZraUl_V0_33_adapter.js?v=0.33.1"></script>
 </body></html>

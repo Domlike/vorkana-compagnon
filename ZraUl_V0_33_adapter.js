@@ -12,7 +12,7 @@
   if (portrait) portrait.src = "assets/portraits/zraul.png";
 
   const style = document.createElement("style");
-  style.textContent = `.zmsg-layout{display:grid;grid-template-columns:250px 1fr;gap:14px}.zmsg-card{border:1px solid #d8d1c6;background:#fff;border-radius:8px;padding:15px}.zmsg-presence{display:grid;gap:7px}.zmsg-member{padding:8px;background:#f3f0ea;border-radius:6px}.zmsg-member:before{content:'●';color:#6e9a60;margin-right:7px}.zmsg-feed{height:360px;overflow:auto;padding:10px;background:#f1ede6;border-radius:7px;display:flex;flex-direction:column;gap:7px}.zmsg-item{max-width:78%;padding:8px 10px;background:white;border:1px solid #d8d0c4;border-left:4px solid #77608d;border-radius:8px}.zmsg-item.mine{align-self:flex-end;background:#eaf0f4}.zmsg-item small{display:block;color:#777;margin-top:3px}.zmsg-compose{display:grid;grid-template-columns:180px 1fr auto;gap:7px;margin-top:8px}.zmsg-compose select,.zmsg-compose input{border:1px solid #cfc7bc;border-radius:6px;padding:9px;background:white}.zra-situation{margin-bottom:14px;padding:12px 14px;border:1px solid #d8c8a9;border-left:5px solid #9b6f2d;border-radius:7px;background:#f3ead9}.zra-situation b{display:block;margin-bottom:5px}.zra-situation span{display:inline-block;margin:3px 5px 0 0;padding:3px 7px;border-radius:999px;background:#4f3a31;color:white;font-size:12px}@media(max-width:800px){.zmsg-layout,.zmsg-compose{grid-template-columns:1fr}}`;
+  style.textContent = `.zmsg-layout{display:grid;grid-template-columns:250px 1fr;gap:14px}.zmsg-card{border:1px solid #d8d1c6;background:#fff;border-radius:8px;padding:15px}.zmsg-layout .zmsg-card:first-child{border-left:5px solid var(--player)}.zmsg-layout .zmsg-card:last-child{border-left:5px solid var(--gm)}.zmsg-presence{display:grid;gap:7px}.zmsg-member{padding:8px;background:#f3f0ea;border-radius:6px}.zmsg-member.player{border-left:4px solid var(--player)}.zmsg-member.gm{border-left:4px solid var(--gm)}.zmsg-member:before{content:'●';color:#6e9a60;margin-right:7px}.zmsg-feed{height:360px;overflow:auto;padding:10px;background:#f1ede6;border-radius:7px;display:flex;flex-direction:column;gap:7px}.zmsg-item{max-width:78%;padding:8px 10px;background:white;border:1px solid #d8d0c4;border-left:5px solid var(--player);border-radius:8px}.zmsg-item.from-gm{border-left-color:var(--gm);background:#fff9ec}.zmsg-item.whisper{box-shadow:inset 0 -3px var(--specialization)}.zmsg-item.mine{align-self:flex-end;background:#f1f1ef}.zmsg-item small{display:block;color:#777;margin-top:3px}.zmsg-compose{display:grid;grid-template-columns:180px 1fr auto;gap:7px;margin-top:8px}.zmsg-compose select,.zmsg-compose input{border:1px solid #cfc7bc;border-radius:6px;padding:9px;background:white}.zra-situation{margin-bottom:14px;padding:12px 14px;border:1px solid #d8c8a9;border-left:5px solid var(--gm);border-radius:7px;background:#f3ead9}.zra-situation b{display:block;margin-bottom:5px}.zra-situation span{display:inline-block;margin:3px 5px 0 0;padding:3px 7px;border-radius:999px;background:#4f3a31;color:white;font-size:12px}@media(max-width:800px){.zmsg-layout,.zmsg-compose{grid-template-columns:1fr}}`;
   document.head.appendChild(style);
 
   const nav = document.getElementById("nav");
@@ -25,7 +25,7 @@
   }
   const messageButton = document.createElement("button");
   messageButton.dataset.page = "messages";
-  messageButton.innerHTML = '<span class="dot k"></span>Messages';
+  messageButton.innerHTML = '<span class="dot player"></span>Messages';
   nav.insertBefore(messageButton, nav.querySelector("details"));
   const messagePage = document.createElement("section");
   messagePage.className = "view";
@@ -34,7 +34,7 @@
   titles.messages = "Messages";
   messageButton.onclick = () => openPage("messages");
   const circleButton = document.createElement("button");
-  circleButton.innerHTML = '<span class="dot t"></span>Ressources & marché';
+  circleButton.innerHTML = '<span class="dot"></span>Ressources & marché';
   nav.insertBefore(circleButton, nav.querySelector("details"));
   circleButton.onclick = () => window.open(circleHubUrl(), "VorkanaCircle");
 
@@ -57,14 +57,14 @@
     L.messages.push({ ...payload, mine: !!mine }); L.messages = L.messages.slice(-150); save(); renderMessages();
   }
   function recipientList() {
-    const players = new Map([["pj_1", "Kalha"], ["pj_2", "Barbak"], ["pj_3", "Ogunta"], ["pj_4", "Jaskar"], ["pj_5", "Kal’Zakath"], ["pj_6", "Gul’Rak"]]);
+    const players = new Map([["pj_1", "Kalha"], ["pj_2", "Kal’Zakath"], ["pj_3", "Barbak"], ["pj_4", "Ogunta"], ["pj_5", "Jaskar"], ["pj_6", "Gul’Rak"]]);
     presence.filter(m => m.playerId && m.playerId !== P.playerId).forEach(m => players.set(m.playerId, m.name || m.playerId));
     return [["gm", "MJ"], ["all", "Tout le groupe"], ...players.entries()];
   }
   function renderMessages() {
     if (!messagePage) return;
-    const members = presence.length ? presence.map(m => `<div class="zmsg-member">${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</div>`).join("") : `<p class="muted">Présences visibles après connexion.</p>`;
-    const feed = L.messages.length ? L.messages.map(m => `<div class="zmsg-item ${m.mine ? "mine" : ""}"><b>${esc(m.from || "MJ")}</b>${m.toLabel ? ` → ${esc(m.toLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
+    const members = presence.length ? presence.map(m => `<div class="zmsg-member ${m.role === "gm" ? "gm" : "player"}">${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</div>`).join("") : `<p class="muted">Présences visibles après connexion.</p>`;
+    const feed = L.messages.length ? L.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""); return `<div class="zmsg-item ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper === false ? "" : "whisper"}"><b>${esc(m.from || "MJ")}</b>${m.toLabel ? ` → ${esc(m.toLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`; }).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
     messagePage.innerHTML = `<div class="head"><h2>Messages</h2><p>Les murmures entre joueurs restent visibles par le MJ.</p></div><div class="zmsg-layout"><div class="zmsg-card"><h3>Présences</h3><div class="zmsg-presence">${members}</div><p class="notice">L’invitation ne demande aucun mot de passe. Elle identifie seulement la salle et votre personnage.</p></div><div class="zmsg-card"><h3>Fil de la salle</h3><div class="zmsg-feed" id="zmsgFeed">${feed}</div><div class="zmsg-compose"><select id="zmsgTo">${recipientList().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="zmsgText" placeholder="Votre message…"><button class="btn primary" id="zmsgSend">Envoyer</button></div></div></div>`;
     const feedEl = document.getElementById("zmsgFeed"); if (feedEl) feedEl.scrollTop = feedEl.scrollHeight;
     document.getElementById("zmsgSend").onclick = () => {
