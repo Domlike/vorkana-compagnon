@@ -1894,12 +1894,12 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
   <button type="button" id="globalHealthStrip" class="global-health-strip" title="Ouvrir l’outil de récupération">
     <div class="global-health-core">
       <span class="global-health-label">Vie</span>
-      <div class="global-health-track" aria-label="Jauge de dommages">
-        <span id="globalHealthFill" class="global-health-fill"></span>
-        <i class="global-health-mark unconscious" style="left:80.645%"></i>
-        <i class="global-health-mark death" style="left:100%"></i>
+      <div class="global-health-track" role="meter" aria-label="Vie restante" aria-valuemin="0" aria-valuemax="62" aria-valuenow="62">
+        <span id="globalHealthFill" class="global-health-fill" style="width:100%;background:linear-gradient(90deg,#9b3b33,#dc7868)"></span>
+        <i class="global-health-mark unconscious" style="left:19.35483870967742%"></i>
+        <i class="global-health-mark death" style="left:0%"></i>
       </div>
-      <b id="globalHealthDamage">0 / 62</b>
+      <b id="globalHealthDamage">62 / 62</b>
       <span id="globalHealthStateText" class="global-health-state-text">Indemne</span>
     </div>
     <div class="global-karma-core">
@@ -4519,8 +4519,19 @@ function healthRenderGlobalStrip(){
         woundCount=document.getElementById("globalWoundCount"),
         woundPenalty=document.getElementById("globalWoundPenalty"),
         icons=document.getElementById("globalStateIcons");
-  if(fill)fill.style.width=`${Math.max(0,Math.min(100,damage/P.combat.health.death*100))}%`;
-  if(dmg)dmg.textContent=`${damage} / ${P.combat.health.death}`;
+  const maxLife=Math.max(1,Number(P.combat.health.death)||1),life=Math.max(0,Math.min(maxLife,maxLife-damage)),lifePercent=life/maxLife*100;
+  if(fill){
+    fill.style.width=lifePercent+'%';
+    fill.style.background='linear-gradient(90deg,#9b3b33,#dc7868)';
+    const track=fill.parentElement;
+    track.setAttribute('role','meter');track.setAttribute('aria-label','Vie restante');
+    track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(maxLife));track.setAttribute('aria-valuenow',String(life));
+    track.setAttribute('aria-valuetext',life+' sur '+maxLife+' — '+summary.label);
+    const unconscious=track.querySelector('.unconscious'),death=track.querySelector('.death');
+    if(unconscious){unconscious.style.left=Math.max(0,(maxLife-P.combat.health.unconscious)/maxLife*100)+'%';unconscious.title='Inconscience : '+P.combat.health.unconscious+' dommages';}
+    if(death){death.style.left='0%';death.title='Mort : '+maxLife+' dommages';}
+  }
+  if(dmg){dmg.textContent=life+' / '+maxLife;dmg.title='Vie restante • '+damage+' dommage(s) reçu(s)';}
   if(state)state.textContent=summary.label;
   if(karmaFill)karmaFill.style.width=`${Math.max(0,Math.min(100,karma/P.combat.karma.max*100))}%`;
   if(karmaValue)karmaValue.textContent=`${karma} / ${P.combat.karma.max}`;
