@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "0.35";
+  const VERSION = "0.36";
   const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   const LOCAL_KEY = "earthdawn-room-envelope-v033";
   const CONFIG = window.EARTHDAWN_REALTIME_CONFIG || {};
@@ -252,7 +252,13 @@
     });
     updatePresence();
     startRemote();
+    loadDiffusion();
     return api;
+  }
+  function loadDiffusion(){
+    if(!document.createElement||!document.getElementById)return;
+    const load=()=>{if(document.getElementById('vorkana-diffusion-loader'))return;const script=document.createElement('script');script.id='vorkana-diffusion-loader';script.src=new URL('vorkana-diffusion.js?v=0.36.0',location.href).href;script.async=true;document.head.appendChild(script);};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
   }
   function setRoom(room) {
     const next = cleanRoom(room);
