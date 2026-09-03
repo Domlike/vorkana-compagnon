@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "0.36";
+  const VERSION = "0.38";
   const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   const LOCAL_KEY = "earthdawn-room-envelope-v033";
   const CONFIG = window.EARTHDAWN_REALTIME_CONFIG || {};
@@ -21,7 +21,7 @@
     seen: new Map(),
     started: false,
     pending: [], outbox: [], delivery: {}, memory: "checking", cursor: 0, busy: false,
-    generation: 0, retryAt: 0
+    generation: 0, retryAt: 0, flushing: false
   };
 
   function cleanRoom(value) {
@@ -52,6 +52,7 @@
     remember(envelope.eventId);
     if (!intendedForMe(envelope)) return;
     const payload = { ...(envelope.payload || {}), __earthdawnEnvelope: envelope, __earthdawnTransport: transport };
+    if(window.VorkanaCombatExchange?.acceptSnapshot&&!window.VorkanaCombatExchange.acceptSnapshot(payload))return;
     if (payload.type === "vorkana-receipt") {
       const entry = state.delivery[payload.messageId] || { recipients: {} };
       entry.recipients ||= {};
@@ -88,6 +89,25 @@
       return result === "ok" || result === undefined;
     } catch (_) { return false; }
   }
+  function queueRemote(envelope) {
+    const p=envelope.payload||{};
+    // Absolute snapshots and presence probes supersede their older unsent copy.
+    if(['earthdawn-cockpit-state','earthdawn-cockpit-pong','earthdawn-player-ping','earthdawn-player-ready'].includes(p.type))
+      state.pending=state.pending.filter(e=>e.payload?.type!==p.type||JSON.stringify(e.targets)!==JSON.stringify(envelope.targets));
+    if(!state.pending.some(e=>e.eventId===envelope.eventId))state.pending.push(envelope);
+    saveMail();
+  }
+  async function flushRemote() {
+    if(state.flushing||!state.remoteChannel||state.status!=='online')return;
+    state.flushing=true;const generation=state.generation;
+    try {
+      for(const envelope of state.pending.slice(0,30)) {
+        if(!await sendRemote(envelope))break;
+        if(generation!==state.generation)return;
+        state.pending=state.pending.filter(e=>e.eventId!==envelope.eventId);saveMail();
+      }
+    } finally {if(generation===state.generation)state.flushing=false;}
+  }
   function send(payload, options) {
     const envelope = makeEnvelope(payload, options);
     remember(envelope.eventId);
@@ -97,10 +117,9 @@
       if (payload.messageId) { state.delivery[payload.messageId] ||= { recipients: {} }; emit("vorkana-delivery", { messageId: payload.messageId }); }
       pumpMail();
     }
-    if (CONFIG.enabled && CONFIG.supabaseUrl && CONFIG.supabasePublishableKey && state.status !== "online") {
-      state.pending.push(envelope);
-      if (state.pending.length > 100) state.pending.shift();
-    } else sendRemote(envelope);
+    if (CONFIG.enabled && CONFIG.supabaseUrl && CONFIG.supabasePublishableKey) {
+      queueRemote(envelope);flushRemote();
+    }
     return true;
   }
 
@@ -111,12 +130,13 @@
   function identity() { return state.playerId || state.role; }
   function mailKey() { return `vorkana_mail_v035_${state.room}_${identity()}_${encodeURIComponent(location.pathname || 'page')}`; }
   function saveMail() {
-    try { localStorage.setItem(mailKey(), JSON.stringify({ outbox: state.outbox, delivery: state.delivery, cursor: state.cursor })); }
+    try { localStorage.setItem(mailKey(), JSON.stringify({ outbox: state.outbox, pending: state.pending, delivery: state.delivery, cursor: state.cursor })); }
     catch (_) { emit("vorkana-storage-error", { note: "Impossible de conserver les envois sur cet appareil." }); }
   }
   function loadMail() {
     let saved = {}; try { saved = JSON.parse(localStorage.getItem(mailKey()) || "{}"); } catch (_) {}
     state.outbox = Array.isArray(saved.outbox) ? saved.outbox.filter(e => e.room === state.room && durable(e.payload)) : [];
+    state.pending = Array.isArray(saved.pending) ? saved.pending.filter(e => e.room===state.room&&e.sender?.playerId===state.playerId&&e.sender?.role===state.role) : [];
     state.delivery = saved.delivery || {}; state.cursor = Number(saved.cursor) || 0;
   }
   function memoryStatus(status) { if (state.memory === status) return; state.memory = status; emit("vorkana-memory", { status, pending: state.outbox.length }); }
@@ -220,7 +240,7 @@
             if(generation !== state.generation)return;
             setStatus("online", "Salle en ligne synchronisée");
             updatePresence();
-            while (state.pending.length) sendRemote(state.pending.shift());
+            flushRemote();
             state.outbox.forEach(sendRemote); pumpMail();
           } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
             memoryStatus("unavailable");
@@ -265,7 +285,7 @@
     if (next === state.room) return api;
     try { state.localChannel && state.localChannel.close(); } catch (_) {}
     try { state.remoteChannel && state.remoteClient && state.remoteClient.removeChannel(state.remoteChannel); } catch (_) {}
-    saveMail(); state.generation++; state.busy = false; state.retryAt = 0;
+    saveMail(); state.generation++; state.busy = false; state.flushing=false; state.retryAt = 0;
     state.pending = []; state.seen.clear(); state.presence = []; state.memory = "checking";
     state.localChannel = null; state.remoteChannel = null; state.remoteClient = null; state.started = false; state.room = next;
     try { localStorage.setItem("earthdawn_room_v033", next); } catch (_) {}
@@ -292,9 +312,10 @@
     invitationUrl,
     markRead: payload => receipt(payload, "read"),
     delivery: id => state.delivery[id] || { recipients: {} },
-    retry: () => { state.retryAt = 0; pumpMail(); },
-    status: () => ({ role: state.role, playerId: state.playerId, name: state.name, clientId: state.clientId, room: state.room, status: state.status, remote: !!state.remoteChannel, presence: state.presence.slice(), memory: state.memory, pending: state.outbox.length })
+    retry: () => { state.retryAt = 0; flushRemote();pumpMail(); },
+    status: () => ({ role: state.role, playerId: state.playerId, name: state.name, clientId: state.clientId, room: state.room, status: state.status, remote: !!state.remoteChannel, presence: state.presence.slice(), memory: state.memory, pending: new Set([...state.outbox,...state.pending].map(e=>e.eventId)).size })
   };
   window.EarthdawnSync = api;
   setInterval(pumpMail, 5000);
+  setInterval(flushRemote, 2500);
 })();
