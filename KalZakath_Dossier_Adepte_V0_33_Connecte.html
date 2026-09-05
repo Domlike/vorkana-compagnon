@@ -1164,7 +1164,14 @@ table{width:100%;border-collapse:collapse;background:white}th{background:#44546a
 .gear-location{position:absolute;border:1px solid #baa889;background:rgba(255,250,240,.95);border-radius:7px;padding:5px 7px;min-width:75px;text-align:left;color:#5c4c39;cursor:pointer;box-shadow:0 2px 6px rgba(60,45,27,.10)}
 .gear-location span{display:block;font-size:10px;font-weight:800}.gear-location small{display:inline-flex;margin-top:2px;min-width:17px;height:17px;border-radius:99px;background:#6c8291;color:white;align-items:center;justify-content:center;font-size:9px}
 .gear-location.active{outline:2px solid rgba(71,103,118,.35);border-color:#607d8b}
-.pin-back{top:65px;right:17px}.pin-quiver{top:125px;right:5px}.pin-belt-left{top:268px;left:8px}.pin-belt-right{top:268px;right:8px}.pin-torso{top:182px;left:10px}.pin-tail{bottom:44px;right:14px}.pin-unassigned{bottom:12px;left:10px}
+.gear-general-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0 0 9px}
+.gear-general-location{position:static;min-width:0;text-align:center;padding:7px 8px;background:#fffaf0}
+.gear-general-location span{font-size:11px}.gear-general-location small{margin:3px auto 0}
+.pin-back{top:55px;right:13px}.pin-quiver{top:55px;left:13px}
+.pin-belt-front{top:185px;left:8px}.pin-belt-back{top:185px;right:8px}
+.pin-belt-left{top:245px;left:8px}.pin-belt-right{top:245px;right:8px}
+.pin-thigh-left{top:335px;left:8px}.pin-thigh-right{top:335px;right:8px}
+.pin-boot-left{top:435px;left:8px}.pin-boot-right{top:435px;right:8px}
 .body-legend{margin-top:9px;padding:8px 9px;border-left:3px solid #8c7657;background:rgba(255,248,233,.75);font-size:11px;color:#675b4c;line-height:1.45}
 
 .inventory-card-head{display:flex;justify-content:space-between;align-items:end;gap:10px;border-bottom:1px solid #dbd0bf;padding-bottom:9px}.inventory-card-head h3{margin:2px 0 0;font:600 20px Georgia,"Times New Roman",serif;color:#463a2e}
@@ -2549,6 +2556,18 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
         <button type="button" data-body-mode="armor">Couverture d’armure</button>
       </div>
 
+      <div class="gear-general-strip" aria-label="Emplacements généraux">
+        <button class="gear-location gear-general-location" data-gear-location="torso">
+          <span>Sur soi</span><small id="locTorsoCount">0</small>
+        </button>
+        <button class="gear-location gear-general-location" data-gear-location="bag">
+          <span>Bagages</span><small id="locTailCount">0</small>
+        </button>
+        <button class="gear-location gear-general-location" data-gear-location="unassigned">
+          <span>À répartir</span><small id="locUnassignedCount">0</small>
+        </button>
+      </div>
+
       <div class="tsskrang-stage" id="gearBodyStage">
         
         <div class="character-illustration-wrap" aria-label="Illustration de référence de Kal’Zakath">
@@ -2573,14 +2592,23 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
         <button class="gear-location pin-belt-right" data-gear-location="beltRight">
           <span>Ceinture D.</span><small id="locBeltRightCount">0</small>
         </button>
-        <button class="gear-location pin-torso" data-gear-location="torso">
-          <span>Sur soi</span><small id="locTorsoCount">0</small>
+        <button class="gear-location pin-belt-front" data-gear-location="beltFront">
+          <span>Ceinture devant</span><small id="locBeltFrontCount">0</small>
         </button>
-        <button class="gear-location pin-tail" data-gear-location="bag">
-          <span>Bagages</span><small id="locTailCount">0</small>
+        <button class="gear-location pin-belt-back" data-gear-location="beltBack">
+          <span>Ceinture derrière</span><small id="locBeltBackCount">0</small>
         </button>
-        <button class="gear-location pin-unassigned" data-gear-location="unassigned">
-          <span>À répartir</span><small id="locUnassignedCount">0</small>
+        <button class="gear-location pin-thigh-left" data-gear-location="thighLeft">
+          <span>Cuisse G.</span><small id="locThighLeftCount">0</small>
+        </button>
+        <button class="gear-location pin-thigh-right" data-gear-location="thighRight">
+          <span>Cuisse D.</span><small id="locThighRightCount">0</small>
+        </button>
+        <button class="gear-location pin-boot-left" data-gear-location="bootLeft">
+          <span>Botte G.</span><small id="locBootLeftCount">0</small>
+        </button>
+        <button class="gear-location pin-boot-right" data-gear-location="bootRight">
+          <span>Botte D.</span><small id="locBootRightCount">0</small>
         </button>
       </div>
 
@@ -3290,6 +3318,12 @@ const GEAR_LOCATIONS={
   hand:{label:"En main",access:"Prêt à utiliser"},
   torso:{label:"Sur soi",access:"Immédiat"},
   back:{label:"Dos",access:"Action simple pour saisir/ranger"},
+  bootLeft:{label:"Botte gauche",access:"Immédiat"},
+  bootRight:{label:"Botte droite",access:"Immédiat"},
+  thighLeft:{label:"Cuisse gauche",access:"Immédiat"},
+  thighRight:{label:"Cuisse droite",access:"Immédiat"},
+  beltFront:{label:"Ceinture devant",access:"Immédiat"},
+  beltBack:{label:"Ceinture derrière",access:"Immédiat"},
   
   beltLeft:{label:"Ceinture gauche",access:"Immédiat"},
   beltRight:{label:"Ceinture droite",access:"Immédiat"},
@@ -3311,7 +3345,7 @@ const GEAR_PURSE_DEFAULTS=[{"id":"purse","name":"Bourse personnelle","location":
 function gearState(){
   if(!L.inventory||typeof L.inventory!=="object"){
     L.inventory={
-      version:"0.31",
+      version:"0.36",
       items:Object.fromEntries(GEAR_BASE_ITEMS.map(i=>[i.id,{location:i.location,weightOverride:null,state:i.state||"available"}])),
       purses:clone(GEAR_PURSE_DEFAULTS),
       bodyMode:"gear",
@@ -3438,12 +3472,12 @@ function gearRenderSilhouette(){
   document.querySelectorAll("[data-body-mode]").forEach(b=>b.classList.toggle("active",b.dataset.bodyMode===st.bodyMode));
   document.querySelectorAll("[data-gear-location]").forEach(b=>b.classList.toggle("active",st.filterLocation===b.dataset.gearLocation));
 
-  const counts={back:0,hand:0,beltLeft:0,beltRight:0,torso:0,bag:0,unassigned:0};
+  const counts={back:0,hand:0,beltLeft:0,beltRight:0,beltFront:0,beltBack:0,thighLeft:0,thighRight:0,bootLeft:0,bootRight:0,torso:0,bag:0,unassigned:0};
   gearAllItems().forEach(i=>{if(counts[i.location]!==undefined)counts[i.location]++});
   gearState().purses.forEach(p=>{
     if(p.id!=="unallocated"&&counts[p.location]!==undefined)counts[p.location]++;
   });
-  const map={back:"locBackCount",hand:"locQuiverCount",beltLeft:"locBeltLeftCount",beltRight:"locBeltRightCount",torso:"locTorsoCount",bag:"locTailCount",unassigned:"locUnassignedCount"};
+  const map={back:"locBackCount",hand:"locQuiverCount",beltLeft:"locBeltLeftCount",beltRight:"locBeltRightCount",beltFront:"locBeltFrontCount",beltBack:"locBeltBackCount",thighLeft:"locThighLeftCount",thighRight:"locThighRightCount",bootLeft:"locBootLeftCount",bootRight:"locBootRightCount",torso:"locTorsoCount",bag:"locTailCount",unassigned:"locUnassignedCount"};
   Object.entries(map).forEach(([loc,id])=>{const el=document.getElementById(id);if(el)el.textContent=counts[loc]||0});
   const legend=document.getElementById("gearBodyLegend");if(legend)legend.innerHTML=gearBodyLegend(st.bodyMode);
 }
