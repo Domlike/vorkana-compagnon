@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Jaskar — Dossier d’Adepte V0.34</title>
+<title>Jaskar — Dossier d’Adepte V0.40</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -1859,7 +1859,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 
 </style>
 <script src="earthdawn-realtime-config.js"></script>
-<script src="earthdawn-sync.js?v=0.38.0"></script>
+<script src="earthdawn-sync.js?v=0.40.0"></script>
 </head>
 <body><div class="app">
 <aside>
@@ -2742,7 +2742,7 @@ if(!L.notes||typeof L.notes!=="object")L.notes={free:"",interludes:[]};
 if(!Array.isArray(L.notes.interludes))L.notes.interludes=[];
 L.stateReset034=true; // Preserve saved health; no implicit reset.
 L.version="0.34";L.sync.protocolVersion="1.1";
-function save(){localStorage.setItem(STORE,JSON.stringify(L))}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(L));window.dispatchEvent(new CustomEvent('vorkana-storage-restored'));return true;}catch(error){window.dispatchEvent(new CustomEvent('vorkana-storage-error',{detail:{note:'Sauvegarde locale impossible. Téléchargez une sauvegarde de votre dossier.'}}));return false;}}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function fmt(n){return Number(n).toLocaleString("fr-FR")}
 const titles={home:"Essentiel",progression:"Progression",legend:"Progression",combat:"Combat",archer:"Discipline",gear:"Équipement",notes:"Carnet de notes"};
@@ -2810,7 +2810,7 @@ function sendProposalBundleToCockpit(showFeedback=true){
    return false
  }
  L.sync.status="proposals_sent";save();
- if(showFeedback)alert(`${bundle.proposals.length} proposition(s) transmise(s) au Cockpit.`);
+ if(showFeedback)alert(`${bundle.proposals.length} proposition(s) placée(s) dans la file d’envoi. La réception doit être confirmée par le MJ.`);
  return true
 }
 function renderProposalSurfaces(){
@@ -3394,7 +3394,7 @@ window.gearClearFilter=gearClearFilter;
 function gearSetBodyMode(mode){
   const st=gearState();st.bodyMode=["gear","armor"].includes(mode)?mode:"gear";save();renderGear();
 }
-function gearBodyLegend(mode){return mode==='armor'?'Protection équipée : cuir rembourré, Armure physique 4 / mystique 1. Valeurs globales ; pas d’armure localisée.':'Deux épées, une dague et un sac à dos. Les emplacements sont préparables ; les poids inconnus restent explicitement signalés.';}
+function gearBodyLegend(mode){return mode==='armor'?`Protection équipée : ${P.combat.armor.label}. Armure physique ${P.combat.armor.physical} / mystique ${P.combat.armor.mystical}. Valeurs globales ; pas d’armure localisée.`:'Deux épées, une dague et un sac à dos. Les emplacements sont préparables ; les poids inconnus restent explicitement signalés.';}
 function gearRenderLoad(){
   const {known,unknown}=gearWeightSummary();
   const cap=P.carryCapacity, pct=Math.min(100,Math.max(0,known/cap*100));
@@ -5650,7 +5650,8 @@ if(document.readyState==="loading"){
 }
 
 </script>
-<script src="Dossiers_References_V0_34.js?v=0.34.3"></script>
-<script src="vorkana-combat-options.js?v=0.37.0"></script>
+<script src="Dossiers_References_V0_34.js?v=0.40.0"></script>
+<script src="vorkana-combat-options.js?v=0.40.0"></script>
 <script src="vorkana-combat-sync.js?v=0.38.0"></script>
+<script src="vorkana-sauvegarde.js?v=0.40.0"></script>
 </body></html>

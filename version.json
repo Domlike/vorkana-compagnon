@@ -1,0 +1,12 @@
+{
+  "release": "0.40.0",
+  "date": "2026-09-07",
+  "scope": "Corrections de cohérence et conservation des données",
+  "entry": "index.html",
+  "notes": [
+    "Mémoire et brouillons conservés",
+    "Sauvegarde personnelle complète",
+    "Corrections validées de Barbak et Kal’Zakath",
+    "Références et copie de test alignées"
+  ]
+}

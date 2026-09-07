@@ -4,8 +4,9 @@
 
   const Sync = window.EarthdawnSync;
   const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
-  let presence = [];
+  let presence = [], messageLimit=150, messageRoom=null, storageFailed=false;
   if (!Array.isArray(L.messages)) L.messages = [];
+  L.messages.forEach(m=>{m.room ||= m.__earthdawnEnvelope?.room || Sync.status().room;});
 
   const connectButton = document.getElementById("connectCockpit");
   if (connectButton) connectButton.remove();
@@ -23,7 +24,7 @@
     cockpitConnected = true;
     const st = syncState(), online = st.status === "online";
     const badge = document.getElementById("cockpitStatus"), mode = document.getElementById("playerModeStatus"), exportButton = document.getElementById("exportProposal");
-    if (badge) { badge.className = `badge ${online ? "connected" : "waiting"}`; badge.textContent = online ? "Salle : synchronisée" : "Salle : mode local"; }
+    if (badge) { badge.className = `badge ${online && st.memory==='ready' && !storageFailed ? "connected" : "waiting"}`; badge.textContent = storageFailed?'Sauvegarde locale impossible':!online?'Salle : mode local':st.memory==='ready'?(st.pending?'En ligne · envois en attente':'En ligne · mémoire disponible'):'En ligne · mémoire indisponible'; }
     if (mode) mode.textContent = `Salle ${st.room}`;
     if (exportButton) exportButton.textContent = "Transmettre les propositions au MJ";
   };
@@ -45,8 +46,9 @@
     return [...unique.values()];
   }
   function addMessage(payload, mine) {
-    if (!payload.messageId || L.messages.some(item => item.messageId === payload.messageId)) return;
-    L.messages.push({ ...payload, mine: !!mine }); L.messages = L.messages.slice(-150); save(); renderMessages();
+    const room=payload.__earthdawnEnvelope?.room||Sync.status().room;
+    if(!payload.messageId||L.messages.some(m=>m.messageId===payload.messageId&&m.room===room))return;
+    L.messages.push({...payload,room,mine:!!mine||payload.fromId===P.playerId});save();renderMessages();
   }
   function recipientList() {
     const players = new Map(Object.entries(PLAYER_NAMES).filter(([id]) => id !== P.playerId));
@@ -55,17 +57,48 @@
   }
   function renderMessages() {
     if (!messageDock) return;
-    const members = presence.length ? presence.map(m => `<div class="zmsg-member ${m.role === "gm" ? "gm" : "player"}">${esc(m.name || (m.role === "gm" ? "MJ" : m.playerId || "Invité"))}</div>`).join("") : `<p class="muted">Présences visibles après connexion.</p>`;
-    const feed = L.messages.length ? L.messages.map(m => { const fromGm = m.fromId === "gm" || /^mj$/i.test(m.from || ""), targetLabel = m.toLabel || participantName(m.to); return `<div class="zmsg-item ${fromGm ? "from-gm" : "from-player"} ${m.mine ? "mine" : ""} ${m.whisper === false ? "" : "whisper"}"><b>${esc(m.from || "MJ")}</b>${targetLabel ? ` → ${esc(targetLabel)}` : ""}<div>${esc(m.text || "")}</div><small>${new Date(m.sentAt || Date.now()).toLocaleString("fr-FR")} • ${m.whisper === false ? "groupe" : "murmure visible MJ"}</small></div>`; }).join("") : `<p class="muted">Aucun message pour le moment.</p>`;
-    messageDock.innerHTML = `<details class="zmsg-dock" open><summary><span>Messages</span><span class="zmsg-online">${presence.length} connecté${presence.length > 1 ? "s" : ""}</span></summary><div class="zmsg-presence">${members}</div><div class="zmsg-feed" id="zmsgFeed">${feed}</div><div class="zmsg-compose"><select id="zmsgTo">${recipientList().map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`).join("")}</select><input id="zmsgText" placeholder="Votre message…"><button id="zmsgSend">Envoyer</button></div></details>`;
-    const feedEl = document.getElementById("zmsgFeed"); if (feedEl) feedEl.scrollTop = feedEl.scrollHeight;
-    document.getElementById("zmsgSend").onclick = () => {
-      const input = document.getElementById("zmsgText"), text = input.value.trim(); if (!text) return;
-      const to = document.getElementById("zmsgTo").value, label = recipientList().find(x => x[0] === to)?.[1] || to;
-      const payload = { type: "earthdawn-whisper", messageId: id(), sentAt: new Date().toISOString(), from: P.name, fromId: P.playerId, to, toLabel: label, text, whisper: to !== "all", visibility: "gm_and_recipients" };
-      Sync.send(payload, { targets: to === "all" ? ["all"] : to === "gm" ? ["gm"] : [to, "gm"] }); addMessage(payload, true);
-    };
+    const room=Sync.status().room;
+    L.messageDrafts ||= {};
+    const draft=L.messageDrafts[room] ||= {text:'',to:'gm'};
+    const existing=document.getElementById('zmsgText');
+    if(!existing){
+      messageDock.innerHTML=`<details class="zmsg-dock" open><summary><span>Messages</span><span class="zmsg-online" id="zmsgOnline"></span></summary><div class="zmsg-presence" id="zmsgPresence"></div><div style="padding:6px"><button id="zmsgOlder" type="button">Afficher les messages précédents</button> <button id="zmsgRecover" type="button">Retrouver l’historique</button><small id="zmsgHistoryStatus" role="status"></small></div><div class="zmsg-feed" id="zmsgFeed"></div><div class="zmsg-compose"><select id="zmsgTo" aria-label="Destinataire"></select><input id="zmsgText" placeholder="Votre message…" aria-label="Votre message"><button id="zmsgSend">Envoyer</button></div></details>`;
+      document.getElementById('zmsgText').addEventListener('input',e=>{(L.messageDrafts[Sync.status().room] ||= {}).text=e.target.value;save();});
+      document.getElementById('zmsgTo').addEventListener('change',e=>{(L.messageDrafts[Sync.status().room] ||= {}).to=e.target.value;save();});
+      document.getElementById('zmsgOlder').onclick=()=>{messageLimit+=150;renderMessages();};
+      document.getElementById('zmsgRecover').onclick=async()=>{
+        const button=document.getElementById('zmsgRecover'),status=document.getElementById('zmsgHistoryStatus');button.disabled=true;status.textContent=' Lecture de la mémoire partagée…';
+        try{const result=await Sync.recoverMessages();status.textContent=` ${result.count} message(s) retrouvé(s) dans la mémoire partagée.`;}catch(error){status.textContent=' '+error.message;}finally{button.disabled=false;}
+      };
+      document.getElementById('zmsgSend').onclick=()=>{
+        const input=document.getElementById('zmsgText'),text=input.value.trim();if(!text)return;
+        const to=document.getElementById('zmsgTo').value,label=participantName(to);
+        const payload={type:'earthdawn-whisper',messageId:id(),sentAt:new Date().toISOString(),from:P.name,fromId:P.playerId,to,toLabel:label,text,whisper:to!=='all',visibility:'gm_and_recipients'};
+        L.messageDrafts[Sync.status().room]={text:'',to};input.value='';addMessage(payload,true);
+        Sync.send(payload,{targets:to==='all'?['all']:to==='gm'?['gm']:[to,'gm']});renderMessages();
+      };
+    }
+    const input=document.getElementById('zmsgText'),select=document.getElementById('zmsgTo');
+    const changedRoom=messageRoom!==room;
+    if(changedRoom||!existing){input.value=draft.text||'';messageRoom=room;messageLimit=150;}
+    const to=!changedRoom&&existing&&select.value?select.value:draft.to||'gm';
+    const options=recipientList().map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('');
+    if(select.innerHTML!==options){select.innerHTML=options;select.value=to;}
+    if(!select.value)select.value='gm';
+    document.getElementById('zmsgOnline').textContent=`${presence.length} présent${presence.length>1?'s':''}`;
+    document.getElementById('zmsgPresence').innerHTML=presence.map(m=>`<div class="zmsg-member ${m.role==='gm'?'gm':'player'}">${esc(m.name||participantName(m.playerId))}</div>`).join('');
+    const messages=L.messages.filter(m=>m.room===room).slice().sort((a,b)=>String(a.sentAt||'').localeCompare(String(b.sentAt||'')));
+    const visible=messages.slice(-messageLimit),feed=document.getElementById('zmsgFeed'),bottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<35,previousTop=feed.scrollTop;
+    const html=visible.map(m=>{
+      const delivery=Sync.delivery(m.messageId),receipts=delivery.recipients||{},target=m.to||'gm';
+      const receipt=target==='all'?(Object.values(receipts).includes('read')?'Lu par au moins un destinataire':Object.values(receipts).length?'Reçu par au moins un destinataire':'Réception à confirmer'):receipts[target]==='read'?'Lu par le destinataire':receipts[target]==='received'?'Reçu par le destinataire':'Réception à confirmer';
+      const status=m.mine?`${delivery.saved?'Conservé dans la mémoire partagée':'Sauvegarde distante en attente'} · ${receipt}`:'';
+      return `<div class="zmsg-item ${m.fromId==='gm'?'from-gm':'from-player'} ${m.mine?'mine':''}"><b>${esc(m.from||participantName(m.fromId))}</b> → ${esc(m.toLabel||participantName(m.to))}<div>${esc(m.text||'')}</div><small>${esc(new Date(m.sentAt||Date.now()).toLocaleString('fr-FR'))}${status?' · '+esc(status):''}</small></div>`;
+    }).join('')||'<p>Aucun message pour le moment.</p>';
+    if(feed.innerHTML!==html){feed.innerHTML=html;feed.scrollTop=bottom?feed.scrollHeight:previousTop;}
+    document.getElementById('zmsgOlder').hidden=messages.length<=messageLimit;
   }
+
   function darknessLabel(value) {
     const rules = { partial: ["Obscurité partielle", -1, 25], consequent: ["Obscurité conséquente", -3, 50], total: ["Obscurité totale", -5, 75] }, rule = rules[value?.darkness];
     if (!rule) return "";
@@ -98,6 +131,12 @@
     banner.innerHTML = `<b>${combat?.active ? `Situation attribuée par le MJ — round ${Number(combat.round) || 1}` : "Aucune situation de combat active"}</b>${labels.length ? labels.map(label => `<span>${esc(label)}</span>`).join("") : `<small>${combat?.active ? "Aucun modificateur initial particulier." : "Le dossier reste prêt à recevoir le prochain combat."}</small>`}`;
   }
 
+  window.addEventListener('vorkana-storage-error',()=>{storageFailed=true;renderCockpitStatus();});
+  window.addEventListener('vorkana-storage-restored',()=>{storageFailed=false;renderCockpitStatus();});
+  window.addEventListener('vorkana-memory',()=>{renderCockpitStatus();renderMessages();});
+  window.addEventListener('vorkana-delivery',()=>{renderCockpitStatus();renderMessages();});
+  window.addEventListener('vorkana-history-message',event=>addMessage(event.detail.payload,false));
+  window.addEventListener('vorkana-room-changed',()=>{presence=[];messageRoom=null;renderMessages();renderCockpitStatus();});
   window.addEventListener("earthdawn-sync-status", renderCockpitStatus);
   window.addEventListener("earthdawn-sync-presence", event => { presence = dedupePresence(event.detail.members); renderMessages(); });
   window.addEventListener("earthdawn-sync-message", event => { const d = event.detail.payload || {}; if (d.type === "earthdawn-whisper") addMessage(d, false); if (d.type === "earthdawn-cockpit-state" || d.type === "earthdawn-cockpit-hello") renderSituationBanner(d.combat); });
@@ -109,6 +148,7 @@
 
 // This adapter is intentionally loaded only by the four newly harmonised dossiers.
 const REF=P.referenceConfig;
+if(REF.id==='barbak')ARCHER_TALENT_EFFECTS['Vivacité du tigre']='Talent optionnel acquis au Cercle 3, rang 1. Pour ce round, ajoute le rang au niveau d’initiative, selon la règle des modificateurs du 06. Effort 1 ; pas de test autonome ni de Karma. Cumulable avec Danse des airs. Correction validée par le MJ, sans effet rétroactif.';
 const refOriginal={add:crAddMechanical,move:crAddMovement,attack:crRollAttack,manual:crSetManualAttack,editor:crMechanicalEditor,planEditor:crPlanEntryEditor,render:renderCombatFlow,resolution:crRenderResolution,costs:crApplyRoundCosts,initiative:crRenderInitiative,setInitiative:crSetInitiative,setEntry:crSetEntry,showResult:ncShowResult,manualNC:ncManualEvaluate,autoNC:ncAutoRoll,gearLoad:gearRenderLoad};
 function refPositive(v){return String(v??'').trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=1;}
 function refPropose(label,note,meta={}){const p={id:crUid('reference'),kind:'note',domain:'character',label,note,why:note,meta,status:'sent',createdAt:new Date().toISOString()};L.proposals.push(p);save();sendProposalBundleToCockpit(false);return p;}
@@ -139,7 +179,7 @@ function refAttackOptions(e,a){
  const w=crWeaponFor(a),locked=e.attackResult!=null||combatFlow().resourcesApplied;
  let out='';
  if(REF.id==='kalzakath'&&w?.ranged)out+=`<div class="cr-note sem-magic"><label><input type="checkbox" ${e.eye?'checked':''} ${locked?'disabled':''} onchange="refSetAttackFlag('eye',this.checked)"> Œil de Dragon : +2 au niveau d’attaque, +1 aux dommages</label><small>Bonus appliqué une seule fois. Les 2 dommages permanents sont déjà compris dans les seuils.</small></div>`;
- if(REF.id==='kalzakath'&&w?.ammo==='arrows')out+=`<div class="cr-field"><label>Carquois : ${Number(L.draft.arrows)||0} ordinaires • ${Number(L.draft.sisterArrows)||0} de sœur</label><select ${locked?'disabled':''} onchange="refSetAttackFlag('projectile',this.value)"><option value="normal" ${e.projectile!=='sister'?'selected':''}>Flèche ordinaire</option><option value="sister" ${e.projectile==='sister'?'selected':''}>Flèche de sœur — aucun bonus présumé</option></select></div>`;
+ if(REF.id==='kalzakath'&&w?.ammo==='arrows')out+=`<div class="cr-field"><label>Carquois : ${Number(L.draft.arrows)||0} ordinaires • ${Number(L.draft.sisterArrows)||0} renforcées par Kalha</label><select ${locked?'disabled':''} onchange="refSetAttackFlag('projectile',this.value)"><option value="normal" ${e.projectile!=='sister'?'selected':''}>Flèche ordinaire</option><option value="sister" ${e.projectile==='sister'?'selected':''}>Flèche renforcée par Kalha — +1 aux dommages</option></select></div>`;
  if(REF.critical&&a.damageDice)out+=`<div class="cr-note sem-skill"><label><input type="checkbox" ${e.critical?'checked':''} ${!refCriticalReady(e)||e.damageResult!=null||combatFlow().resourcesApplied?'disabled':''} onchange="refSetAttackFlag('critical',this.checked)"> Attaque critique : +${REF.critical} niveaux aux dommages, Effort 1</label><small>Excellent ou mieux requis ; compétence sans Karma.</small></div>`;
  if(a.id==='kick')out+=`<div class="cr-field"><label><input type="checkbox" ${e.kickAllowed?'checked':''} ${locked?'disabled':''} onchange="refSetAttackFlag('kickAllowed',this.checked)"> Initiative supérieure à la cible et jambe libre, vérifiées avec le MJ</label></div>`;
  return out;
@@ -147,7 +187,7 @@ function refAttackOptions(e,a){
 function refSetAttackFlag(k,v){const e=crActiveEntry();if(!e||combatFlow().resourcesApplied)return;if(k==='critical'){if(!refCriticalReady(e)||e.damageResult!=null)return;}else if(e.attackResult!=null)return;e[k]=v;save();renderCombatFlow();}
 function refCriticalReady(e){const d=crDegree(e);return !!d&&['excellent','extraordinary','extra'].includes(d.key)||!!d&&/Excellent|Extraordinaire/.test(d.label);}
 crAttackStepInfo=function(a=crSelectedAction(),e=crActiveEntry()){if(!a||!e)return null;const w=crWeaponFor(a),baseStep=Number(a.attackStep),eye=REF.id==='kalzakath'&&w?.ranged&&e.eye?2:0,wound=-healthActionPenalty(),situational=Math.trunc(Number(e.levelMod)||0)+eye,final=edStepSpec(Math.max(1,baseStep+wound+situational));return {baseStep,wound,situational,final};};
-crDamageProfile=function(a=crSelectedAction(),e=crActiveEntry()){const w=crWeaponFor(a);if(!w?.damageDice)return {step:null,dice:null,label:'—',reinforced:false};const eye=REF.id==='kalzakath'&&w.ranged&&e?.eye?1:0,critical=REF.critical&&e?.critical&&refCriticalReady(e)?REF.critical:0,step=w.damageStep+eye+critical,dice=edStepDiceLabel(edStepSpec(step));return {step,dice,label:'Niveau '+step+' / '+dice+(eye?' • Œil +1':'')+(critical?' • critique +'+critical:''),reinforced:false};};
+crDamageProfile=function(a=crSelectedAction(),e=crActiveEntry()){const w=crWeaponFor(a);if(!w?.damageDice)return {step:null,dice:null,label:'—',reinforced:false};const eye=REF.id==='kalzakath'&&w.ranged&&e?.eye?1:0,critical=REF.critical&&e?.critical&&refCriticalReady(e)?REF.critical:0,reinforced=REF.id==='kalzakath'&&w.ammo==='arrows'&&e?.projectile==='sister'?1:0,step=w.damageStep+eye+critical+reinforced,dice=edStepDiceLabel(edStepSpec(step));return {step,dice,label:'Niveau '+step+' / '+dice+(eye?' • Œil +1':'')+(critical?' • critique +'+critical:'')+(reinforced?' • Kalha +1':''),reinforced:!!reinforced};};
 function refAmmoCosts(){const out={arrows:0,sisterArrows:0,daggersThrown:0};for(const e of crSeq()){if(e.attackResult==null)continue;const w=crWeaponFor(crSelectedAction(e));if(w?.ammo==='arrows')out[e.projectile==='sister'?'sisterArrows':'arrows']++;if(w?.ammo==='daggers')out.daggersThrown++;}return out;}
 function refBeforeAttack(){
  const e=crActiveEntry(),a=crSelectedAction(e),c=combatFlow();if(!e||!a||!c.active||c.resourcesApplied||e.attackResult!=null)return false;
@@ -172,6 +212,7 @@ crRoundCosts=function(){
  for(const e of crSeq()){if(e.attackResult==null)continue;const a=crSelectedAction(e);if(!a)continue;if(e.usedKarma??crAttackKarma(a,e))karma++;effort+=Number(a.effort)||0;if(e.critical&&e.damageResult!=null&&refCriticalReady(e))effort++;recoveries+=a.recoveryCost||0;}
  const rs=crReactionState();effort+=P.combat.reactions.reduce((n,r)=>n+(rs.uses[r.id]||0)*r.effort,0);karma+=rs.karmaUsed||0;
  if(combatFlow().initiative!=null&&combatFlow().airDance)effort++;
+ if(combatFlow().initiative!=null&&combatFlow().tigerSpeed)effort++;
  return {...ammo,karma,effort,recoveries,specialProjectile:0};
 };
 crApplyRoundCosts=function(){
@@ -179,7 +220,7 @@ crApplyRoundCosts=function(){
  if(x.karma>Number(L.draft.karma)||x.recoveries>P.combat.recovery.maxPerDay-Number(L.draft.recoveriesUsed||0)){alert('Les ressources ont changé ; vérifier les consommations avec le MJ.');return;}
  refOriginal.costs();
  if(x.recoveries)mutate('recoveriesUsed',x.recoveries,'Peau de bois — récupération consacrée',0,P.combat.recovery.maxPerDay);
- if(x.sisterArrows){L.draft.sisterArrows=Math.max(0,L.draft.sisterArrows-x.sisterArrows);refPropose('Flèches de sœur utilisées',x.sisterArrows+' flèche(s) tirée(s), y compris les tirs manqués. Récupération à confirmer.',{quantity:x.sisterArrows,stock:L.draft.sisterArrows});}
+ if(x.sisterArrows){L.draft.sisterArrows=Math.max(0,L.draft.sisterArrows-x.sisterArrows);refPropose('Flèches renforcées par Kalha utilisées',x.sisterArrows+' flèche(s) tirée(s), y compris les tirs manqués. Récupération à confirmer.',{quantity:x.sisterArrows,stock:L.draft.sisterArrows});}
  if(x.daggersThrown){L.draft.daggersAvailable=Math.max(0,L.draft.daggersAvailable-x.daggersThrown);refPropose('Dagues de jet à récupérer',x.daggersThrown+' dague(s) lancée(s). Elles ne sont pas détruites ; retour en inventaire à confirmer.',{quantity:x.daggersThrown});}
  save();renderCombatFlow();
 };
@@ -198,11 +239,21 @@ crUseReaction=function(id,v=null){
 crReactionCards=function(){const s=crReactionState(),c=combatFlow();return P.combat.reactions.map(r=>{const remains=r.usesPerRound==null?'selon besoin':Math.max(0,r.usesPerRound-(s.uses[r.id]||0))+'/'+r.usesPerRound;const disabled=c.resourcesApplied||(r.usesPerRound!=null&&(s.uses[r.id]||0)>=r.usesPerRound);return `<div class="cr-action-preview"><b class="${r.actionCost?'sem-skill':'sem-t'}">${esc(r.label)}${r.actionCost?' — compétence':''}</b><small>Niveau ${Math.max(1,r.step-healthActionPenalty())} • ${remains} • Effort ${r.effort}</small><p class="cr-note">${esc(ARCHER_TALENT_EFFECTS[r.label])}</p>${r.karma==='optional'?`<label><input id="reactionKarma_${r.id}" type="checkbox"> Karma +${P.combat.karma.dice}</label>`:''}${r.id==='anticipation'?'<label><input id="anticipationAllowed" type="checkbox"> Initiative supérieure et nouvel adversaire vérifiés</label>':''}<div class="cr-actions"><button class="cr-btn" ${disabled?'disabled':''} onclick="crUseReaction('${r.id}')">🎲 Lancer</button></div><div class="cr-field"><label>Ou résultat de vos dés</label><input type="number" min="1" id="reactionManual_${r.id}"><button class="cr-btn" ${disabled?'disabled':''} onclick="crUseReaction('${r.id}',document.getElementById('reactionManual_${r.id}').value)">Enregistrer</button></div></div>`;}).join('')+(s.last?`<div class="cr-roll-box"><strong>${s.last.total}</strong> — ${esc(s.last.label)}<p>${esc(s.last.detail)}</p></div>`:'');};
 if(REF.id==='barbak')P.combat.reactions.find(r=>r.id==='balance').usesPerRound=null;
 function refSetAirDance(v){const c=combatFlow();if(c.initiative!=null)return;c.airDance=!!v;save();renderCombatFlow();}
-function refInitStep(){return REF.id==='barbak'&&combatFlow().airDance?8:P.combat.initiative.step;}
+function refSetTigerSpeed(v){const c=combatFlow();if(c.initiative!=null)return;c.tigerSpeed=!!v;save();renderCombatFlow();}
+function refInitStep(){
+ const c=combatFlow(),t=P.talentsKnown.find(t=>t.name==='Vivacité du tigre'),air=P.talentsKnown.find(t=>t.name==='Danse des airs');
+ return Math.max(1,P.combat.initiative.step+(REF.id==='barbak'&&c.airDance?Number(air?.rank)||0:0)+(REF.id==='barbak'&&c.tigerSpeed?Number(t?.rank)||0:0));
+}
 function refCheckInitiative(){if(REF.id==='barbak'&&combatFlow().airDance&&!crSeq().some(e=>e.kind==='movement'&&e.mode!=='run')){alert('Danse des airs exige un déplacement de combat dans le plan.');return false;}return true;}
-crRollInitiative=function(){if(!refCheckInitiative())return;const c=combatFlow();if(c.initiative!=null)return;const r=edRollStep(refInitStep());c.initiative=r.total;c.planLocked=true;c.log.push('Initiative '+r.total+' — '+r.detail+(c.airDance?' • Danse des airs, Effort 1':''));save();renderCombatFlow();playerPost({type:'earthdawn-player-initiative',round:c.round,initiative:r.total});};
+crRollInitiative=function(){if(!refCheckInitiative())return;const c=combatFlow();if(c.initiative!=null)return;const r=edRollStep(refInitStep());c.initiative=r.total;c.planLocked=true;c.log.push('Initiative '+r.total+' — '+r.detail+(c.airDance?' • Danse des airs, Effort 1':'')+(c.tigerSpeed?' • Vivacité du tigre, Effort 1':''));save();renderCombatFlow();playerPost({type:'earthdawn-player-initiative',round:c.round,initiative:r.total});};
 crSetInitiative=function(v){if(!refPositive(v)||!refCheckInitiative())return;refOriginal.setInitiative(v);};
-crRenderInitiative=function(){let html=refOriginal.initiative();if(REF.id==='barbak'){const c=combatFlow(),step=refInitStep();html=html.replace('<div class="cr-stat-grid">',`<div class="cr-note"><label><input type="checkbox" ${c.airDance?'checked':''} ${c.initiative!=null?'disabled':''} onchange="refSetAirDance(this.checked)"> Danse des airs — niveau 8 / 2D6, Effort 1</label><p>${esc(ARCHER_TALENT_EFFECTS['Danse des airs'])}</p></div><div class="cr-stat-grid">`).replace('<span>Niveau</span><b>4</b>','<span>Niveau</span><b>'+step+'</b>').replaceAll('D6</b>',edStepDiceLabel(edStepSpec(step))+'</b>').replace('Lancer D6','Lancer '+edStepDiceLabel(edStepSpec(step)));}return html;};
+crRenderInitiative=function(){
+ if(REF.id!=='barbak')return refOriginal.initiative();
+ const c=combatFlow(),initiative=P.combat.initiative,baseStep=initiative.step,baseDice=initiative.dice,step=refInitStep();
+ let html;try{initiative.step=step;initiative.dice=edStepDiceLabel(edStepSpec(step));html=refOriginal.initiative();}finally{initiative.step=baseStep;initiative.dice=baseDice;}
+ const locked=c.initiative!=null?'disabled':'';
+ return html.replace('<div class="cr-stat-grid">',`<div class="cr-note"><label><input type="checkbox" ${c.airDance?'checked':''} ${locked} onchange="refSetAirDance(this.checked)"> Danse des airs — +4 niveaux, Effort 1</label><p>${esc(ARCHER_TALENT_EFFECTS['Danse des airs'])}</p><label><input type="checkbox" ${c.tigerSpeed?'checked':''} ${locked} onchange="refSetTigerSpeed(this.checked)"> Vivacité du tigre — +1 niveau, Effort 1</label><p>Pour ce round ; cumulable avec Danse des airs. Les coûts ne sont comptés qu’après détermination de l’initiative.</p></div><div class="cr-stat-grid">`);
+};
 
 // Non-combat tests share the reference launcher and propose their genuine resource costs.
 let refNCPending=null;

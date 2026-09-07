@@ -20,8 +20,8 @@
     <section class="view" id="view-availability"></section>
   </main>
   <script src="earthdawn-realtime-config.js"></script>
-  <script src="earthdawn-sync.js?v=0.35.0"></script>
-  <script src="vorkana-campagne.js?v=0.35.0"></script>
+  <script src="earthdawn-sync.js?v=0.40.0"></script>
+  <script src="vorkana-campagne.js?v=0.40.0"></script>
   <script>
   (function(){
     "use strict";
@@ -64,13 +64,39 @@
       document.getElementById("view-calendar").innerHTML=`<article class="card"><h2>Calendrier public de campagne</h2><div class="timeline">${events.map(([date,text])=>`<article><b>${esc(date)}</b><p>${esc(text)}</p></article>`).join("")}</div></article>`;
     }
     function catalogRows(items){return items.map(item=>`<tr><td><b>${esc(item.name)}</b><br><small class="muted">${esc(item.category)}</small></td><td><span class="state ${esc(item.status)}">${esc(stateLabel(item.status))}</span></td><td>${Number.isFinite(Number(item.stock))&&item.stock!==null?esc(item.stock):"—"}</td><td>${esc(item.price||"—")}</td><td>${esc(item.note||"—")}</td></tr>`).join("")}
+
+    function referenceData(){return (window.VorkanaCampaign&&typeof VorkanaCampaign.reference==="function")?VorkanaCampaign.reference():{equipment:[],carrying:[],rules:{}}}
+    function referenceEquipmentRows(items){return items.map(item=>`<tr><td><b>${esc(item.name)}</b></td><td>${esc(item.price)}</td><td>${esc(item.weight)}</td><td><span class="tag">${esc(item.status)}</span><br><small class="muted">${esc(item.note)}</small></td></tr>`).join("")}
+    function referenceCarryingRows(items){return items.map(row=>`<tr><td>${esc(row.strength)}</td><td>${esc(row.carry)} kg</td><td>${esc(row.lift)} kg</td><td>${row.note?`<small>${esc(row.note)}</small>`:"—"}</td></tr>`).join("")}
+    function updateEncumbrancePlanner(){
+      const ref=referenceData(),strengthInput=document.getElementById("encStrength"),weightInput=document.getElementById("encWeight"),out=document.getElementById("encResult");
+      if(!strengthInput||!weightInput||!out)return;
+      const strength=Math.max(1,Math.min(50,Math.trunc(Number(strengthInput.value)||1))),weight=Math.max(0,Number(weightInput.value)||0);
+      strengthInput.value=strength;
+      const row=ref.carrying.find(x=>x.strength===strength);
+      if(!row){out.textContent="Valeur de Force hors du référentiel.";return}
+      let text=`FOR ${strength} : ${row.carry} kg sans malus ; ${row.lift} kg à soulever.`;
+      if(weight>row.carry){
+        const required=ref.carrying.find(x=>Number(x.carry)>=weight);
+        if(required){
+          const penalty=Math.max(0,required.strength-strength);
+          text+=` Charge ${weight.toLocaleString("fr-FR")} kg : FOR minimale ${required.strength}, donc DEX −${penalty} tant que cette charge est portée.`;
+        }else{
+          text+=" Charge au-delà de la table de référence : arbitrage MJ requis.";
+        }
+      }else if(weight>0){
+        text+=` Charge ${weight.toLocaleString("fr-FR")} kg : aucun malus d’encombrement.`;
+      }
+      out.textContent=text;
+    }
     function renderMarket(){
-      const mine=state.proposals.filter(p=>p.playerId===playerId), options=state.catalog.map(item=>`<option value="${esc(item.id)}">${esc(item.name)} — ${esc(stateLabel(item.status))}</option>`).join("");
+      const ref=referenceData(), mine=state.proposals.filter(p=>p.playerId===playerId), options=state.catalog.map(item=>`<option value="${esc(item.id)}">${esc(item.name)} — ${esc(stateLabel(item.status))}</option>`).join("");
       document.getElementById("view-market").innerHTML=`<div class="grid three"><div class="metric"><small>Marché de référence</small><b>${esc(state.context.location)}</b><span>${esc(state.context.date)}</span></div><div class="metric"><small>Offres disponibles</small><b>${state.catalog.filter(x=>x.status==="available").length}</b><span>plus ${state.catalog.filter(x=>x.status==="limited").length} limitées</span></div><div class="metric"><small>Mes propositions</small><b>${mine.length}</b><span>achat ou vente</span></div></div>
       <article class="card" style="margin-top:14px"><div class="filters"><div class="field"><label>Rechercher</label><input id="marketSearch" placeholder="Objet ou service"></div><div class="field"><label>Catégorie</label><select id="marketCategory"><option value="">Toutes</option>${[...new Set(state.catalog.map(x=>x.category))].map(x=>`<option>${esc(x)}</option>`).join("")}</select></div></div><div class="table-wrap"><table><thead><tr><th>Offre</th><th>Disponibilité</th><th>Stock</th><th>Prix</th><th>Précision</th></tr></thead><tbody id="marketRows">${catalogRows(state.catalog)}</tbody></table></div></article>
+      <article class="card" style="margin-top:14px"><h3>Référentiel de campagne — équipement et encombrement</h3><p class="muted">Ces valeurs servent à préparer les dépenses et les charges. Elles ne rendent pas automatiquement l’objet disponible à Keltanap : la disponibilité locale reste celle du marché ci-dessus.</p><div class="table-wrap"><table><thead><tr><th>Objet</th><th>Prix de référence</th><th>Poids</th><th>Décision active</th></tr></thead><tbody>${referenceEquipmentRows(ref.equipment)}</tbody></table></div><div class="grid two" style="margin-top:14px"><div><h4>Calcul d’encombrement</h4><div class="form"><div class="field"><label>Force</label><input id="encStrength" type="number" min="1" max="50" value="10"></div><div class="field"><label>Charge portée (kg)</label><input id="encWeight" type="number" min="0" step="0.05" value="0"></div></div><div class="notice green" id="encResult" style="margin-top:10px"></div><p class="muted">La capacité affichée est une capacité <b>sans malus</b>, pas un maximum absolu. En vol, un sylphelin divise sa capacité de transport par deux.</p></div><div><h4>Règle active</h4><p>${esc(ref.rules.encumbrance||"")}</p><p>${esc(ref.rules.lifting||"")}</p></div></div><details style="margin-top:12px"><summary>Table complète des capacités (FOR 1–50)</summary><div class="table-wrap"><table><thead><tr><th>FOR</th><th>Transport sans malus</th><th>Soulèvement max.</th><th>Note</th></tr></thead><tbody>${referenceCarryingRows(ref.carrying)}</tbody></table></div></details></article>
       ${role==="player"?`<div class="grid two" style="margin-top:14px"><article class="card"><h3>Proposer un achat ou une vente</h3><div class="form"><div class="field"><label>Opération</label><select id="proposalKind"><option>Achat</option><option>Vente</option></select></div><div class="field"><label>Objet du catalogue</label><select id="proposalItem"><option value="custom">Autre / offre personnelle</option>${options}</select></div><div class="field"><label>Quantité</label><input id="proposalQty" type="number" min="1" value="1"></div><div class="field"><label>Prix proposé</label><input id="proposalPrice" placeholder="Facultatif"></div><div class="field wide"><label>Détail</label><textarea id="proposalNote" placeholder="Objet exact, état, délai, échange proposé…"></textarea></div></div><button class="btn primary" id="sendProposal">Transmettre au MJ</button><p class="muted">La proposition ne modifie ni votre argent ni votre inventaire avant validation.</p></article><article class="card"><h3>Suivi de mes propositions</h3><div id="myProposals">${mine.length?mine.slice().reverse().map(proposalCard).join(""):"<p class='empty'>Aucune proposition.</p>"}</div></article></div>`:`<article class="card" style="margin-top:14px"><h3>Propositions reçues</h3>${state.proposals.length?state.proposals.slice().reverse().map(proposalCard).join(""):"<p class='empty'>Aucune proposition reçue.</p>"}</article>`}`;
       const filter=()=>{const q=(document.getElementById("marketSearch").value||"").toLowerCase(),cat=document.getElementById("marketCategory").value;document.getElementById("marketRows").innerHTML=catalogRows(state.catalog.filter(x=>(!cat||x.category===cat)&&(!q||`${x.name} ${x.note}`.toLowerCase().includes(q))))};
-      document.getElementById("marketSearch").oninput=filter;document.getElementById("marketCategory").onchange=filter;
+      document.getElementById("marketSearch").oninput=filter;document.getElementById("marketCategory").onchange=filter;document.getElementById("encStrength").oninput=updateEncumbrancePlanner;document.getElementById("encWeight").oninput=updateEncumbrancePlanner;updateEncumbrancePlanner();
       if(role==="player")document.getElementById("sendProposal").onclick=sendProposal;
       document.querySelectorAll("[data-decision]").forEach(button=>button.onclick=()=>decideProposal(button.dataset.proposal,button.dataset.decision));
     }

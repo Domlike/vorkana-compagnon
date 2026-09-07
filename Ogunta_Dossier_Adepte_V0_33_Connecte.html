@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ogunta — Dossier d’Adepte V0.34</title>
+<title>Ogunta — Dossier d’Adepte V0.40</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -1859,7 +1859,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 
 </style>
 <script src="earthdawn-realtime-config.js"></script>
-<script src="earthdawn-sync.js?v=0.38.0"></script>
+<script src="earthdawn-sync.js?v=0.40.0"></script>
 <style>.grimoire-page{padding:24px;border:1px solid #bda884;border-radius:11px;background:linear-gradient(135deg,#f5ecd9,#e8d6b7);color:#30271d}
 .grimoire-page h2{font:700 32px Georgia;color:#3b3022;margin:0 0 5px}.grimoire-page h3{font:700 22px Georgia;margin:0 0 10px;color:#385443}.grimoire-page p{line-height:1.5}.gr-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.gr-heading p{margin:0;color:#76664d}.gr-context{border:1px solid #6d876b;background:#e4ebd8;padding:7px 11px;border-radius:99px;font-size:12px;white-space:nowrap}
 .gr-matrices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}.gr-matrix{background:#1c3026;color:#f5ecda;border:1px solid #577460;border-radius:9px;padding:12px;min-width:0}.gr-matrix>small{display:block;color:#c6d3bc;font-size:11px}.gr-matrix>b{display:block;font:700 18px Georgia;margin:6px 0}.gr-matrix p{font-size:12px;margin:6px 0;color:#c6d3bc}.gr-matrix button{border:1px solid #7a9875;border-radius:5px;padding:7px;background:#294938;color:#f6f0e5;cursor:pointer;width:100%}.gr-matrix details{margin-top:10px;font-size:12px}.gr-matrix summary{cursor:pointer;color:#d6c28b}.gr-matrix select{width:100%;margin:8px 0;background:#fffaf0;color:#322919;padding:6px;border-radius:5px}.gr-matrix .gr-matrix-actions{display:grid;gap:6px}
@@ -2754,7 +2754,7 @@ if(!L.notes||typeof L.notes!=="object")L.notes={free:"",interludes:[]};
 if(!Array.isArray(L.notes.interludes))L.notes.interludes=[];
 L.stateReset034=true; // Preserve saved health; no implicit reset.
 L.version="0.34";L.sync.protocolVersion="1.1";
-function save(){localStorage.setItem(STORE,JSON.stringify(L))}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(L));window.dispatchEvent(new CustomEvent('vorkana-storage-restored'));return true;}catch(error){window.dispatchEvent(new CustomEvent('vorkana-storage-error',{detail:{note:'Sauvegarde locale impossible. Téléchargez une sauvegarde de votre dossier.'}}));return false;}}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function fmt(n){return Number(n).toLocaleString("fr-FR")}
 const titles={home:"Essentiel",progression:"Progression",legend:"Progression",combat:"Combat",archer:"Discipline",gear:"Équipement",notes:"Carnet de notes"};
@@ -2822,7 +2822,7 @@ function sendProposalBundleToCockpit(showFeedback=true){
    return false
  }
  L.sync.status="proposals_sent";save();
- if(showFeedback)alert(`${bundle.proposals.length} proposition(s) transmise(s) au Cockpit.`);
+ if(showFeedback)alert(`${bundle.proposals.length} proposition(s) placée(s) dans la file d’envoi. La réception doit être confirmée par le MJ.`);
  return true
 }
 function renderProposalSurfaces(){
@@ -3406,7 +3406,7 @@ window.gearClearFilter=gearClearFilter;
 function gearSetBodyMode(mode){
   const st=gearState();st.bodyMode=["gear","armor"].includes(mode)?mode:"gear";save();renderGear();
 }
-function gearBodyLegend(mode){return mode==='armor'?'Protection équipée : cuir rembourré, Armure physique 4 / mystique 1. Valeurs globales ; pas d’armure localisée.':'Deux épées, une dague et un sac à dos. Les emplacements sont préparables ; les poids inconnus restent explicitement signalés.';}
+function gearBodyLegend(mode){return mode==='armor'?`Protection équipée : ${P.combat.armor.label}. Armure physique ${P.combat.armor.physical} / mystique ${P.combat.armor.mystical}. Valeurs globales ; pas d’armure localisée.`:'Deux épées, une dague et un sac à dos. Les emplacements sont préparables ; les poids inconnus restent explicitement signalés.';}
 function gearRenderLoad(){
   const {known,unknown}=gearWeightSummary();
   const cap=P.carryCapacity, pct=Math.min(100,Math.max(0,known/cap*100));
@@ -5662,7 +5662,8 @@ if(document.readyState==="loading"){
 }
 
 </script>
-<script src="Dossiers_References_V0_34.js?v=0.34.3"></script>
-<script src="vorkana-combat-options.js?v=0.37.0"></script>
+<script src="Dossiers_References_V0_34.js?v=0.40.0"></script>
+<script src="vorkana-combat-options.js?v=0.40.0"></script>
 <script src="vorkana-combat-sync.js?v=0.38.0"></script>
+<script src="vorkana-sauvegarde.js?v=0.40.0"></script>
 </body></html>

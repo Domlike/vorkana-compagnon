@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "0.38";
+  const VERSION = "0.40";
   const PLAYER_NAMES = { pj_0: "Zra’Ul", pj_1: "Kalha", pj_2: "Kal’Zakath", pj_3: "Barbak", pj_4: "Ogunta", pj_5: "Jaskar", pj_6: "Gul’Rak" };
   const LOCAL_KEY = "earthdawn-room-envelope-v033";
   const CONFIG = window.EARTHDAWN_REALTIME_CONFIG || {};
@@ -177,6 +177,44 @@
     } catch (_) { if (generation === state.generation) { memoryStatus("unavailable"); state.retryAt = Date.now() + 15000; } }
     finally { if (generation === state.generation) state.busy = false; }
   }
+  async function recoverMessages() {
+    if(!state.remoteClient||state.status!=='online')throw Error('La mémoire partagée est accessible après connexion à la salle.');
+    const generation=state.generation,room=state.room,client=state.remoteClient;
+    let cursor=0,count=0;
+    for(;;){
+      const result=await client.rpc('vorkana_read_events',{p_room:room,p_after:cursor});
+      if(generation!==state.generation)throw Error('La salle a changé. Relancez la recherche.');
+      if(result.error)throw Error('La mémoire partagée est indisponible. Les messages locaux sont conservés.');
+      const rows=result.data||[];if(!rows.length)break;
+      let next=cursor;
+      for(const row of rows){
+        next=Math.max(next,Number(row.seq)||0);
+        const e=row.envelope;
+        // History recovery never replays approvals, purchases or combat consequences.
+        if(e?.room!==room||e.payload?.type!=='earthdawn-whisper'||!intendedForMe(e))continue;
+        if(e.payload.fromId===identity()){state.delivery[e.payload.messageId] ||= {recipients:{}};state.delivery[e.payload.messageId].saved=true;}
+        emit('vorkana-history-message',{payload:{...e.payload,__earthdawnEnvelope:e,__earthdawnTransport:'history'}});count++;
+      }
+      if(next<=cursor)throw Error('La lecture de l’historique n’a pas progressé. Réessayez plus tard.');
+      cursor=next;if(rows.length<250)break;
+    }
+    saveMail();emit('vorkana-delivery',{});return {count};
+  }
+  function mailSnapshot(){return JSON.parse(JSON.stringify({room:state.room,identity:identity(),outbox:state.outbox,pending:state.pending,delivery:state.delivery,cursor:state.cursor}));}
+  function restoreMail(saved){
+    if(!saved||saved.room!==state.room||saved.identity!==identity())throw Error('Cette file d’envoi appartient à une autre salle ou un autre personnage.');
+    const valid=e=>e&&e.room===state.room&&e.sender?.role===state.role&&e.sender?.playerId===state.playerId&&typeof e.eventId==='string';
+    const merge=(current,incoming,filter)=>{const result=current.slice(),ids=new Set(current.map(e=>e.eventId));for(const e of Array.isArray(incoming)?incoming:[])if(valid(e)&&filter(e)&&!ids.has(e.eventId)){result.push(e);ids.add(e.eventId);}return result;};
+    state.outbox=merge(state.outbox,saved.outbox,e=>durable(e.payload));
+    state.pending=merge(state.pending,saved.pending,()=>true);
+    for(const [id,d] of Object.entries(saved.delivery||{})){
+      if(['__proto__','constructor','prototype'].includes(id)||!d||typeof d!=='object')continue;
+      const entry=state.delivery[id] ||= {recipients:{}};entry.saved ||= !!d.saved;entry.recipients ||= {};
+      for(const [who,stage] of Object.entries(d.recipients||{}))if(!['__proto__','constructor','prototype'].includes(who)&&entry.recipients[who]!=='read'&&['read','received'].includes(stage))entry.recipients[who]=stage;
+    }
+    state.cursor=Math.min(state.cursor,Math.max(0,Number(saved.cursor)||0));saveMail();
+  }
+
   function normalizedPresence(members) {
     const unique = new Map();
     (Array.isArray(members) ? members : []).forEach(member => {
@@ -266,10 +304,10 @@
     if ("BroadcastChannel" in window) {
       try { state.localChannel = new BroadcastChannel(`earthdawn:${state.room}`); state.localChannel.onmessage = event => receive(event.data, "local"); } catch (_) { /* localStorage reste disponible */ }
     }
-    window.addEventListener("storage", event => {
+    if(!state.storageListenerInstalled){state.storageListenerInstalled=true;window.addEventListener("storage", event => {
       if (event.key !== LOCAL_KEY || !event.newValue) return;
       try { receive(JSON.parse(event.newValue).envelope, "storage"); } catch (_) { /* message incomplet */ }
-    });
+    });}
     updatePresence();
     startRemote();
     loadDiffusion();
@@ -310,6 +348,9 @@
     sendToPlayer: (playerId, payload) => send(payload, { targets: [playerId] }),
     sendToGM: payload => send(payload, { targets: ["gm"] }),
     invitationUrl,
+    recoverMessages,
+    mailSnapshot,
+    restoreMail,
     markRead: payload => receipt(payload, "read"),
     delivery: id => state.delivery[id] || { recipients: {} },
     retry: () => { state.retryAt = 0; flushRemote();pumpMail(); },
