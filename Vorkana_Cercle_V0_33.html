@@ -13,9 +13,9 @@
   <main class="shell">
     <header class="top"><div><span class="eyebrow">Vorkana • espace partagé</span><h1>Vie de campagne</h1><p class="lead">Mémoire du groupe, connaissances partagées et préparatifs entre les séances.</p></div><div class="status" id="syncStatus"><i></i><span>Connexion…</span></div></header>
     <div class="identity-bar" id="identityBar"><label for="hubPlayer">Je suis</label><select id="hubPlayer"></select></div>
-    <nav class="tabs" id="tabs"><button data-view="resources" class="active">À préparer</button><button data-view="aides">Aides de jeu</button><button data-view="market">Biens & services</button><button data-view="calendar">Calendrier</button><button data-view="availability" id="availabilityTab" hidden>Disponibilités MJ</button></nav>
+    <nav class="tabs" id="tabs"><button data-view="resources" class="active">À préparer</button><button data-view="aides">Aides de jeu</button><button data-view="market">Biens & services</button><button data-view="memory">Mémoire du groupe</button><button data-view="calendar">Calendrier</button><button data-view="availability" id="availabilityTab" hidden>Disponibilités MJ</button></nav>
     <section class="view active" id="view-resources"></section>
-    <section class="view" id="view-aides"></section><section class="view" id="view-calendar"></section>
+    <section class="view" id="view-aides"></section><section class="view" id="view-memory"></section><section class="view" id="view-calendar"></section>
     <section class="view" id="view-market"></section>
     <section class="view" id="view-availability"></section>
   </main>
@@ -124,5 +124,5 @@
     document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(b)history.replaceState(null,"","#"+b.dataset.view);});
   })();
   </script>
-<script src="vorkana-navigation.js?v=0.43.0"></script></body>
+<script src="vorkana-navigation.js?v=0.43.0"></script><script src="vorkana-memoire.js?v=0.45.0"></script></body>
 </html>
