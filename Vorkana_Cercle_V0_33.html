@@ -13,15 +13,16 @@
   <main class="shell">
     <header class="top"><div><span class="eyebrow">Vorkana • espace partagé</span><h1>Vie de campagne</h1><p class="lead">Mémoire du groupe, connaissances partagées et préparatifs entre les séances.</p></div><div class="status" id="syncStatus"><i></i><span>Connexion…</span></div></header>
     <div class="identity-bar" id="identityBar"><label for="hubPlayer">Je suis</label><select id="hubPlayer"></select></div>
-    <nav class="tabs" id="tabs"><button data-view="market" class="active">Biens & services</button><button data-view="resources">Ressources</button><button data-view="calendar">Calendrier</button><button data-view="availability" id="availabilityTab" hidden>Disponibilités MJ</button></nav>
-    <section class="view" id="view-resources"></section>
-    <section class="view" id="view-calendar"></section>
-    <section class="view active" id="view-market"></section>
+    <nav class="tabs" id="tabs"><button data-view="resources" class="active">À préparer</button><button data-view="aides">Aides de jeu</button><button data-view="market">Biens & services</button><button data-view="calendar">Calendrier</button><button data-view="availability" id="availabilityTab" hidden>Disponibilités MJ</button></nav>
+    <section class="view active" id="view-resources"></section>
+    <section class="view" id="view-aides"></section><section class="view" id="view-calendar"></section>
+    <section class="view" id="view-market"></section>
     <section class="view" id="view-availability"></section>
   </main>
   <script src="earthdawn-realtime-config.js"></script>
   <script src="earthdawn-sync.js?v=0.40.0"></script>
   <script src="vorkana-campagne.js?v=0.40.0"></script>
+  <script src="vorkana-aides.js?v=0.41.0"></script>
   <script>
   (function(){
     "use strict";
@@ -51,16 +52,9 @@
     let availabilityRevision=0,availabilityDirty=false;
     function broadcast(){if(role==='gm'){VorkanaCampaign.publish(state.context,state.catalog,availabilityRevision);availabilityDirty=false;document.getElementById('syncStatus').querySelector('span').textContent='Publication transmise au cockpit…';}}
     function stateLabel(value){return {available:"Disponible",limited:"Limité / sur commande",unavailable:"Indisponible",unknown:"À déterminer"}[value]||value}
-    function renderResources(){
-      document.getElementById("view-resources").innerHTML=`<div class="grid three"><div class="metric"><small>Date prévue du marché</small><b>${esc(state.context.date)}</b><span>prévision, non avancement de la campagne</span></div><div class="metric"><small>Prochain marché</small><b>${esc(state.context.location)}</b><span>source du marché</span></div><div class="metric"><small>Groupe</small><b>Vorkana</b><span>sept Adeptes connectables</span></div></div>
-      <div class="grid two" style="margin-top:14px"><article class="card green resource"><span class="tag">Chronique publique</span><h3>De Grand-Foire à Rocnoir</h3><p>Le groupe a rejoint Rocnoir après une semaine de voyage, enquêté sur la disparition de Katsika, puis l’a libéré sur l’île des Naufrageurs sans déclencher d’alarme ni de combat.</p></article>
-      <article class="card resource"><span class="tag">Chanson</span><h3>Le Fleuve garde les Noms</h3><p>Zra’Ul et Jaskar l’ont mémorisée pendant le voyage. Son texte complet n’est pas encore consolidé dans les fichiers maîtres : la ressource est donc signalée sans inventer de paroles.</p></article>
-      <article class="card resource"><span class="tag">Documentation</span><h3>Règles et décisions de table</h3><p>Les jets proposés par les dossiers utilisent les niveaux et dés consolidés. Les cas inhabituels et les effets de situation restent soumis à l’arbitrage du MJ.</p></article>
-      <article class="card resource"><span class="tag">Mémoire</span><h3>Vorkana a fait justice</h3><p>Après le sauvetage de Katsika, Kal’Zakath a revendiqué publiquement l’action au nom de Vorkana. Sa signification reste ouverte : justice, libération, bravade, menace ou récit selon celui qui la rapporte.</p></article></div>
-      <div class="notice" style="margin-top:14px">Seules les connaissances des personnages ont leur place ici. Les secrets et préparations du MJ restent dans le cockpit.</div><details class="card" style="margin-top:14px"><summary>Les prochaines rubriques</summary><p><b>Mémoire du groupe :</b> histoires jouées, lieux visités, PNJ connus.</p><p><b>Connaissances :</b> peuples, histoire, géographie et Passions, selon ce que les personnages en savent.</p><p><b>Agora :</b> échanges entre les séances, interludes et rappel de leur fonctionnement.</p><p><b>Aides de jeu :</b> objets à trame, vision astrale et règles utiles.</p><p class="muted">Ces rubriques seront alimentées avec des textes validés. Leur contenu n’est pas encore publié.</p></details>`;
-    }
+    function renderResources(){ window.VorkanaAides.render(); }
     function renderCalendar(){
-      const events=[["18 Sollus 1448","Voyage vers Throal, rencontre avec Voluptia, entrée contrôlée et premiers échanges avec la Grande Bibliothèque."],["19–20 Sollus","Deux jours à Grand-Foire : préparatifs personnels, harmonisation des chiens et apprentissages joués."],["21–28 Sollus","Voyage d’environ une semaine ; arrivée à Rocnoir le 28 au soir."],["29 Sollus","Enquête auprès de Nicodémus et M’rok, Capitainerie, plage des Coques et localisation de Katsika."],["Nuit du 29 au 30","Reconnaissance de l’île des Naufrageurs, libération et exfiltration de Katsika sans alarme ni combat."],["30 Sollus","Peu après l’aube, après le retour de Katsika."],["Vers le 10 Riag 1448",state.context.note||"Arrivée prévue à Keltanap."]];
+      const events=[["18 Sollus 1448","Voyage vers Throal, rencontre avec Voluptia, entrée contrôlée et premiers échanges avec la Grande Bibliothèque."],["19–20 Sollus","Deux jours à Grand-Foire : préparatifs personnels, harmonisation des chiens et apprentissages joués."],["21–28 Sollus","Voyage d’environ une semaine ; arrivée à Rocnoir le 28 au soir."],["29 Sollus","Enquête auprès de Nicodémus et M’rok, Capitainerie, plage des Coques et localisation de Katsika."],["Nuit du 29 au 30","Reconnaissance de l’île des Naufrageurs, libération et exfiltration de Katsika sans alarme ni combat."],["30 Sollus","Peu après l’aube, après le retour de Katsika."],["4 Riag 1448 — situation jouée","Après la perte du Luxueux, les survivants ont rejoint la terre ferme. Le groupe se trouve au camp des survivants, à quelques jours de Keltanap."],["Suite envisagée — à confirmer en jeu","Repos, puis route vers Keltanap. La date du marché est une prévision ; elle ne fait pas avancer les personnages dans le temps."]];
       document.getElementById("view-calendar").innerHTML=`<article class="card"><h2>Calendrier public de campagne</h2><div class="timeline">${events.map(([date,text])=>`<article><b>${esc(date)}</b><p>${esc(text)}</p></article>`).join("")}</div></article>`;
     }
     function catalogRows(items){return items.map(item=>`<tr><td><b>${esc(item.name)}</b><br><small class="muted">${esc(item.category)}</small></td><td><span class="state ${esc(item.status)}">${esc(stateLabel(item.status))}</span></td><td>${Number.isFinite(Number(item.stock))&&item.stock!==null?esc(item.stock):"—"}</td><td>${esc(item.price||"—")}</td><td>${esc(item.note||"—")}</td></tr>`).join("")}
@@ -125,6 +119,8 @@
     addEventListener('earthdawn-sync-status',event=>{const el=document.getElementById('syncStatus'),online=event.detail.status==='online';el.classList.toggle('online',online);el.querySelector('span').textContent=`${online?'En ligne':'Mode local'} • salle ${event.detail.room}`;if(online){if(role==='gm')Sync.sendToGM({type:'vorkana-hub-request',asGM:true});else{Sync.sendToGM({type:'vorkana-hub-request',playerId});state.proposals.filter(p=>p.status==='pending').forEach(proposal=>Sync.sendToGM({type:'vorkana-market-proposal',proposal}));}}});
     addEventListener('earthdawn-sync-message',event=>{if(role==='gm')return;const d=event.detail.payload||{};if(d.type==='vorkana-hub-state'&&d.state){if(Number(d.state.revisionNumber||0)<Number(state.revisionNumber||0))return;state.context=d.state.context||state.context;state.catalog=Array.isArray(d.state.catalog)?d.state.catalog:state.catalog;state.revisionNumber=d.state.revisionNumber||0;save();state.proposals.filter(p=>p.status==='pending').forEach(proposal=>Sync.sendToGM({type:'vorkana-market-proposal',proposal}));renderAll();}else if(d.type==='vorkana-market-decision'){const p=state.proposals.find(x=>x.id===d.proposalId);if(p&&!(['accepted','rejected'].includes(p.status)&&d.status==='received')){p.status=d.status;p.decidedAt=d.decidedAt||new Date().toISOString();save();renderMarket();}}});
     renderAll();
+    const initialView=location.hash.slice(1); const initialButton=Array.from(document.querySelectorAll("#tabs [data-view]")).find(b=>b.dataset.view===initialView&&!b.hidden); if(initialButton)initialButton.click(); window.addEventListener("hashchange",()=>{const b=Array.from(document.querySelectorAll("#tabs [data-view]")).find(x=>x.dataset.view===location.hash.slice(1)&&!x.hidden);if(b)b.click();});
+    document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(b)history.replaceState(null,"","#"+b.dataset.view);});
   })();
   </script>
 </body>
