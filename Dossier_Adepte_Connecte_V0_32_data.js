@@ -80,7 +80,7 @@ window.EARTHDAWN_PLAYER_DATA={
       {name:"Mouchoir noir brodé « Gullûz »",location:"Sac",status:"Disponible",note:"Trois points d’argent au revers ; pas un objet à trame."},
       {name:"Torche, gourde, bottes souples, vêtements et bourse",location:"Porté / sac",status:"Disponibles"}
     ],
-    resources:["9 PA et 8 PC.","Transport / levage : 48 / 95 kg.","Aucun objet à trame confirmé."],
+    resources:["9 PA et 8 PC.","Transport / levage : 63 / 125 kg.","Aucun objet à trame confirmé."],
     history:[
       "Gul’Rak est la contraction de Gullûz Zug-Rak, interprété comme « Mort rampante » ou « Ombre furtive ».",
       "Il protège discrètement sa famille, parfois sans que les intéressés sachent qu’il est intervenu.",
