@@ -252,7 +252,7 @@ crRenderInitiative=function(){
  const c=combatFlow(),initiative=P.combat.initiative,baseStep=initiative.step,baseDice=initiative.dice,step=refInitStep();
  let html;try{initiative.step=step;initiative.dice=edStepDiceLabel(edStepSpec(step));html=refOriginal.initiative();}finally{initiative.step=baseStep;initiative.dice=baseDice;}
  const locked=c.initiative!=null?'disabled':'';
- return html.replace('<div class="cr-stat-grid">',`<div class="cr-note"><label><input type="checkbox" ${c.airDance?'checked':''} ${locked} onchange="refSetAirDance(this.checked)"> Danse des airs — +4 niveaux, Effort 1</label><p>${esc(ARCHER_TALENT_EFFECTS['Danse des airs'])}</p><label><input type="checkbox" ${c.tigerSpeed?'checked':''} ${locked} onchange="refSetTigerSpeed(this.checked)"> Vivacité du tigre — +1 niveau, Effort 1</label><p>Pour ce round ; cumulable avec Danse des airs. Les coûts ne sont comptés qu’après détermination de l’initiative.</p></div><div class="cr-stat-grid">`);
+ return html.replace('<div class="cr-stat-grid">',`<div class="cr-note"><label><input type="checkbox" ${c.airDance?'checked':''} ${locked} onchange="refSetAirDance(this.checked)"> Danse des airs — +${P.talentsKnown.find(t=>t.name==='Danse des airs').rank} niveaux, Effort 1</label><p>${esc(ARCHER_TALENT_EFFECTS['Danse des airs'])}</p><label><input type="checkbox" ${c.tigerSpeed?'checked':''} ${locked} onchange="refSetTigerSpeed(this.checked)"> Vivacité du tigre — +${P.talentsKnown.find(t=>t.name==='Vivacité du tigre').rank} niveau, Effort 1</label><p>Pour ce round ; cumulable avec Danse des airs. Les coûts ne sont comptés qu’après détermination de l’initiative.</p></div><div class="cr-stat-grid">`);
 };
 
 // Non-combat tests share the reference launcher and propose their genuine resource costs.
@@ -319,6 +319,7 @@ function refOutSpell(id,stage,v=null){
  const input=document.getElementById('spellManual_'+id);if(input)input.value='';
  save();refRenderSpellBook();renderHealthState();
 }
+function refFollowStep(kind){return kind==='repel'?P.talentsKnown.find(t=>t.name==='Incantation').step:kind==='repelDamage'?P.attributes.Volonté.step+5:kind==='shield'?P.attributes.Volonté.step+6:P.attributes.Volonté.step;}
 function refFollowSpell(spellId,kind,v=null){
  const m=refMagic(),active=m.effects.findLast(e=>e.spell===spellId&&!e.finished);if(!active){alert('Aucun effet actif de ce sort enregistré.');return;}
  if(kind==='pain'&&combatFlow().active){alert('En combat, choisir « Maintenir Douleur » dans le plan du round : la concentration utilise l’action ordinaire.');return;}
@@ -326,9 +327,9 @@ function refFollowSpell(spellId,kind,v=null){
  if(v!==null&&!refPositive(v)){alert('Saisir un résultat valide.');return;}
  const key=combatFlow().active?'R'+combatFlow().round:document.getElementById('followRound')?.value.trim();if(!key){alert('Indiquer le round ou repère temporel du suivi.');return;}
  m.follow=m.follow||{};const prefix=active.id+'_'+key+'_'+kind,shieldCount=Object.keys(m.follow).filter(k=>k.startsWith(prefix+'_')).length,usedKey=kind==='shield'?prefix+'_'+(shieldCount+1):prefix;
- if(m.follow[usedKey]||(kind==='shield'&&shieldCount>=4)){alert(kind==='shield'?'Quatre défenses de brume déjà effectuées ce round.':'Ce test a déjà été enregistré pour ce repère.');return;}
+ if(m.follow[usedKey]||(kind==='shield'&&shieldCount>=P.talentsKnown.find(t=>t.name==='Incantation').rank)){alert(kind==='shield'?'Nombre maximal de défenses de brume déjà atteint ce round.':'Ce test a déjà été enregistré pour ce repère.');return;}
  if(kind==='repelDamage'&&!m.follow[active.id+'_'+key+'_repel']?.success){alert('Réussir d’abord l’Incantation contre l’intrus.');return;}
- const step=kind==='repel'?11:kind==='repelDamage'?11:kind==='shield'?12:6;
+ const step=refFollowStep(kind);
  const r=v===null?edRollStep(Math.max(1,step-healthActionPenalty())):{total:Number(v),detail:'Dés lancés à la table'};
  const dn=Number(document.getElementById('followDN')?.value);if(kind!=='repelDamage'&&!refPositive(dn)){alert('Indiquer le résultat adverse / la Défense à dépasser.');return;}
  const result={...r,success:kind==='repelDamage'||ncDegree(dn,r.total,r.allOnes).success};m.follow[usedKey]=result;
@@ -404,7 +405,7 @@ function grFollowHTML(){
  const active=new Set(grActiveEffects().map(e=>e.spell));
  const actions=[['pain','pain','Douleur — Volonté opposée'],['circle','repel','Cercle — repousser un intrus'],['circle','repelDamage','Cercle — dommages après réussite'],['mist','shield','Bouclier — défense contre une attaque']].filter(([s])=>active.has(s));
  if(!actions.length)return '';
- return `<details class="gr-help" id="grFollow"><summary>Réactions et entretien des effets actifs</summary><p>Douleur : concentration. Cercle de vie : un intrus par round. Bouclier de brume : jusqu’à 4 attaques vues par round, une seule défense active par attaque.</p><label><input type="checkbox" id="followConfirmed"> Durée et conditions confirmées avec le MJ</label><div class="cr-form"><div class="cr-field"><label>Round / repère hors combat</label><input id="followRound" placeholder="Round ou instant"></div><div class="cr-field"><label>Défense ou résultat adverse</label><input id="followDN" type="number" min="1"></div><div class="cr-field"><label>Résultat de vos dés</label><input id="followManual" type="number" min="1"></div></div>${actions.map(([s,k,l])=>`<div class="cr-actions">${s==='pain'&&combatFlow().active?'<button class="cr-btn" onclick="crAddMechanical(\'hold_pain\');openPage(\'combat\')">Ajouter le maintien de Douleur au plan</button>':`<button class="cr-btn" onclick="refFollowSpell('${s}','${k}')">🎲 ${l}</button><button class="cr-btn" onclick="refFollowSpell('${s}','${k}',document.getElementById('followManual').value)">Mes dés — ${l}</button>`}</div>`).join('')}<p id="followResult" role="status"></p></details>`;
+ return `<details class="gr-help" id="grFollow"><summary>Réactions et entretien des effets actifs</summary><p>Douleur : concentration. Cercle de vie : un intrus par round. Bouclier de brume : jusqu’à ${P.talentsKnown.find(t=>t.name==='Incantation').rank} attaques vues par round, une seule défense active par attaque.</p><label><input type="checkbox" id="followConfirmed"> Durée et conditions confirmées avec le MJ</label><div class="cr-form"><div class="cr-field"><label>Round / repère hors combat</label><input id="followRound" placeholder="Round ou instant"></div><div class="cr-field"><label>Défense ou résultat adverse</label><input id="followDN" type="number" min="1"></div><div class="cr-field"><label>Résultat de vos dés</label><input id="followManual" type="number" min="1"></div></div>${actions.map(([s,k,l])=>`<div class="cr-actions">${s==='pain'&&combatFlow().active?'<button class="cr-btn" onclick="crAddMechanical(\'hold_pain\');openPage(\'combat\')">Ajouter le maintien de Douleur au plan</button>':`<button class="cr-btn" onclick="refFollowSpell('${s}','${k}')">🎲 ${l}</button><button class="cr-btn" onclick="refFollowSpell('${s}','${k}',document.getElementById('followManual').value)">Mes dés — ${l}</button>`}</div>`).join('')}<p id="followResult" role="status"></p></details>`;
 }
 function grRender(){
  if(REF.id!=='ogunta')return;const host=document.getElementById('grimoireBook');if(!host)return;

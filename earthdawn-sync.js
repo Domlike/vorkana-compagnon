@@ -128,7 +128,7 @@
   const DURABLE_TYPES = new Set(["earthdawn-whisper", "earthdawn-player-proposals", "earthdawn-player-proposal-decisions", "vorkana-market-proposal", "vorkana-market-decision", "vorkana-hub-state", "vorkana-gm-hub-state", "vorkana-market-command", "vorkana-receipt"]);
   function durable(payload) { return DURABLE_TYPES.has(payload?.type); }
   function identity() { return state.playerId || state.role; }
-  function mailKey() { return `vorkana_mail_v035_${state.room}_${identity()}_${encodeURIComponent(location.pathname || 'page')}`; }
+  function mailKey() { return `vorkana_mail_v035_${state.room}_${identity()}_${encodeURIComponent((location.pathname || 'page').replace(/_Dossier_Adepte\.html$/, '_Dossier_Adepte_V0_33_Connecte.html').replace(/Vorkana_Cercle\.html$/, 'Vorkana_Cercle_V0_33.html'))}`; }
   function saveMail() {
     try { localStorage.setItem(mailKey(), JSON.stringify({ outbox: state.outbox, pending: state.pending, delivery: state.delivery, cursor: state.cursor })); }
     catch (_) { emit("vorkana-storage-error", { note: "Impossible de conserver les envois sur cet appareil." }); }

@@ -12,7 +12,7 @@ const guides=[
 guides.push(...(window.VorkanaAidesContenu||[]));
 const files=['ZraUl','Kalha','KalZakath','Barbak','Ogunta','Jaskar','GulRak'];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function dossier(page){const p=new URLSearchParams(location.search), n=Number((p.get('player')||'pj_0').replace('pj_','')); const u=new URL((files[n]||files[0])+'_Dossier_Adepte_V0_33_Connecte.html',location.href);p.delete('role');u.search=p.toString();u.hash=page;return u.href;}
+function dossier(page){const p=new URLSearchParams(location.search), n=Number((p.get('player')||'pj_0').replace('pj_','')); const u=new URL((files[n]||files[0])+'_Dossier_Adepte.html',location.href);p.delete('role');u.search=p.toString();u.hash=page;return u.href;}
 function action(page,label){return page==='market'?'<button class="btn" data-jump="market">'+label+'</button>':'<a class="btn" href="'+esc(dossier(page))+'">'+label+'</a>';}
 function render(){
 const home=document.getElementById('view-resources');
