@@ -1857,6 +1857,22 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 .nc-zone{display:flex;flex-direction:column}.nc-zone>.nc-heading{order:-3}.nc-zone>.trait-test-zone{order:-2}.nc-zone>.health-zone{order:-1}.nc-quick{display:none!important}
 @media(max-width:700px){.vorkana-brand{grid-template-columns:42px 1fr}.vorkana-brand img{width:40px;height:40px}}
 
+.discipline-talent-status{margin-top:14px}
+.discipline-talent-status:first-child{margin-top:0}
+.discipline-talent-status h4{
+  margin:0 0 7px;padding:7px 10px;border-left:4px solid #6f8396;
+  background:rgba(236,240,241,.72);color:#324b5a;
+  font:700 17px Georgia,"Times New Roman",serif
+}
+.discipline-talent-table.compact-status th,
+.discipline-talent-table.compact-status td{font-size:11px;padding:6px}
+.talent-kind{display:inline-flex;align-items:center;border:1px solid #cec4b5;border-radius:99px;padding:3px 7px;background:#fff;white-space:nowrap}
+.talent-kind.essential{border-left:4px solid #7b8e9d;color:#556978;font-weight:700}
+.talent-kind.optional{border-left:4px solid var(--specialization);color:#72568a;font-weight:700}
+.talent-flag{text-align:center;font-weight:900;font-size:15px}
+.talent-flag.yes{color:#6e4dac}.talent-flag.no{color:#aaa;font-weight:400}
+.talent-attr{text-align:center;color:#4f79a6;font-weight:700}
+
 </style>
 <script src="earthdawn-realtime-config.js"></script>
 <script src="earthdawn-sync.js?v=0.40.0"></script>
@@ -3059,9 +3075,17 @@ function renderTalents(){
     return {t,meta};
   }).sort((a,b)=>(Number(a.meta.circle)||99)-(Number(b.meta.circle)||99)||(a.meta.order||99)-(b.meta.order||99));
 
-  target.innerHTML=`<table class="discipline-talent-table">
+  const talentTiers=[
+    {label:"Talents d’Initié",range:"Cercle 1",min:1,max:1},
+    {label:"Talents de Novice",range:"Cercles 2 à 4",min:2,max:4},
+    {label:"Talents de Compagnon",range:"Cercles 5 à 8",min:5,max:8},
+    {label:"Talents de Gardien",range:"Cercles 9 à 12",min:9,max:12},
+    {label:"Talents de Maître",range:"Cercles 13 à 15",min:13,max:15},
+    {label:"Cercle à préciser",range:"",min:0,max:0}
+  ].map(g=>({...g,rows:rows.filter(({meta})=>{const c=Number(meta.circle)||0;return c>=g.min&&c<=g.max;})})).filter(g=>g.rows.length);
+  target.innerHTML=talentTiers.map(g=>`<section class="discipline-talent-status"><h4>${g.label} <small>${g.range?"— "+g.range:""}</small></h4><table class="discipline-talent-table">
     <thead><tr><th>Cercle</th><th>Talent</th><th>Nature</th><th>Rang</th><th>Niveau</th><th>Dés</th></tr></thead>
-    <tbody>${rows.map(({t,meta})=>{
+    <tbody>${g.rows.map(({t,meta})=>{
       const cls=meta.nature==="Choix optionnel"?"optional":meta.discipline?"discipline":"essential";
       const nature=meta.discipline?`${meta.nature} • Discipline`:meta.nature;
       return `<tr>
@@ -3072,7 +3096,7 @@ function renderTalents(){
         <td>${t.step??"—"}</td>
         <td class="talent-dice">${esc(t.dice||"—")}</td>
       </tr>`;
-    }).join("")}</tbody></table>`;
+    }).join("")}</tbody></table></section>`).join("");
 
   const specs=document.getElementById("disciplineSpecializations");
   if(specs){
