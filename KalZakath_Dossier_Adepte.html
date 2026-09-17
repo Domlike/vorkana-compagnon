@@ -3053,7 +3053,7 @@ function applyCockpitSnapshot(d){
  cockpitConnected=true;lastCockpitSeen=Date.now();cockpitWin=d.__source||cockpitWin;
  L.sync.status="connected";L.sync.lastCockpitSeenAt=new Date().toISOString();
  if(d.revision)L.sync.baseRevision=String(d.revision);
- applyCockpitRuntime(d.runtime);applyProposalDecisions(d.decisions);
+ applyProposalDecisions(d.decisions);applyCockpitRuntime(d.runtime);
  const incoming=d.combat||{},c=combatFlow();
  if(incoming.active){
    if(!c.active){crStart("cockpit",{round:incoming.round,situation:incoming.situation})}
@@ -5736,7 +5736,7 @@ function fillSpendOptions(){
     arr=Object.keys(P.attributes).map(n=>({v:n,l:`${n} — valeur ${P.attributes[n].value}`}));
   }
   if(d==="karma"){
-    arr=[{v:"karma",l:`1 point de Karma — ${P.combat.karma.current}/${P.combat.karma.max}`}];
+    arr=[{v:"karma",l:`1 point de Karma — ${L.draft.karma ?? P.combat.karma.current}/${P.combat.karma.max}`}];
   }
   if(d==="specialization"){
     arr=[{v:"none",l:"Aucune spécialisation prête à acheter"}];
@@ -5788,7 +5788,7 @@ function currentSpend(){
   }
   if(d==="karma"){
     const pending=progressionList().filter(p=>p.domain==="karma"&&isProposalActiveForBudget(p)).length;
-    const current=Number(P.combat.karma.current)+pending;
+    const current=Number(L.draft.karma ?? P.combat.karma.current)+pending;
     const blocked=current>=Number(P.combat.karma.max);
     return {
       domain:d,label:`Acheter 1 point de Karma (${current} → ${current+1})`,
