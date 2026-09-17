@@ -80,6 +80,16 @@ function installVorkanaProgression(){
   function commit(){const ledger=ensure(),applied=new Set(ledger.appliedProposalIds);for(const p of L.proposals||[]){if(p.kind!=='progression'||p.status!=='approved'||applied.has(p.id))continue;if(domains.includes(p.domain))ledger.confirmed[p.domain]=Number(ledger.confirmed[p.domain]||0)+Number(p.legendCost||0);if(['talent','skill'].includes(p.domain)&&p.targetName&&p.toRank!=null){const key=p.domain==='talent'?'talentRanks':'skillRanks';ledger[key][p.targetName]=Math.max(rank(p.targetName,p.domain),Number(p.toRank));}else if(p.domain==='attribute'&&p.targetName&&p.toRank!=null){ledger.attributeAdv[p.targetName]=Math.max(Number(ledger.attributeAdv[p.targetName]||0),Number(p.toRank));}else if(p.domain==='specialization'&&p.targetName){if(!ledger.specializations.includes(p.targetName))ledger.specializations.push(p.targetName);}else if(p.domain==='thread'&&p.targetName){if(!ledger.threads.includes(p.targetName))ledger.threads.push(p.targetName);}else if(p.domain==='karma')L.draft.karma=Math.min(P.combat.karma.max,Number(L.draft.karma||0)+1);applied.add(p.id);}ledger.appliedProposalIds=[...applied];recalculate();}
   function renderSummary(){
     const ledger=ensure();for(const d of domains){const el=document.getElementById('pend-'+d)?.previousElementSibling;if(el)el.textContent=fmt(ledger.confirmed[d]||0);}const total=document.getElementById('pend-total')?.previousElementSibling;if(total)total.textContent=fmt(P.legend.spent);
+    const table=document.getElementById('pend-total')?.closest('table');
+    if(table){
+      let row=table.querySelector('[data-unallocated]');
+      if(!row){row=document.createElement('tr');row.dataset.unallocated='1';row.innerHTML='<th>Dépenses antérieures non ventilées</th><td></td><td>—</td>';table.tBodies[0].append(row);}
+      const remainder=Number(P.legend.spent)-domains.reduce((sum,d)=>sum+Number(ledger.confirmed[d]||0),0);
+      row.children[1].textContent=fmt(remainder);row.hidden=remainder===0;
+      row.title='Ces PL sont déjà compris dans le total confirmé. Les sources anciennes ne permettent pas de les répartir par domaine. Les nouvelles validations sont ventilées automatiquement.';
+      let note=table.parentElement.querySelector('[data-budget-note]');
+      if(!note){note=document.createElement('p');note.dataset.budgetNote='1';note.textContent='Les dépenses anciennes non ventilées restent comprises dans le total. Chaque nouvelle progression validée augmente son domaine une seule fois ; une proposition refusée ne dépense aucun PL.';table.after(note);}
+    }
     document.querySelectorAll('#page-progression span').forEach(el=>{if(/^Dépensé\s*:/.test(el.textContent)&&el.querySelector('b'))el.querySelector('b').textContent=fmt(P.legend.spent);});
     const social=document.querySelector('.nc-heading .nc-languages');if(social&&/Défense sociale/i.test(social.textContent))social.querySelector('span').textContent=P.combat.defenses.social;
     const load=document.getElementById('gearEncDex')?.parentElement?.parentElement;if(load)load.querySelectorAll('div').forEach(el=>{const title=el.querySelector('small')?.textContent,b=el.querySelector('b');if(b&&title==='Transport')b.textContent=P.carryCapacity+' kg';if(b&&title==='Soulever')b.textContent=P.liftCapacity+' kg';});
