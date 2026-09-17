@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zra’Ul — Dossier d’Adepte V0.42</title>
+<title>Zra’Ul — Dossier d’Adepte V0.43</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -5161,7 +5161,7 @@ function crAddMechanical(actionId){
  const e={id:crUid("mech"),kind:"mechanical",actionId,actionClass:cls,label:a.label,target:combatFlow().declaration.target||"",
           targetDN:9,targetArmor:0,levelMod:0,useKarma:false,projectile:"normal",
           attackResult:null,attackAllOnes:false,attackDetail:"",damageResult:null,damageDetail:"",
-          status:"planned"};
+          karmaSpent:0,karmaRolls:[],status:"planned"};
  crSeq().push(e);combatFlow().economy.activeId=e.id;crTouchPlan();save();renderCombatFlow()
 }
 function crAddSprint(){
@@ -5225,7 +5225,8 @@ function crSetEntry(id,key,value){
  }else if(["useKarma","delayCounter"].includes(key))e[key]=!!value;
  else e[key]=value;
  if(["levelMod","targetDN","target","projectile"].includes(key)&&e.kind==="mechanical"){
-   e.attackResult=null;e.attackDetail="";e.damageResult=null;e.damageDetail="";e.status="planned";
+   e.attackResult=null;e.attackAllOnes=false;e.attackDetail="";e.damageResult=null;e.damageDetail="";
+   e.karmaSpent=0;e.karmaRolls=[];e.status="planned";
  }
  if(declarationKeys.includes(key))crTouchPlan();
  save();renderCombatFlow()
@@ -5298,28 +5299,78 @@ function crDodgeStepInfo(){
 function crAttackKarma(a,entry=crActiveEntry()){
  return !!a&&(a.karma==="required"||(a.karma==="optional"&&!!entry?.useKarma))
 }
+function crSureShotRank(){
+ return Math.max(1,Number(P.talentsKnown.find(t=>t.name==="Tir infaillible")?.rank)||1)
+}
+function crEntryKarmaSpent(a,e){
+ if(!a||!e||e.attackResult==null)return 0;
+ if(a.id==="sure_shot")return Math.max(1,Number(e.karmaSpent)||1);
+ return crAttackKarma(a,e)?1:0
+}
+function crCommittedKarma(excludeEntryId=null){
+ return crSeq().reduce((total,e)=>{
+   if(e.kind!=="mechanical"||e.id===excludeEntryId||e.attackResult==null)return total;
+   const a=P.combat.actions.find(x=>x.id===e.actionId);
+   return total+crEntryKarmaSpent(a,e)
+ },0)
+}
 function crDegree(entry=crActiveEntry()){
  return entry?.kind!=="mechanical"||entry.attackResult==null?null:
    ncDegree(Number(entry.targetDN),Number(entry.attackResult),!!entry.attackAllOnes)
 }
 function crRollAttack(){
  const e=crActiveEntry(),a=crSelectedAction(e);if(!e||!a)return;
+ if(a.id==="sure_shot"&&e.attackResult!=null){
+   alert("Tir infaillible a déjà été lancé. En cas d’échec, utilise « Ajouter 1 Karma » au lieu de relancer le test complet.");return
+ }
  const info=crAttackStepInfo(a,e),k=crAttackKarma(a,e),
-       stock=Math.max(0,Number(L.draft.karma)||0);
- if(k&&stock<=0){alert("Karma insuffisant.");return}
+       stock=Math.max(0,Number(L.draft.karma)||0),committed=crCommittedKarma(e.id);
+ if(k&&stock-committed<=0){alert("Karma insuffisant.");return}
  const r=edRollStep(info.final.step,k?P.combat.karma.dice:""),mods=[];
  if(info.situational)mods.push(`situation ${edSignedLevel(info.situational)}`);
  if(info.wound)mods.push(`BG ${edSignedLevel(info.wound)}`);
  e.attackResult=r.total;e.attackAllOnes=r.allOnes;e.status="rolled";
+ if(a.id==="sure_shot"){
+   e.karmaSpent=1;e.karmaRolls=[{n:1,total:null,detail:`Premier Karma inclus dans le test : ${P.combat.karma.dice}`}];
+ }else{e.karmaSpent=0;e.karmaRolls=[]}
  e.attackDetail=`Niveau ${info.baseStep}${mods.length?` → ${info.final.step} (${mods.join(" ; ")})`:""} / ${edStepDiceLabel(info.final)}${k?` + Karma ${P.combat.karma.dice}`:""} • ${r.detail}`;
  combatFlow().log.push(`${a.label} — attaque ${r.total}${k?" avec Karma":""}`);
  save();renderCombatFlow()
 }
 function crSetManualAttack(v){
  const e=crActiveEntry(),a=crSelectedAction(e),n=Number(v);if(!e||!a||!Number.isFinite(n))return;
- const info=crAttackStepInfo(a,e);
+ if(a.id==="sure_shot"&&e.attackResult!=null){
+   alert("Tir infaillible a déjà un résultat. En cas d’échec, ajoute un point de Karma au résultat existant.");return
+ }
+ const info=crAttackStepInfo(a,e),stock=Math.max(0,Number(L.draft.karma)||0);
+ if(a.id==="sure_shot"&&stock-crCommittedKarma(e.id)<=0){alert("Karma insuffisant pour le premier jet de Tir infaillible.");return}
  e.attackResult=Math.max(1,n);e.attackAllOnes=false;e.status="rolled";
- e.attackDetail=`Résultat saisi : ${Math.max(1,n)} • dés attendus niveau ${info.final.step} / ${edStepDiceLabel(info.final)}.`;
+ if(a.id==="sure_shot"){
+   e.karmaSpent=1;e.karmaRolls=[{n:1,total:null,detail:"Premier Karma inclus dans le résultat saisi."}];
+ }else{e.karmaSpent=0;e.karmaRolls=[]}
+ e.attackDetail=`Résultat saisi : ${Math.max(1,n)} • dés attendus niveau ${info.final.step} / ${edStepDiceLabel(info.final)}${a.id==="sure_shot"?` + Karma ${P.combat.karma.dice}`:""}.`;
+ save();renderCombatFlow()
+}
+function crAddSureShotKarma(v=null){
+ const e=crActiveEntry(),a=crSelectedAction(e);if(!e||!a||a.id!=="sure_shot"||e.attackResult==null)return;
+ const degree=crDegree(e);if(degree?.success){alert("La cible est déjà touchée : Tir infaillible ne permet pas de dépenser davantage de Karma pour améliorer le degré de résultat.");return}
+ const max=crSureShotRank(),spent=Math.max(1,Number(e.karmaSpent)||1),stock=Math.max(0,Number(L.draft.karma)||0),
+       available=stock-crCommittedKarma(e.id)-spent;
+ if(spent>=max){alert(`Limite atteinte : Tir infaillible est au rang ${max}, donc ${max} point(s) de Karma au maximum sur ce test.`);return}
+ if(available<=0){alert("Karma insuffisant pour ajouter un nouveau dé.");return}
+ let add,detail,allOnes;
+ if(v!==null&&v!==""){
+   const n=Number(v);if(!Number.isFinite(n)||n<1){alert("Saisir le résultat du dé de Karma.");return}
+   add=Math.trunc(n);detail=`Résultat saisi : +${add}`;allOnes=add===1;
+ }else{
+   const r=edRollStep(P.combat.karma.step);add=r.total;detail=`${P.combat.karma.dice} : ${r.detail}`;allOnes=r.allOnes;
+ }
+ e.attackResult=Math.max(1,Number(e.attackResult)||1)+add;
+ e.karmaSpent=spent+1;e.karmaRolls=Array.isArray(e.karmaRolls)?e.karmaRolls:[];
+ e.karmaRolls.push({n:e.karmaSpent,total:add,detail});
+ e.attackAllOnes=!!e.attackAllOnes&&!!allOnes;e.damageResult=null;e.damageDetail="";e.status="rolled";
+ e.attackDetail+=` • Karma ${e.karmaSpent}/${max} : +${add} (${detail})`;
+ combatFlow().log.push(`${a.label} — Karma supplémentaire ${e.karmaSpent}/${max} : +${add} → attaque ${e.attackResult}`);
  save();renderCombatFlow()
 }
 function crRollDamage(){
@@ -5383,7 +5434,8 @@ function crSetProjectile(entryId,value){
    const other=crSeq().find(x=>x.kind==="mechanical"&&x.id!==entryId&&x.projectile==="kalha"&&x.attackResult!=null);
    if(other){alert("La pointe renforcée est un projectile unique et a déjà été tirée dans une autre action de ce round.");return}
  }
- e.projectile=value;e.attackResult=null;e.damageResult=null;e.status="planned";crTouchPlan();save();renderCombatFlow()
+ e.projectile=value;e.attackResult=null;e.attackAllOnes=false;e.attackDetail="";e.damageResult=null;e.damageDetail="";
+ e.karmaSpent=0;e.karmaRolls=[];e.status="planned";crTouchPlan();save();renderCombatFlow()
 }
 window.crSetProjectile=crSetProjectile;
 
@@ -5395,7 +5447,7 @@ function crRoundCosts(){
      if(["bow","second_shot","sure_shot"].includes(a.id)){
        if(e.projectile==="kalha")specialProjectile=1;else arrows++;
      }
-     if(crAttackKarma(a,e))karma++;
+     karma+=crEntryKarmaSpent(a,e);
      effort+=Math.max(0,Number(a.effort)||0);
    }else if(e.kind==="sprint"&&e.result!=null)effort+=1;
    else if(e.kind==="anticipation"&&e.result!=null)effort+=CR_ANTICIPATION.effort;
@@ -5548,6 +5600,11 @@ function crProjectileControls(e,a){
 }
 function crMechanicalEditor(e){
  const a=crSelectedAction(e),info=crAttackStepInfo(a,e),d=crDegree(e),dp=crDamageProfile(a,e);if(!a)return "";
+ const sure=a.id==="sure_shot"&&e.attackResult!=null,
+       sureMax=sure?crSureShotRank():0,
+       sureSpent=sure?Math.max(1,Number(e.karmaSpent)||1):0,
+       sureFailed=!!(sure&&d&&!d.success),
+       sureAvailable=sure?Math.max(0,(Number(L.draft.karma)||0)-crCommittedKarma(e.id)-sureSpent):0;
  return `<div class="cr-action-preview"><b>${esc(a.label)}</b><small>${crEntryTypeLabel(e)} • attaque base ${info.baseStep} → <b>niveau ${info.final.step} / ${edStepDiceLabel(info.final)}</b>${info.wound?` • BG ${edSignedLevel(info.wound)}`:""}</small></div>
   <div class="cr-form" style="margin-top:9px">
    <div class="cr-field"><label>Cible déclarée</label><input value="${esc(e.target)}" disabled></div>
@@ -5559,9 +5616,14 @@ function crMechanicalEditor(e){
    </select></div>
   </div>
   ${crProjectileControls(e,a)}
-  <div class="cr-actions"><button class="cr-btn primary" onclick="crRollAttack()">🎲 Lancer niveau ${info.final.step} / ${edStepDiceLabel(info.final)}</button></div>
-  <div class="cr-field" style="margin-top:8px"><label>Ou saisir le résultat obtenu</label><input type="number" min="1" onchange="crSetManualAttack(this.value)"></div>
+  <div class="cr-actions"><button class="cr-btn primary" onclick="crRollAttack()">🎲 Lancer niveau ${info.final.step} / ${edStepDiceLabel(info.final)}${a.id==="sure_shot"?` + Karma ${P.combat.karma.dice}`:""}</button></div>
+  <div class="cr-field" style="margin-top:8px"><label>Ou saisir le résultat obtenu${a.id==="sure_shot"?" après le premier Karma":""}</label><input type="number" min="1" onchange="crSetManualAttack(this.value)"></div>
   ${e.attackResult!=null?`<div class="cr-roll-box"><div class="cr-roll-total"><strong>${e.attackResult}</strong><span class="cr-degree">${d?d.label:"Résultat"}</span></div><div class="cr-roll-detail">${esc(e.attackDetail)}</div></div>`:""}
+  ${sure?`<div class="cr-info"><b>Tir infaillible :</b> ${sureSpent}/${sureMax} point(s) de Karma dépensé(s) sur ce test.${d?.success?" La cible est touchée : aucun Karma supplémentaire ne peut être ajouté.":""}</div>`:""}
+  ${sureFailed&&sureSpent<sureMax&&sureAvailable>0?`<div class="cr-actions"><button class="cr-btn primary" onclick="crAddSureShotKarma()">🎲 Ajouter 1 Karma (${sureSpent+1}/${sureMax})</button></div>
+    <div class="cr-field" style="margin-top:8px"><label>Ou saisir le résultat du dé de Karma</label><div style="display:grid;grid-template-columns:1fr auto;gap:6px"><input id="crSureShotExtra_${e.id}" type="number" min="1" placeholder="Résultat du ${P.combat.karma.dice}"><button class="cr-btn" onclick="crAddSureShotKarma(document.getElementById('crSureShotExtra_${e.id}').value)">Ajouter</button></div></div>`:""}
+  ${sureFailed&&sureSpent>=sureMax?`<div class="cr-warning"><b>Limite atteinte :</b> rang ${sureMax}, donc ${sureMax} point(s) de Karma au maximum sur ce test.</div>`:""}
+  ${sureFailed&&sureSpent<sureMax&&sureAvailable<=0?`<div class="cr-warning"><b>Karma insuffisant :</b> aucun point supplémentaire n’est disponible pour poursuivre Tir infaillible.</div>`:""}
   ${e.attackResult!=null?`<div class="cr-actions"><button class="cr-btn" onclick="crGoPhase('resolution')">Passer à la résolution des dommages →</button></div>`:""}`
 }
 function crSprintEditor(e){
