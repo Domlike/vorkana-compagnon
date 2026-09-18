@@ -14,7 +14,7 @@ window.VorkanaPublished=(()=>{
    ledger.confirmed[p.domain]+=p.legendCost;
    if(p.domain==='talent'||p.domain==='skill')ledger[p.domain==='talent'?'talentRanks':'skillRanks'][p.targetName]=p.toRank;
    if(p.domain==='attribute')ledger.attributeAdv[p.targetName]=p.toRank;
-   if(p.domain==='specialization')ledger.specializations.push(p.targetName);
+   if(p.domain==='specialization'&&p.activation!=='deferred')ledger.specializations.push(p.targetName);
    if(p.domain==='thread')ledger.threads.push(p.targetName);
    ledger.appliedProposalIds.push(d.id);
   }
