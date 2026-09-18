@@ -3,17 +3,151 @@
   const Sync=window.EarthdawnSync;if(!Sync)return;
   const names={pj_0:'Zra’Ul',pj_1:'Kalha',pj_2:'Kal’Zakath',pj_3:'Barbak',pj_4:'Ogunta',pj_5:'Jaskar',pj_6:'Gul’Rak'};
   const catalog=[
-    ['rations','Rations de voyage','Voyage','available',10,'1 PA / semaine','Vivres simples, dans la limite des réserves locales.'],
-    ['torches','Torches et huile','Voyage','available',8,'À confirmer','Matériel courant disponible à Keltanap.'],
-    ['rope','Corde','Voyage','limited',2,'À confirmer','Longueur à préciser avant achat.'],
-    ['arrows','Flèches ordinaires','Projectiles','limited',15,'À confirmer','Petit stock local destiné surtout à la chasse.'],
-    ['healing','Applications de kit de soigneur','Soins','limited',3,'À confirmer','Disponibilité à confirmer à l’arrivée.'],
-    ['silvermoss','Mousse d’argent','Soins','unavailable',0,'—','Aucune source de vente confirmée.'],
-    ['weapons','Armes courantes','Armement','limited',null,'Selon arme','Pièces particulières sur demande.'],
-    ['armor','Armures courantes','Armement','unavailable',0,'Selon armure','Aucune armure prête à la vente confirmée.'],
-    ['repairs','Réparation / entretien','Service','limited',null,'Selon travail','Selon l’artisan et le temps disponible.'],
-    ['lodging','Repas et couchage simples','Service','available',null,'À confirmer','Accueil villageois modeste ; capacité limitée.']
-  ].map(([id,name,category,status,stock,price,note])=>({id,name,category,status,stock,price,note}));
+  {
+    "id": "rations",
+    "name": "Vivres et rations",
+    "category": "Voyage",
+    "status": "available",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Viande et produits des exploitations locales ; conditionnement pour la route à convenir."
+  },
+  {
+    "id": "waterskins",
+    "name": "Outres",
+    "category": "Voyage",
+    "status": "available",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Vues chez un marchand à l’entrée ; contenance et état à choisir."
+  },
+  {
+    "id": "torches",
+    "name": "Torches et huile",
+    "category": "Voyage",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "À demander aux échoppes ; assortiment et quantité à vérifier."
+  },
+  {
+    "id": "rope",
+    "name": "Cordes et matériel de bât",
+    "category": "Voyage",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Présence de bêtes de bât et de caravanes ; pièces adaptées à rechercher."
+  },
+  {
+    "id": "arrows",
+    "name": "Flèches et traits",
+    "category": "Projectiles",
+    "status": "available",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Marchand aperçu à l’arrivée. Type de projectile et quantité à préciser."
+  },
+  {
+    "id": "bows",
+    "name": "Arcs",
+    "category": "Armement",
+    "status": "available",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Marchand aperçu à l’entrée. Modèle, puissance et état à examiner."
+  },
+  {
+    "id": "weapons",
+    "name": "Autres armes courantes",
+    "category": "Armement",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Forgerons et voyageurs armés présents ; offre exacte à vérifier."
+  },
+  {
+    "id": "armor",
+    "name": "Armures et protections",
+    "category": "Armement",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Occasion, ajustement ou commande à discuter ; aucune pièce précise garantie."
+  },
+  {
+    "id": "repairs",
+    "name": "Réparation et entretien à la forge",
+    "category": "Service",
+    "status": "available",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Forgeron au travail sous un auvent. Devis et délai selon la pièce."
+  },
+  {
+    "id": "lodging",
+    "name": "Repas et couchage",
+    "category": "Service",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Grande tente près de l’entrée et odeurs de cuisine. Places pour les survivants à négocier avec Dan."
+  },
+  {
+    "id": "healing",
+    "name": "Fournitures de soigneur",
+    "category": "Soins",
+    "status": "unknown",
+    "stock": null,
+    "price": "À établir",
+    "note": "Chercher un vendeur ; le matériel disponible n’a pas été établi."
+  },
+  {
+    "id": "silvermoss",
+    "name": "Mousse d’argent",
+    "category": "Soins",
+    "status": "unknown",
+    "stock": null,
+    "price": "À établir",
+    "note": "Aucun vendeur identifié ; disponibilité à enquêter, pas de stock annoncé."
+  },
+  {
+    "id": "mounts",
+    "name": "Montures et bêtes de bât",
+    "category": "Transport",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Chevaux et troupeaux visibles. Vente ou location, prix et garanties à négocier."
+  },
+  {
+    "id": "escort",
+    "name": "Escorte vers Jerris",
+    "category": "Service",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Des cavaliers expérimentés sont présents près des enclos. Dan peut négocier ; aucun engagement conclu."
+  },
+  {
+    "id": "caravan",
+    "name": "Place dans une caravane vers Jerris",
+    "category": "Transport",
+    "status": "unknown",
+    "stock": null,
+    "price": "À établir",
+    "note": "Lieu de passage propice aux contacts ; destination, départ et places restent à trouver."
+  },
+  {
+    "id": "resale",
+    "name": "Revente et troc",
+    "category": "Commerce",
+    "status": "limited",
+    "stock": null,
+    "price": "À négocier",
+    "note": "Présenter les biens et leur état aux marchands ; aucun prix de reprise garanti."
+  }
+];
   // Référentiel de campagne : valeurs stables, séparées des disponibilités locales.
   const equipmentReference=[
     {id:"dagger",name:"Dague",price:"8 pc",weight:"500 g",status:"Correction de cohérence",note:"Poids unique retenu pour la même arme en mêlée et au jet."},
@@ -86,10 +220,12 @@
     return JSON.parse(JSON.stringify({equipment:equipmentReference,carrying:carryingReference,rules:rulesReference}));
   }
 
-  const fresh=()=>({revision:'keltanap-10-riag',revisionNumber:0,context:{date:'Vers le 10 Riag 1448 TH',location:'Keltanap — village d’environ 300 habitants',note:'Prochaine occasion d’achat prévue à l’arrivée à Keltanap.'},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
+  const MARKET_REVISION="crete-griffe-arrivee-20260918";
+  const fresh=()=>({revision:MARKET_REVISION,revisionNumber:0,context:{"date":"Arrivée dans l’après-midi, après deux jours de marche — Riag 1448 TH","location":"Crête-Griffe — marché des routes et des contreforts des Delaris","note":"L’escorte des survivants jusqu’à Crête-Griffe est jouée. Dan et Bogrunt ont pris en charge la nourriture et les besoins du trajet ; une dette non chiffrée reste reconnue envers Vorkana. Dan cherche maintenant un abri et une escorte ou une caravane vers Jerris. Aucun prix supplémentaire ni achat n’est encore conclu. Les montants et quantités du marché sont à négocier sur place."},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
+  function migrate(saved){if(saved?.revision===MARKET_REVISION&&Array.isArray(saved.catalog))return saved;const next=fresh();if(saved){next.marketArchives=[...(saved.marketArchives||[]),{revision:saved.revision,context:saved.context,catalog:saved.catalog,updatedAt:saved.updatedAt}];next.proposals=(saved.proposals||[]).map(p=>({...p,marketRevision:p.marketRevision||saved.revision||'ancien-marche',status:['accepted','rejected'].includes(p.status)?p.status:'needs_review'}));}return next;}
   const key=()=>`vorkana_circle_${Sync.status().room}_v033`;
   let data,authority=false,started=false;
-  function load(){try{const x=JSON.parse(localStorage.getItem(key())||'null');data=x&&x.catalog?x:fresh();}catch(_){data=fresh();}data.proposals ||= [];data.commands ||= [];data.revisionNumber ||= 0;}
+  function load(){try{const x=JSON.parse(localStorage.getItem(key())||'null');data=migrate(x);}catch(_){data=fresh();}data.proposals ||= [];data.commands ||= [];data.revisionNumber ||= 0;}
   function emit(){window.dispatchEvent(new CustomEvent('vorkana-campaign-changed',{detail:{state:data}}));}
   function save(){try{localStorage.setItem(key(),JSON.stringify(data));}catch(_){window.dispatchEvent(new CustomEvent('vorkana-storage-error'));}emit();}
   function publicState(){return {revision:data.revision,revisionNumber:data.revisionNumber,context:data.context,catalog:data.catalog,updatedAt:data.updatedAt};}
@@ -98,6 +234,7 @@
   function decision(id,status){
     const p=data.proposals.find(p=>p.id===id);if(!p)throw Error('Cette demande n’est plus disponible.');
     if(['accepted','rejected'].includes(p.status))return;
+    if(p.marketRevision!==MARKET_REVISION)throw Error('Demande d’un ancien marché : la reformuler à Crête-Griffe avant acceptation.');
     if(!['accepted','rejected'].includes(status))throw Error('Décision invalide.');
     if(status==='accepted'&&p.kind==='Achat'){
       const item=data.catalog.find(x=>x.id===p.itemId);
@@ -108,11 +245,12 @@
     Sync.send({type:'vorkana-market-decision',proposalId:p.id,status,decidedAt:p.decidedAt},{targets:[p.playerId,'gm']});
   }
   function command(action,values){
-    const p={type:'vorkana-market-command',id:'market-command-'+Date.now()+'-'+Math.random().toString(36).slice(2),action,...values};
+    const p={type:'vorkana-market-command',marketRevision:MARKET_REVISION,id:'market-command-'+Date.now()+'-'+Math.random().toString(36).slice(2),action,...values};
     if(authority)return applyCommand(p);
     Sync.send(p,{targets:['gm']});return 'pending';
   }
   function applyCommand(p){
+    if(p.marketRevision!==MARKET_REVISION)throw Error('Marché ancien : recharger le cockpit et Vie de Campagne.');
     if(data.commands.includes(p.id))return;
     if(p.action==='decision')decision(p.proposalId,p.status);
     else if(p.action==='publish'){
@@ -125,6 +263,7 @@
   }
   function receive(e){
     if(!started)return;const p=e.detail?.payload||{};
+    if(['vorkana-gm-hub-state','vorkana-hub-state'].includes(p.type)&&p.state?.revision!==MARKET_REVISION)return;
     if(p.type==='vorkana-gm-hub-state'&&p.state&&(Number(p.state.revisionNumber)>Number(data.revisionNumber)||!authority&&Number(p.state.revisionNumber)===Number(data.revisionNumber))) {data=p.state;data.commands ||= [];save();return;}
     if(p.type==='vorkana-hub-state'&&!authority&&p.state&&Number(p.state.revisionNumber)>Number(data.revisionNumber)){Object.assign(data,p.state);save();return;}
     if(!authority)return;
@@ -133,6 +272,7 @@
       else if(names[p.playerId]){Sync.send({type:'vorkana-hub-state',state:publicState()},{targets:[p.playerId]});data.proposals.filter(x=>x.playerId===p.playerId).forEach(x=>Sync.send({type:'vorkana-market-decision',proposalId:x.id,status:x.status,decidedAt:x.decidedAt},{targets:[p.playerId]}));}
     }else if(p.type==='vorkana-market-proposal'&&p.proposal){
       const x=p.proposal;
+      if(x.marketRevision!==MARKET_REVISION)return;
       if(!names[x.playerId]||!x.id||!['Achat','Vente'].includes(x.kind)||!Number.isInteger(x.quantity)||x.quantity<1||x.quantity>10000)return;
       let known=data.proposals.find(v=>v.id===x.id);
       if(!known){known={...x,playerName:names[x.playerId],status:'received'};data.proposals.push(known);commit();}
@@ -144,5 +284,5 @@
   window.addEventListener('earthdawn-sync-message',receive);
   window.addEventListener('earthdawn-sync-message',e=>{const p=e.detail?.payload;if(started&&!authority&&p?.type==='vorkana-market-error')window.dispatchEvent(new CustomEvent('vorkana-campaign-error',{detail:p}));});
   window.addEventListener('vorkana-room-changed',()=>{if(started){load();emit();}});
-  window.VorkanaCampaign={start(isAuthority){authority=!!isAuthority;started=true;load();if(!authority)Sync.sendToGM({type:'vorkana-hub-request',asGM:true});return this;},state(){if(!data)load();return data;},reference,decide:(id,status)=>command('decision',{proposalId:id,status}),publish:(context,catalog,expectedRevision)=>command('publish',{context,catalog,expectedRevision}),broadcast};
+  window.VorkanaCampaign={start(isAuthority){authority=!!isAuthority;started=true;load();if(!authority)Sync.sendToGM({type:'vorkana-hub-request',asGM:true});return this;},state(){if(!data)load();return data;},reference,fresh,migrate,decide:(id,status)=>command('decision',{proposalId:id,status}),publish:(context,catalog,expectedRevision)=>command('publish',{context,catalog,expectedRevision}),broadcast};
 })();
