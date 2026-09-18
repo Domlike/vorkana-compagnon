@@ -39,10 +39,8 @@ function installVorkanaProgression(){
     jaskar:{sword:'Armes de mêlée',empathy:'Sens empathique',voice:'Imitation de voix'},
     gulrak:{short:'Armes de mêlée',dagger:'Armes de mêlée',second:'Deuxième attaque',silent:'Déplacement silencieux',detectTrap:'Détection des pièges'}
   }[id];
-  function ensure(){
-    if(!L.progressionLedger){const historical=(L.proposals||[]).filter(p=>p.kind==='progression'&&p.status==='approved').map(p=>p.id);L.progressionLedger={schema:'vorkana-confirmed-0.49',baseline:'html-2026-09-14',baselineSpent:base.legend.spent,confirmed:copy(budgetBase),appliedProposalIds:historical,historicalProposalIds:historical.slice(),talentRanks:Object.fromEntries(base.talentsKnown.map(t=>[t.name,t.rank])),skillRanks:Object.fromEntries(base.skills.map(t=>[t.name,t.rank])),attributeAdv:copy(attrBaseline),specializations:[],threads:[]};}
-    return L.progressionLedger;
-  }
+  const publishedLedger=VorkanaPublished.build(base,attrBaseline);
+  function ensure(){return VorkanaPublished.attach(L,publishedLedger);}
   function rank(name,kind='talent'){const items=kind==='talent'?base.talentsKnown:base.skills;return Number(ensure()[kind==='talent'?'talentRanks':'skillRanks'][name]??items.find(t=>t.name===name)?.rank??0);}
   function recalculate(){
     const ledger=ensure();P.attributes=copy(base.attributes);
@@ -75,21 +73,11 @@ function installVorkanaProgression(){
     if(id==='ogunta')for(const s of P.referenceConfig.spells){const original=base.referenceConfig.spells.find(x=>x.id===s.id);if(original.effectStep!=null)s.effectStep=original.effectStep+stepDelta('Volonté');if(s.id!=='lance'&&/^7 (rounds|minutes)$/.test(original.duration))s.duration=String(rank('Incantation')+3)+' '+original.duration.split(' ')[1];if(s.id==='mist')s.text=original.text.replace('jusqu’à 4 attaques','jusqu’à '+rank('Incantation')+' attaques');if(s.id==='circle')s.effectLabel=original.effectLabel.replace('niveau 11','niveau '+(P.attributes.Volonté.step+5));}
     P.specializations=[...new Map([...(base.specializations||[]),...(ledger.specializations||[])].map(x=>[x.name||x,x])).values()];
     for(const a of NC_ACTIONS){const trait=NC_TRAIT_ACTIONS.find(t=>t.id===a.id);const source=trait?P.attributes[trait.key]:P.attributes[a.source]||(a.id==='intimidate'?P.attributes.Charisme:null)||(/halfm|halfMagic/i.test(a.id)?P.halfMagic:null)||item(a.label);if(source&&source.step!=null){a.step=source.step;a.dice=source.dice;if(source.value!=null)a.value=source.value;if(source.rank!=null&&a.hint)a.hint=a.hint.replace(/rang \d+/g,'rang '+source.rank);}for(const v of a.variants||[]){const n=Object.keys(P.attributes).find(n=>v.label.includes(n));if(n)Object.assign(v,P.attributes[n]);}}
-    P.legend.spent=Number(ledger.baselineSpent)+domains.reduce((n,d)=>n+Number(ledger.confirmed[d]||0)-budgetBase[d],0);P.legend.available=Math.max(0,P.legend.total-P.legend.spent);
+    P.legend.spent=Number(ledger.publishedSpent);P.legend.available=Math.max(0,P.legend.total-P.legend.spent);
   }
-  function commit(){const ledger=ensure(),applied=new Set(ledger.appliedProposalIds);for(const p of L.proposals||[]){if(p.kind!=='progression'||p.status!=='approved'||applied.has(p.id))continue;if(domains.includes(p.domain))ledger.confirmed[p.domain]=Number(ledger.confirmed[p.domain]||0)+Number(p.legendCost||0);if(['talent','skill'].includes(p.domain)&&p.targetName&&p.toRank!=null){const key=p.domain==='talent'?'talentRanks':'skillRanks';ledger[key][p.targetName]=Math.max(rank(p.targetName,p.domain),Number(p.toRank));}else if(p.domain==='attribute'&&p.targetName&&p.toRank!=null){ledger.attributeAdv[p.targetName]=Math.max(Number(ledger.attributeAdv[p.targetName]||0),Number(p.toRank));}else if(p.domain==='specialization'&&p.targetName){if(!ledger.specializations.includes(p.targetName))ledger.specializations.push(p.targetName);}else if(p.domain==='thread'&&p.targetName){if(!ledger.threads.includes(p.targetName))ledger.threads.push(p.targetName);}else if(p.domain==='karma')L.draft.karma=Math.min(P.combat.karma.max,Number(L.draft.karma||0)+1);applied.add(p.id);}ledger.appliedProposalIds=[...applied];recalculate();}
+  function commit(){ensure();recalculate();}
   function renderSummary(){
     const ledger=ensure();for(const d of domains){const el=document.getElementById('pend-'+d)?.previousElementSibling;if(el)el.textContent=fmt(ledger.confirmed[d]||0);}const total=document.getElementById('pend-total')?.previousElementSibling;if(total)total.textContent=fmt(P.legend.spent);
-    const table=document.getElementById('pend-total')?.closest('table');
-    if(table){
-      let row=table.querySelector('[data-unallocated]');
-      if(!row){row=document.createElement('tr');row.dataset.unallocated='1';row.innerHTML='<th>Dépenses antérieures non ventilées</th><td></td><td>—</td>';table.tBodies[0].append(row);}
-      const remainder=Number(P.legend.spent)-domains.reduce((sum,d)=>sum+Number(ledger.confirmed[d]||0),0);
-      row.children[1].textContent=fmt(remainder);row.hidden=remainder===0;
-      row.title='Ces PL sont déjà compris dans le total confirmé. Les sources anciennes ne permettent pas de les répartir par domaine. Les nouvelles validations sont ventilées automatiquement.';
-      let note=table.parentElement.querySelector('[data-budget-note]');
-      if(!note){note=document.createElement('p');note.dataset.budgetNote='1';note.textContent='Les dépenses anciennes non ventilées restent comprises dans le total. Chaque nouvelle progression validée augmente son domaine une seule fois ; une proposition refusée ne dépense aucun PL.';table.after(note);}
-    }
     document.querySelectorAll('#page-progression span').forEach(el=>{if(/^Dépensé\s*:/.test(el.textContent)&&el.querySelector('b'))el.querySelector('b').textContent=fmt(P.legend.spent);});
     const social=document.querySelector('.nc-heading .nc-languages');if(social&&/Défense sociale/i.test(social.textContent))social.querySelector('span').textContent=P.combat.defenses.social;
     const load=document.getElementById('gearEncDex')?.parentElement?.parentElement;if(load)load.querySelectorAll('div').forEach(el=>{const title=el.querySelector('small')?.textContent,b=el.querySelector('b');if(b&&title==='Transport')b.textContent=P.carryCapacity+' kg';if(b&&title==='Soulever')b.textContent=P.liftCapacity+' kg';});
@@ -98,7 +86,7 @@ function installVorkanaProgression(){
   const oldRender=renderProposalSurfaces,oldProgress=renderProgression6;
   renderProgression6=function(){commit();oldProgress();renderSummary();};
   renderProposalSurfaces=function(){oldRender();renderTalents();ncRenderActionList();ncRenderLauncher();ncRenderTraitTests();renderSummary();};
-  applyProposalDecisions=function(decisions){if(!Array.isArray(decisions))return;ensure();for(const d of decisions){const p=(L.proposals||[]).find(p=>p.id===d.id);if(!p||p.status!=='sent'||!['approved','rejected'].includes(d.decision))continue;p.status=d.decision;p.decisionAt=d.decidedAt||new Date().toISOString();p.decisionNote=d.note||'';}commit();};
+  applyProposalDecisions=function(decisions){if(!Array.isArray(decisions))return;ensure();for(const d of decisions){const p=(L.proposals||[]).find(p=>p.id===d.id);if(!p||p.status!=='sent'||!['approved','rejected'].includes(d.decision))continue;p.status=d.decision;p.integrationStatus=d.integrationStatus||"pending_publication";p.decisionAt=d.decidedAt||new Date().toISOString();p.decisionNote=d.note||'';}commit();};
   if(id==='gulrak'){crDamageProfile=function(a=crSelectedAction(),entry=crActiveEntry()){const w=crWeaponFor(a);if(!w?.damageDice)return {step:null,dice:null,label:'—',reinforced:false};const surprise=!!entry?.surprise,bonus=surprise?rank('Attaque surprise'):0,step=w.damageStep+bonus,dice=edStepDiceLabel(step);return {step,dice,label:'Niveau '+step+' / '+dice+(surprise?' • Attaque surprise +'+bonus:''),reinforced:false,surprise};};}
   window.VorkanaProgression={commit,recalculate,rank,baseline:()=>copy(base),summary:renderSummary};
   commit();save();renderProposalSurfaces();

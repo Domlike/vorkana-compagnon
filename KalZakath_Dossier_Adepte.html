@@ -1890,6 +1890,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 @media(max-width:700px){.vorkana-brand{grid-template-columns:42px 1fr}.vorkana-brand img{width:40px;height:40px}}
 
 </style>
+<script src="vorkana-published.js?v=20260918"></script>
 <script src="earthdawn-realtime-config.js"></script>
 <script src="earthdawn-sync.js?v=0.40.0"></script>
 </head>
@@ -2295,14 +2296,14 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
         <thead><tr><th>Domaine</th><th>Confirmé</th><th>Proposé</th></tr></thead>
         <tbody>
           <tr><td class="sem-a">Attributs</td><td id="conf-attribute">0</td><td id="pend-attribute">0</td></tr>
-          <tr><td class="sem-t">Talents</td><td id="conf-talent">5 800</td><td id="pend-talent">0</td></tr>
+          <tr><td class="sem-t">Talents</td><td id="conf-talent">5 800</td><td id="pend-talent">0</td></tr>
           <tr><td class="sem-sp">Spécialisations</td><td id="conf-specialization">0</td><td id="pend-specialization">0</td></tr>
-          <tr><td class="sem-sk">Compétences</td><td id="conf-skill">2 800</td><td id="pend-skill">0</td></tr>
+          <tr><td class="sem-sk">Compétences</td><td id="conf-skill">2 800</td><td id="pend-skill">0</td></tr>
           <tr><td class="sem-th">Filaments</td><td id="conf-thread">0</td><td id="pend-thread">0</td></tr>
           <tr><td class="sem-k">Karma</td><td id="conf-karma">0</td><td id="pend-karma">0</td></tr>
           <tr><td class="sem-m">Objets magiques</td><td id="conf-magic">0</td><td id="pend-magic">0</td></tr>
         </tbody>
-        <tfoot><tr><th>Total</th><th id="conf-total">8 600</th><th id="pend-total">0</th></tr></tfoot>
+        <tfoot><tr><th>Total</th><th id="conf-total">8 600</th><th id="pend-total">0</th></tr></tfoot>
       </table>
     </div>
 
@@ -2874,30 +2875,8 @@ if(!Array.isArray(L.notes.interludes))L.notes.interludes=[];
 const PROGRESSION_BASELINE={
   attribute:0,talent:5800,specialization:0,skill:2800,thread:0,karma:0,magic:0
 };
-function ensureProgressionLedger(){
-  if(!L.progressionLedger||typeof L.progressionLedger!=="object"){
-    const alreadyApproved=(L.proposals||[])
-      .filter(p=>p&&p.kind==="progression"&&p.status==="approved")
-      .map(p=>p.id);
-    L.progressionLedger={
-      baseline:"2026-09-08",
-      confirmed:{...PROGRESSION_BASELINE},
-      appliedProposalIds:alreadyApproved,
-      talentRanks:Object.fromEntries((P.talentsKnown||[]).map(t=>[t.name,Number(t.rank)||0])),
-      skillRanks:Object.fromEntries((P.skills||[]).map(t=>[t.name,Number(t.rank)||0])),
-      attributeAdv:{},
-      specializations:[],
-      threads:[]
-    };
-  }
-  L.progressionLedger.confirmed={...PROGRESSION_BASELINE,...(L.progressionLedger.confirmed||{})};
-  if(!Array.isArray(L.progressionLedger.appliedProposalIds))L.progressionLedger.appliedProposalIds=[];
-  if(!L.progressionLedger.talentRanks)L.progressionLedger.talentRanks={};
-  if(!L.progressionLedger.skillRanks)L.progressionLedger.skillRanks={};
-  if(!L.progressionLedger.attributeAdv)L.progressionLedger.attributeAdv={};
-  if(!Array.isArray(L.progressionLedger.specializations))L.progressionLedger.specializations=[];
-  if(!Array.isArray(L.progressionLedger.threads))L.progressionLedger.threads=[];
-}
+const publishedKalLedger=VorkanaPublished.build(KAL_MECHANICAL_BASE);
+function ensureProgressionLedger(){VorkanaPublished.attach(L,publishedKalLedger);}
 function progressionConfirmed(domain){ensureProgressionLedger();return Number(L.progressionLedger.confirmed[domain]||0)}
 function progressionConfirmedTotal(){
   return ["attribute","talent","specialization","skill","thread","karma","magic"]
@@ -2919,37 +2898,10 @@ function confirmedAttributeAdv(name){
 }
 function syncLegendFromLedger(){
   ensureProgressionLedger();
-  P.legend.spent=progressionConfirmedTotal();
+  P.legend.spent=publishedKalLedger.publishedSpent;
   P.legend.available=Math.max(0,Number(P.legend.total||0)-Number(P.legend.spent||0));
 }
-function commitApprovedProgression(){
-  ensureProgressionLedger();
-  const applied=new Set(L.progressionLedger.appliedProposalIds||[]);
-  for(const p of (L.proposals||[])){
-    if(!p||p.kind!=="progression"||p.status!=="approved"||applied.has(p.id))continue;
-    const domain=p.domain;
-    if(Object.prototype.hasOwnProperty.call(L.progressionLedger.confirmed,domain)){
-      L.progressionLedger.confirmed[domain]=Number(L.progressionLedger.confirmed[domain]||0)+(Number(p.legendCost)||0);
-    }
-    if(domain==="talent"&&p.targetName&&p.toRank!=null){
-      L.progressionLedger.talentRanks[p.targetName]=Math.max(confirmedTalentRank(p.targetName),Number(p.toRank)||0);
-    }else if(domain==="skill"&&p.targetName&&p.toRank!=null){
-      L.progressionLedger.skillRanks[p.targetName]=Math.max(confirmedSkillRank(p.targetName),Number(p.toRank)||0);
-    }else if(domain==="attribute"&&p.targetName&&p.toRank!=null){
-      L.progressionLedger.attributeAdv[p.targetName]=Math.max(confirmedAttributeAdv(p.targetName),Number(p.toRank)||0);
-    }else if(domain==="specialization"&&p.targetName){
-      if(!L.progressionLedger.specializations.includes(p.targetName))L.progressionLedger.specializations.push(p.targetName);
-    }else if(domain==="thread"&&p.targetName){
-      if(!L.progressionLedger.threads.includes(p.targetName))L.progressionLedger.threads.push(p.targetName);
-    }else if(domain==="karma"&&L.draft){
-      L.draft.karma=Math.min(Number(P.combat.karma.max||999),Number(L.draft.karma||0)+1);
-    }
-    applied.add(p.id);
-  }
-  L.progressionLedger.appliedProposalIds=[...applied];
-  syncLegendFromLedger();
-  recalculateConfirmedMechanics();
-}
+function commitApprovedProgression(){ensureProgressionLedger();syncLegendFromLedger();recalculateConfirmedMechanics();}
 ensureProgressionLedger();
 syncLegendFromLedger();
 
@@ -3043,7 +2995,7 @@ function applyProposalDecisions(decisions){
  decisions.forEach(d=>{
    const p=(L.proposals||[]).find(x=>x.id===d.id);if(!p)return;
    if(!['approved','rejected'].includes(d.decision)||p.status!=='sent')return;
-   p.status=d.decision;
+   p.status=d.decision;p.integrationStatus=d.integrationStatus||"pending_publication";
    p.decisionAt=d.decidedAt||new Date().toISOString();
    p.decisionNote=d.note||"";
  });
@@ -3939,7 +3891,7 @@ function gearRenderMoneyProposals(){
   const arr=(L.proposals||[]).filter(p=>["money","inventory","catalogTransaction","magicDemo"].includes(p.kind));
   if(!arr.length){host.innerHTML=`<div class="drawer-empty">Aucune proposition d’équipement ou de monnaie.</div>`;return}
   host.innerHTML=arr.slice().reverse().map(p=>{
-    const st=normalizedProposalStatus(p),label=proposalStatusLabel(st);
+    const st=normalizedProposalStatus(p),label=proposalStatusLabel(st,p);
     return `<div class="money-proposal-row">
       <div><b>${esc(p.label)}</b><br><small>${esc(p.note||"")}</small><br><span class="proposal-status ${st}">${esc(label)}</span></div>
       <div class="proposal-actions">
@@ -5494,7 +5446,7 @@ function renderPlayerNotes(){
  host.innerHTML=entries.length?entries.map(item=>{
    const proposal=item.proposalId?(L.proposals||[]).find(p=>p.id===item.proposalId):null,
          status=proposal?normalizedProposalStatus(proposal):item.legacy?"historique":"draft",
-         statusLabel=status==="approved"?"Validé par le MJ":status==="rejected"?"À revoir avec le MJ":status==="sent"?"Transmis au MJ":status==="historique"?"Échange archivé":"En préparation",
+         statusLabel=status==="approved"?"Validé par le MJ — à intégrer":status==="rejected"?"À revoir avec le MJ":status==="sent"?"Transmis au MJ":status==="historique"?"Échange archivé":"En préparation",
          reply=proposal?.decisionNote||item.gmText||"";
    return `<article class="interlude-card"><header><h4>${esc(item.title||"Interlude")}</h4><time>${item.date?new Date(item.date+"T12:00:00").toLocaleDateString("fr-FR"):"Sans date"}</time></header>
     <div class="interlude-player">${esc(item.playerText||"")}</div>
@@ -5601,15 +5553,17 @@ function normalizedProposalStatus(p){
   // migration des anciennes versions : "pending" devient "draft"
   return p.status==="pending" ? "draft" : "draft";
 }
-function proposalStatusLabel(status){
+function proposalStatusLabel(status,p){
+  if(p?.kind==="progression" && status==="approved" && !p.integrationStatus && !L.progressionLedger?.appliedProposalIds?.includes(p.id))return "Ancienne validation — à rapprocher de la fiche";
+  if(p && L.progressionLedger?.appliedProposalIds?.includes(p.id))return "Intégrée à la fiche publiée";
   return status==="sent" ? "Envoyée au MJ" :
-         status==="approved" ? "Validée par le MJ" :
+         status==="approved" ? "Validée par le MJ — à intégrer" :
          status==="rejected" ? "Refusée par le MJ" :
          "En préparation";
 }
 function isProposalActiveForBudget(p){
   const s=normalizedProposalStatus(p);
-  return s==="draft" || s==="sent";
+  return !L.progressionLedger?.appliedProposalIds?.includes(p.id) && (s==="draft" || s==="sent" || (s==="approved" && p.integrationStatus==="pending_publication"));
 }
 function progressionList(){
   return (L.proposals||[]).filter(p=>p.kind==="progression").map(p=>{
@@ -5871,11 +5825,15 @@ function renderProgressionProposals6(){
 
   el.innerHTML=sorted.map(p=>{
     const status=normalizedProposalStatus(p);
-    const label=proposalStatusLabel(status);
+    const label=proposalStatusLabel(status,p);
     const canRemove=status==="draft";
     const canSend=status==="draft";
     const canRecall=status==="sent";
-    const decisionNote=status==="approved"
+    const decisionNote=status==="approved" && !p.integrationStatus && !L.progressionLedger?.appliedProposalIds?.includes(p.id)
+      ? "<div class='small'>Historique conservé. Vérifier si cette amélioration est déjà comprise dans la fiche avant toute intégration.</div>"
+      : L.progressionLedger?.appliedProposalIds?.includes(p.id)
+      ? "<div class='small'>Amélioration intégrée à cette fiche publiée.</div>"
+      : status==="approved"
       ? "<div class='small'>Cette dépense est intégrée à l’état confirmé et à son domaine.</div>"
       : status==="rejected"
       ? "<div class='small'>Cette dépense n’est plus comptée comme engagée.</div>"
