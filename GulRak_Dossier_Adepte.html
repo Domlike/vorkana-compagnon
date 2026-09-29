@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gul’Rak — Dossier d’Adepte V0.45</title>
+<title>Gul’Rak — Dossier d’Adepte V0.46</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -2710,7 +2710,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
       <div><span class="section-number">05</span><h3>État documentaire</h3></div>
       <p>Ce que la fiche sait avec certitude, et ce qui reste à préciser.</p>
     </div>
-    <div class="gear-documentation-grid"><div><b>Confirmé</b><p>Deux épées courtes, une dague, cuir rembourré, nécessaire de voyage et mouchoir brodé. Monnaie : 10 PO, 69 PA et 8 PC.</p></div><div><b>Charge</b><p>Poids standards renseignés depuis le Recueil. Vêtements exacts, mouchoir et poids des pièces restent à préciser. La gourde est considérée pleine. Transport / levage : 63 / 125 kg, conformément aux valeurs mécaniques actives de cette fiche.</p></div><div><b>Organisation</b><p>La répartition fine et les poids peuvent être préparés puis proposés au MJ. Le mouchoir n’est pas un objet à filament.</p></div></div></section>
+    <div class="gear-documentation-grid"><div><b>Confirmé</b><p>Deux épées courtes, une dague, cuir rembourré, nécessaire de voyage et mouchoir brodé. La tentative d’amélioration de l’épée courte par Kalha a échoué : aucun bonus ni changement de qualité.</p></div><div><b>Charge</b><p>Charge portée de l’équipement listé : 25,77 kg. Les vêtements sont dérivés des poids standards ; le mouchoir utilise un poids de gestion de 50 g. Le poids des pièces n’est pas suivi.</p></div><div><b>Organisation</b><p>Torche rangée dans le sac ; bourse portée sur soi. Le mouchoir reste un souvenir non magique et non filamentaire.</p></div></div></section>
 
   <aside id="gearDrawer" class="gear-drawer" aria-hidden="true">
     <div class="gear-drawer-head">
@@ -2779,7 +2779,7 @@ document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>openPage(b.dat
 addEventListener("hashchange",()=>openPage(location.hash.slice(1)||"home",false));
 
 /* ===== V0.31 — pont joueur local ===== */
-const COCKPIT_FILE="Cockpit_Earthdawn_Cale_Chaos.html";
+const COCKPIT_FILE="Cockpit_MJ.html";
 let cockpitWin=(window.opener&&!window.opener.closed)?window.opener:null;
 let cockpitConnected=false;
 let lastCockpitSeen=0;
@@ -2819,7 +2819,28 @@ function writePlayerVision(html){
 function requestPlayerVision(){
  playerVisionWin=window.open("","EarthdawnPlayerView","width=1280,height=800");
  if(!playerVisionWin){alert("Le navigateur a bloqué la fenêtre Vision joueur.");return}
- writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p></body></html>');
+ writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-GulRak"){
+      const forced={"torch":{"from":["unassigned"],"to":"bag"},"purse":{"from":["unassigned"],"to":"torso"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-GulRak";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>');
  if(!cockpitConnected){connectToCockpit();setTimeout(()=>playerPost({type:"earthdawn-player-view-request"}),1700);return}
  playerPost({type:"earthdawn-player-view-request"});
 }
@@ -2867,7 +2888,7 @@ function applyCockpitSnapshot(d){
  cockpitConnected=true;lastCockpitSeen=Date.now();cockpitWin=d.__source||cockpitWin;
  L.sync.status="connected";L.sync.lastCockpitSeenAt=new Date().toISOString();
  if(d.revision)L.sync.baseRevision=String(d.revision);
- applyProposalDecisions(d.decisions);applyCockpitRuntime(d.runtime);
+ applyProposalDecisions(d.decisions);applyCockpitEvents(d.events||d.runtimeEvents||[]);applyCockpitRuntime(d.runtime);
  const incoming=d.combat||{},c=combatFlow();
  if(incoming.active){
    if(!c.active){crStart("cockpit",{round:incoming.round,situation:incoming.situation})}
@@ -3344,8 +3365,8 @@ const GEAR_ITEM_STATES={
   temporarilyLost:"Perdu provisoirement",consumed:"Consommé",inaccessible:"Inaccessible"
 };
 
-const GEAR_BASE_ITEMS=[{"id":"short1","name":"Épée courte — première","category":"Arme","weight":1.5,"weightStatus":"official","location":"beltLeft","effect":"Niveau de dommages 10 / D10+D6. Avec Attaque surprise : 13 / D12+D10, si la cible est Surprise. Poids standard : Recueil p.436.","usableIn":"combat"},{"id":"short2","name":"Épée courte — seconde","category":"Arme","weight":1.5,"weightStatus":"official","location":"beltRight","effect":"Deuxième épée possédée. Ne confère pas le talent Deuxième arme. Deuxième attaque réemploie l’arme de la première attaque. Poids standard : Recueil p.436.","usableIn":"combat"},{"id":"dagger","name":"Dague","category":"Arme","weight":0.5,"weightStatus":"official","location":"beltRight","effect":"Niveau de dommages 8 / 2D6 ; avec Attaque surprise : 11 / D10+D8. Poids standard : Recueil p.436.","usableIn":"combat"},{"id":"armor","name":"Cuir rembourré","category":"Armure","weight":10,"weightStatus":"official","location":"torso","effect":"Armure physique 4 ; Armure mystique naturelle 1 ; Initiative 8. Poids standard : Recueil p.440.","fixed":true},{"id":"backpack","name":"Sac à dos","category":"Contenant","weight":1.5,"weightStatus":"source","location":"back","effect":"Contient couverture, briquet, sept rations et mouchoir. Poids corrigé du sac seul : 1,5 kg."},{"id":"blanket","name":"Couverture","category":"Voyage","weight":1,"weightStatus":"source","location":"bag","effect":"Dans le sac à dos. Poids corrigé : 1 kg."},{"id":"flint","name":"Briquet à silex","category":"Voyage","weight":0.22,"weightStatus":"official","location":"bag","effect":"Dans le sac à dos. Poids corrigé : 1 kg."},{"id":"rations","name":"Rations de voyage ×7","category":"Consommable","weight":3.5,"weightStatus":"official","location":"bag","effect":"Sept rations journalières : une semaine, 3,5 kg (Recueil p.454). Consommation à proposer au MJ."},{"id":"handkerchief","name":"Mouchoir noir brodé « Gullûz »","category":"Souvenir","weight":null,"weightStatus":"unknown","location":"bag","effect":"Broderie de Sura Fil-d’Argent, trois points d’argent ajoutés par Miraq. Aucun pouvoir ni filament confirmé."},{"id":"torch","name":"Torche","category":"Voyage","weight":0.5,"weightStatus":"source","location":"unassigned","effect":"Possédée ; emplacement exact à préciser. Poids corrigé : 0,5 kg."},{"id":"water","name":"Gourde","category":"Voyage","weight":2,"weightStatus":"confirmed","location":"beltLeft","effect":"Gourde considérée pleine. Poids de campagne : 2 kg."},{"id":"clothes","name":"Bottes souples, chemise, ceinture et haut-de-chausse","category":"Vêtement","weight":null,"weightStatus":"unknown","location":"torso","effect":"Vêtements portés."},{"id":"purse","name":"Bourse","category":"Contenant","weight":0.5,"weightStatus":"source","location":"unassigned","effect":"Contenant possédé, emplacement à préciser ; contenu compté séparément dans Monnaie. Poids corrigé : 0,5 kg."}];
-const GEAR_PURSE_DEFAULTS=[{"id":"purse","name":"Bourse","location":"unassigned","gold":0,"silver":9,"copper":8,"confirmed":true},{"id":"unallocated","name":"À répartir","location":"unassigned","gold":10,"silver":60,"copper":0,"confirmed":true}];
+const GEAR_BASE_ITEMS=[{"id":"short1","name":"Épée courte — première","category":"Arme","weight":1.5,"weightStatus":"official","location":"beltLeft","effect":"Niveau de dommages 10 / D10+D6. Avec Attaque surprise : 13 / D12+D10 si la cible est Surprise. Tentative d’amélioration par Kalha échouée pendant l’interlude : aucune modification mécanique ni de qualité. Poids standard : 1,5 kg.","usableIn":"combat"},{"id":"short2","name":"Épée courte — seconde","category":"Arme","weight":1.5,"weightStatus":"official","location":"beltRight","effect":"Deuxième épée possédée. Ne confère pas le talent Deuxième arme. Deuxième attaque réemploie l’arme de la première attaque. Poids standard : Recueil p.436.","usableIn":"combat"},{"id":"dagger","name":"Dague","category":"Arme","weight":0.5,"weightStatus":"official","location":"beltRight","effect":"Niveau de dommages 8 / 2D6 ; avec Attaque surprise : 11 / D10+D8. Poids standard : Recueil p.436.","usableIn":"combat"},{"id":"armor","name":"Cuir rembourré","category":"Armure","weight":10,"weightStatus":"official","location":"torso","effect":"Armure physique 4 ; Armure mystique naturelle 1 ; Initiative 8. Poids standard : Recueil p.440.","fixed":true},{"id":"backpack","name":"Sac à dos","category":"Contenant","weight":1.5,"weightStatus":"source","location":"back","effect":"Contient couverture, briquet, sept rations et mouchoir. Poids corrigé du sac seul : 1,5 kg."},{"id":"blanket","name":"Couverture","category":"Voyage","weight":1,"weightStatus":"source","location":"bag","effect":"Dans le sac à dos. Poids corrigé : 1 kg."},{"id":"flint","name":"Briquet à silex","category":"Voyage","weight":0.22,"weightStatus":"official","location":"bag","effect":"Dans le sac à dos. Poids standard : 220 g."},{"id":"rations","name":"Rations de voyage ×7","category":"Consommable","weight":3.5,"weightStatus":"official","location":"bag","effect":"Sept rations journalières : une semaine, 3,5 kg (Recueil p.454). Consommation à proposer au MJ."},{"id":"handkerchief","name":"Mouchoir noir brodé « Gullûz »","category":"Souvenir","weight":0.05,"weightStatus":"estimate","location":"bag","effect":"Broderie de Sura Fil-d’Argent, trois points d’argent ajoutés par Miraq. Aucun pouvoir ni filament confirmé. Poids de gestion : 50 g."},{"id":"torch","name":"Torche","category":"Voyage","weight":0.5,"weightStatus":"source","location":"bag","effect":"Rangée dans le sac à dos. Poids standard : 0,5 kg."},{"id":"water","name":"Gourde","category":"Voyage","weight":2,"weightStatus":"confirmed","location":"beltLeft","effect":"Gourde considérée pleine. Poids de campagne : 2 kg."},{"id":"clothes","name":"Bottes souples, chemise, ceinture et haut-de-chausse","category":"Vêtement","weight":3,"weightStatus":"derived","location":"torso","effect":"Vêtements portés. Charge de référence : bottes souples 1 kg + chemise 1 kg + pantalon/haut-de-chausse 1 kg ; ceinture négligeable."},{"id":"purse","name":"Bourse","category":"Contenant","weight":0.5,"weightStatus":"source","location":"torso","effect":"Bourse portée sur soi ; contenu compté séparément dans Monnaie. Poids standard d’une bourse de ceinture : 0,5 kg."}];
+const GEAR_PURSE_DEFAULTS=[{"id":"purse","name":"Bourse","location":"torso","gold":0,"silver":9,"copper":8,"confirmed":true},{"id":"unallocated","name":"À répartir","location":"unassigned","gold":10,"silver":60,"copper":0,"confirmed":true}];
 function gearState(){
   if(!L.inventory||typeof L.inventory!=="object"){
     L.inventory={
@@ -3492,6 +3513,11 @@ function gearItemTags(i){
   tags.push(`<span class="gear-tag ${i.location==="bag"?"stowed":i.location==="unassigned"?"unknown":"ready"}">${esc(access)}</span>`);
   if(i.weightStatus==="unknown"&&!Number.isFinite(i.weight))tags.push(`<span class="gear-tag unknown">Poids à préciser</span>`);
   if(i.weightStatus==="derived")tags.push(`<span class="gear-tag">Poids dérivé du lot de 20</span>`);
+  if(i.weightStatus==="estimate")tags.push(`<span class="gear-tag">Poids de gestion</span>`);
+  if(i.weightStatus==="negligible")tags.push(`<span class="gear-tag">Poids négligeable</span>`);
+  if(i.quality==="good")tags.push(`<span class="gear-tag ready">Bonne qualité</span>`);
+  if(i.quality==="excellent")tags.push(`<span class="gear-tag ready">Excellente qualité</span>`);
+  if(i.enhancement&&Number(i.enhancement.bonusDamageLevel)>0)tags.push(`<span class="gear-tag">Renforcé +${i.enhancement.bonusDamageLevel} dégâts</span>`);
   tags.push(`<span class="gear-tag ${i.state==="available"?"ready":"unknown"}">${esc(GEAR_ITEM_STATES[i.state]||i.state)}</span>`);
   if(i.demoOnly)tags.push(`<span class="gear-tag unknown">Hors continuité</span>`);
   return tags.join("");
@@ -3526,7 +3552,7 @@ window.gearSelectItem=gearSelectItem;window.gearSetLocation=gearSetLocation;wind
 function gearRenderContainers(){
   const host=document.getElementById("gearContainers");if(!host)return;
   const items=gearAllItems();
-  const cards=[{id:"bagages",title:"Sac à dos",loc:"bag",note:"Couverture, briquet, rations et mouchoir"},{id:"purses",title:"Bourses",loc:null,note:"10 PO, 69 PA et 8 PC"}];
+  const cards=[{id:"bagages",title:"Sac à dos",loc:"bag",note:"Couverture, briquet, rations, torche et mouchoir"},{id:"purses",title:"Bourses",loc:null,note:"10 PO, 69 PA et 8 PC"}];
   host.innerHTML=cards.map(c=>{
     const count=c.id==="purses"?gearState().purses.filter(p=>p.id!=="unallocated").length:items.filter(i=>i.location===c.loc&&i.id!==c.id).length;
     return `<article class="container-card"><h4>${c.title}</h4><p>${c.note}</p><div class="container-count">${count}</div><div class="container-actions">
@@ -5698,4 +5724,65 @@ installVorkanaProgression();
 <script src="vorkana-combat-options.js?v=0.40.0"></script>
 <script src="vorkana-combat-sync.js?v=0.38.0"></script>
 <script src="vorkana-sauvegarde.js?v=0.40.0"></script>
-<script src="vorkana-navigation.js?v=0.43.1"></script><script>applyCockpitRuntime=VorkanaRuntime.player(P,L,save,renderProposalSurfaces);</script></body></html>
+<script src="vorkana-navigation.js?v=0.43.1"></script><script>
+/* SYNC_AUTORITE_FICHE_20260929 */
+function applyCockpitEvents(events){
+  if(!Array.isArray(events))return false;
+  if(!Array.isArray(L.appliedCockpitEvents))L.appliedCockpitEvents=[];
+  const seen=new Set(L.appliedCockpitEvents);let changed=false;
+  events.forEach(ev=>{
+    if(!ev||!ev.id||seen.has(ev.id))return;
+    const field=String(ev.field||ev.resource||"");
+    if(["karma","damage","wounds","recoveriesUsed"].includes(field)){
+      L.draft=L.draft||{};
+      const fallback=field==="karma"?P.combat.karma.current:0;
+      const current=Number.isFinite(Number(L.draft[field]))?Number(L.draft[field]):fallback;
+      if(ev.mode==="set"&&Number.isFinite(Number(ev.value)))L.draft[field]=Number(ev.value);
+      else if(Number.isFinite(Number(ev.delta)))L.draft[field]=current+Number(ev.delta);
+      if(field==="karma")L.draft[field]=Math.max(0,Math.min(P.combat.karma.max,Number(L.draft[field])||0));
+      else L.draft[field]=Math.max(0,Number(L.draft[field])||0);
+      changed=true;
+    }
+    seen.add(ev.id);L.appliedCockpitEvents.push(ev.id);
+  });
+  if(L.appliedCockpitEvents.length>500)L.appliedCockpitEvents=L.appliedCockpitEvents.slice(-500);
+  if(changed){save();if(typeof renderProposalSurfaces==="function")renderProposalSurfaces();if(typeof renderHealthState==="function")renderHealthState();}
+  return changed;
+}
+applyCockpitRuntime=function(runtime){
+  if(runtime&&typeof runtime==="object"){
+    L.sync=L.sync||{};
+    L.sync.lastRuntimeSnapshotObserved={
+      seenAt:new Date().toISOString(),
+      revision:runtime.runtimePublicationRevision||runtime.revision||null,
+      karma:Number.isFinite(Number(runtime.karma))?Number(runtime.karma):null,
+      damage:Number.isFinite(Number(runtime.damage))?Number(runtime.damage):null,
+      wounds:Number.isFinite(Number(runtime.wounds))?Number(runtime.wounds):null,
+      recoveriesUsed:Number.isFinite(Number(runtime.recoveriesUsed))?Number(runtime.recoveriesUsed):null
+    };
+    save();
+  }
+  return false;
+};
+</script><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-GulRak"){
+      const forced={"torch":{"from":["unassigned"],"to":"bag"},"purse":{"from":["unassigned"],"to":"torso"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-GulRak";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Barbak — Dossier d’Adepte V0.42</title>
+<title>Barbak — Dossier d’Adepte V0.43</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -2703,7 +2703,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
       <div><span class="section-number">05</span><h3>État documentaire</h3></div>
       <p>Ce que la fiche sait avec certitude, et ce qui reste à préciser.</p>
     </div>
-<div class="gear-documentation-grid"><div><b>Monnaie</b><p>Les anciens fonds restent confiés à Ogunta, hors de la charge de Barbak. Le paiement du Luxueux (10 PO et 60 PA) reste à répartir.</p></div><div><b>Charge</b><p>Ancienne charge enregistrée : 71,5 kg. Le poids de chaque élément reste à préciser. Transport / levage conservés : 115 / 230 kg.</p></div><div><b>Organisation</b><p>Répartition préparée par le joueur, sous validation du MJ. Un nom d’arme ne crée ni magie ni filament.</p></div></div></section>
+<div class="gear-documentation-grid"><div><b>Confirmé</b><p>Hache à deux mains reforgée, cotte de mailles, tente de Zra’Ul, corde de 15 m, kit d’aventurier et vieille boucle du baudrier de Kash.</p></div><div><b>Charge</b><p>Charge portée documentée : 47,1 kg. Références : hache 4,5 kg ; cotte 18 kg ; tente 10 kg ; corde 7,5 kg ; kit 7 kg. La boucle utilise un poids de gestion de 0,1 kg.</p></div><div><b>Organisation</b><p>Hache et kit dans le dos, tente et corde rangées. Les anciens fonds restent confiés à Ogunta et ne sont pas comptés dans cette charge.</p></div></div></section>
   <aside id="gearDrawer" class="gear-drawer" aria-hidden="true">
     <div class="gear-drawer-head">
       <div>
@@ -2770,7 +2770,7 @@ document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>openPage(b.dat
 addEventListener("hashchange",()=>openPage(location.hash.slice(1)||"home",false));
 
 /* ===== V0.31 — pont joueur local ===== */
-const COCKPIT_FILE="Cockpit_Earthdawn_Cale_Chaos.html";
+const COCKPIT_FILE="Cockpit_MJ.html";
 let cockpitWin=(window.opener&&!window.opener.closed)?window.opener:null;
 let cockpitConnected=false;
 let lastCockpitSeen=0;
@@ -2810,7 +2810,28 @@ function writePlayerVision(html){
 function requestPlayerVision(){
  playerVisionWin=window.open("","EarthdawnPlayerView","width=1280,height=800");
  if(!playerVisionWin){alert("Le navigateur a bloqué la fenêtre Vision joueur.");return}
- writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p></body></html>');
+ writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-Barbak"){
+      const forced={"gear_0":{"from":["bag"],"to":"back"},"gear_4":{"from":["bag"],"to":"back"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-Barbak";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>');
  if(!cockpitConnected){connectToCockpit();setTimeout(()=>playerPost({type:"earthdawn-player-view-request"}),1700);return}
  playerPost({type:"earthdawn-player-view-request"});
 }
@@ -2856,7 +2877,7 @@ function applyCockpitSnapshot(d){
  cockpitConnected=true;lastCockpitSeen=Date.now();cockpitWin=d.__source||cockpitWin;
  L.sync.status="connected";L.sync.lastCockpitSeenAt=new Date().toISOString();
  if(d.revision)L.sync.baseRevision=String(d.revision);
- applyProposalDecisions(d.decisions);applyCockpitRuntime(d.runtime);
+ applyProposalDecisions(d.decisions);applyCockpitEvents(d.events||d.runtimeEvents||[]);applyCockpitRuntime(d.runtime);
  const incoming=d.combat||{},c=combatFlow();
  if(incoming.active){
    if(!c.active){crStart("cockpit",{round:incoming.round,situation:incoming.situation})}
@@ -3333,7 +3354,7 @@ const GEAR_ITEM_STATES={
   temporarilyLost:"Perdu provisoirement",consumed:"Consommé",inaccessible:"Inaccessible"
 };
 
-const GEAR_BASE_ITEMS=[{"id":"gear_0","name":"Hache à deux mains reforgée","weight":null,"weightStatus":"unknown","location":"bag","category":"Arme","effect":"Dommages niveau 17 ; reforgée le 8/4/48.","usableIn":"combat"},{"id":"gear_1","name":"Cotte de mailles","weight":null,"weightStatus":"unknown","location":"torso","category":"Armure","effect":"Armure physique 7 ; malus d’initiative 3."},{"id":"gear_2","name":"Tente de Zra’Ul","weight":null,"weightStatus":"unknown","location":"bag","category":"Équipement","effect":"Confiée à Barbak."},{"id":"gear_3","name":"Corde ×1","weight":15,"weightStatus":"confirmed","location":"bag","category":"Équipement","effect":"Corde de 15 m. Ancien poids enregistré de 15 kg conservé, à vérifier matériellement selon la fiche maître."},{"id":"gear_4","name":"Kit d’aventurier","weight":null,"weightStatus":"unknown","location":"bag","category":"Équipement","effect":"Charge totale enregistrée : 71,5 kg."},{"id":"gear_5","name":"Vieille boucle du baudrier de Kash","weight":null,"weightStatus":"unknown","location":"bag","category":"Équipement","effect":"Remise par Koldar lors du passage au troisième Cercle."}];
+const GEAR_BASE_ITEMS=[{"id":"gear_0","name":"Hache à deux mains reforgée","weight":4.5,"weightStatus":"official","location":"back","category":"Arme","effect":"Dommages niveau 17 ; reforgée le 8/4/48. Poids de référence d’une grande hache d’armes / hache à deux mains : 4,5 kg.","usableIn":"combat"},{"id":"gear_1","name":"Cotte de mailles","weight":18,"weightStatus":"official","location":"torso","category":"Armure","effect":"Armure physique 7 ; malus d’initiative 3. Poids standard : 18 kg."},{"id":"gear_2","name":"Tente de Zra’Ul","weight":10,"weightStatus":"official","location":"bag","category":"Équipement","effect":"Tente de Zra’Ul confiée à Barbak. Poids standard : 10 kg."},{"id":"gear_3","name":"Corde ×1","weight":7.5,"weightStatus":"official","location":"bag","category":"Équipement","effect":"Corde de 15 m. Poids standard corrigé : 7,5 kg."},{"id":"gear_4","name":"Kit d’aventurier","weight":7,"weightStatus":"official","location":"back","category":"Équipement","effect":"Kit d’aventurier standard sans tente : 7 kg. La tente est comptée séparément."},{"id":"gear_5","name":"Vieille boucle du baudrier de Kash","weight":0.1,"weightStatus":"estimate","location":"bag","category":"Équipement","effect":"Vieille boucle du baudrier de Kash, remise par Koldar lors du passage au troisième Cercle. Poids de gestion : 0,1 kg faute de valeur de référence."}];
 const GEAR_PURSE_DEFAULTS=[{"id":"purse","name":"Fonds confiés à Ogunta","location":"elsewhere","gold":64,"silver":54,"copper":1,"confirmed":true},{"id":"unallocated","name":"À répartir","location":"unassigned","gold":10,"silver":60,"copper":0,"confirmed":true}];
 function gearState(){
   if(!L.inventory||typeof L.inventory!=="object"){
@@ -3481,6 +3502,11 @@ function gearItemTags(i){
   tags.push(`<span class="gear-tag ${i.location==="bag"?"stowed":i.location==="unassigned"?"unknown":"ready"}">${esc(access)}</span>`);
   if(i.weightStatus==="unknown"&&!Number.isFinite(i.weight))tags.push(`<span class="gear-tag unknown">Poids à préciser</span>`);
   if(i.weightStatus==="derived")tags.push(`<span class="gear-tag">Poids dérivé du lot de 20</span>`);
+  if(i.weightStatus==="estimate")tags.push(`<span class="gear-tag">Poids de gestion</span>`);
+  if(i.weightStatus==="negligible")tags.push(`<span class="gear-tag">Poids négligeable</span>`);
+  if(i.quality==="good")tags.push(`<span class="gear-tag ready">Bonne qualité</span>`);
+  if(i.quality==="excellent")tags.push(`<span class="gear-tag ready">Excellente qualité</span>`);
+  if(i.enhancement&&Number(i.enhancement.bonusDamageLevel)>0)tags.push(`<span class="gear-tag">Renforcé +${i.enhancement.bonusDamageLevel} dégâts</span>`);
   tags.push(`<span class="gear-tag ${i.state==="available"?"ready":"unknown"}">${esc(GEAR_ITEM_STATES[i.state]||i.state)}</span>`);
   if(i.demoOnly)tags.push(`<span class="gear-tag unknown">Hors continuité</span>`);
   return tags.join("");
@@ -3515,7 +3541,7 @@ window.gearSelectItem=gearSelectItem;window.gearSetLocation=gearSetLocation;wind
 function gearRenderContainers(){
   const host=document.getElementById("gearContainers");if(!host)return;
   const items=gearAllItems();
-  const cards=[{id:"bagages",title:"Sac à dos",loc:"bag",note:"Couverture, briquet, rations et mouchoir"},{id:"purses",title:"Bourses",loc:null,note:"9 PA et 8 PC"}];
+  const cards=[{id:"bagages",title:"Bagages",loc:"bag",note:"Tente et corde rangées ; hache et kit portés dans le dos"},{id:"purses",title:"Bourses",loc:null,note:"64 PO, 54 PA, 1 PC confiés à Ogunta • 10 PO et 60 PA à répartir"}];
   host.innerHTML=cards.map(c=>{
     const count=c.id==="purses"?gearState().purses.filter(p=>p.id!=="unallocated").length:items.filter(i=>i.location===c.loc&&i.id!==c.id).length;
     return `<article class="container-card"><h4>${c.title}</h4><p>${c.note}</p><div class="container-count">${count}</div><div class="container-actions">
@@ -5689,4 +5715,65 @@ installVorkanaProgression();
 <script src="vorkana-combat-options.js?v=0.40.0"></script>
 <script src="vorkana-combat-sync.js?v=0.38.0"></script>
 <script src="vorkana-sauvegarde.js?v=0.40.0"></script>
-<script src="vorkana-navigation.js?v=0.43.1"></script><script>applyCockpitRuntime=VorkanaRuntime.player(P,L,save,renderProposalSurfaces);</script></body></html>
+<script src="vorkana-navigation.js?v=0.43.1"></script><script>
+/* SYNC_AUTORITE_FICHE_20260929 */
+function applyCockpitEvents(events){
+  if(!Array.isArray(events))return false;
+  if(!Array.isArray(L.appliedCockpitEvents))L.appliedCockpitEvents=[];
+  const seen=new Set(L.appliedCockpitEvents);let changed=false;
+  events.forEach(ev=>{
+    if(!ev||!ev.id||seen.has(ev.id))return;
+    const field=String(ev.field||ev.resource||"");
+    if(["karma","damage","wounds","recoveriesUsed"].includes(field)){
+      L.draft=L.draft||{};
+      const fallback=field==="karma"?P.combat.karma.current:0;
+      const current=Number.isFinite(Number(L.draft[field]))?Number(L.draft[field]):fallback;
+      if(ev.mode==="set"&&Number.isFinite(Number(ev.value)))L.draft[field]=Number(ev.value);
+      else if(Number.isFinite(Number(ev.delta)))L.draft[field]=current+Number(ev.delta);
+      if(field==="karma")L.draft[field]=Math.max(0,Math.min(P.combat.karma.max,Number(L.draft[field])||0));
+      else L.draft[field]=Math.max(0,Number(L.draft[field])||0);
+      changed=true;
+    }
+    seen.add(ev.id);L.appliedCockpitEvents.push(ev.id);
+  });
+  if(L.appliedCockpitEvents.length>500)L.appliedCockpitEvents=L.appliedCockpitEvents.slice(-500);
+  if(changed){save();if(typeof renderProposalSurfaces==="function")renderProposalSurfaces();if(typeof renderHealthState==="function")renderHealthState();}
+  return changed;
+}
+applyCockpitRuntime=function(runtime){
+  if(runtime&&typeof runtime==="object"){
+    L.sync=L.sync||{};
+    L.sync.lastRuntimeSnapshotObserved={
+      seenAt:new Date().toISOString(),
+      revision:runtime.runtimePublicationRevision||runtime.revision||null,
+      karma:Number.isFinite(Number(runtime.karma))?Number(runtime.karma):null,
+      damage:Number.isFinite(Number(runtime.damage))?Number(runtime.damage):null,
+      wounds:Number.isFinite(Number(runtime.wounds))?Number(runtime.wounds):null,
+      recoveriesUsed:Number.isFinite(Number(runtime.recoveriesUsed))?Number(runtime.recoveriesUsed):null
+    };
+    save();
+  }
+  return false;
+};
+</script><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-Barbak"){
+      const forced={"gear_0":{"from":["bag"],"to":"back"},"gear_4":{"from":["bag"],"to":"back"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-Barbak";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>

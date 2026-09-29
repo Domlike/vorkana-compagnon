@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kalha — Dossier d’Adepte V0.44</title>
+<title>Kalha — Dossier d’Adepte V0.48</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -1873,6 +1873,86 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 .talent-flag.yes{color:#6e4dac}.talent-flag.no{color:#aaa;font-weight:400}
 .talent-attr{text-align:center;color:#4f79a6;font-weight:700}
 
+
+/* =========================================================
+   V0.47 — Atelier de Forge de Kalha
+   ========================================================= */
+.forge-page{
+  position:relative;padding:28px;border:1px solid rgba(122,91,46,.35);border-radius:10px;
+  background:
+    radial-gradient(circle at 10% 8%,rgba(255,255,255,.5),transparent 28%),
+    radial-gradient(circle at 88% 12%,rgba(111,65,31,.08),transparent 36%),
+    linear-gradient(rgba(246,235,211,.98),rgba(235,218,184,.96));
+  box-shadow:inset 0 0 80px rgba(91,54,25,.10),0 10px 30px rgba(58,39,20,.10)
+}
+.forge-page::before{content:"";position:absolute;inset:8px;border:1px solid rgba(122,91,46,.2);border-radius:7px;pointer-events:none}
+.forge-page>*{position:relative;z-index:1}
+.forge-head{display:flex!important;justify-content:space-between;align-items:flex-end;gap:18px}
+.forge-head h2{font:600 34px Georgia,"Times New Roman",serif!important;color:#3d3024!important}
+.forge-head p{max-width:760px;margin:5px 0 0;color:#675b4c}
+.forge-kicker{font-size:10px;font-weight:900;letter-spacing:.18em;color:#8b6c42}
+.forge-stats{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:7px;margin:14px 0 16px}
+.forge-stat{padding:9px 10px;border:1px solid #d2c1a7;border-radius:7px;background:rgba(255,253,247,.8)}
+.forge-stat span{display:block;font-size:9px;text-transform:uppercase;color:#7c705e}.forge-stat b{display:block;margin-top:2px;color:#2f4c59;font-size:16px}
+.forge-question{margin:17px 0 7px;font:600 19px Georgia,"Times New Roman",serif;color:#4c3927}
+.forge-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.forge-action{
+  border:1px solid #cdbb9f;border-radius:8px;background:linear-gradient(#fffaf0,#f5ead6);
+  padding:13px;text-align:left;cursor:pointer;min-height:122px;color:#3f352a
+}
+.forge-action:hover{border-color:#9d7a4e;box-shadow:0 3px 10px rgba(80,50,20,.1)}
+.forge-action.active{background:linear-gradient(145deg,#315a52,#426e64);border-color:#315a52;color:#fff}
+.forge-action .forge-icon{font-size:25px;display:block;margin-bottom:7px}
+.forge-action b{display:block;font:700 16px Georgia,"Times New Roman",serif}
+.forge-action small{display:block;margin-top:5px;line-height:1.35;opacity:.82}
+.forge-action.locked{opacity:.55;cursor:not-allowed}
+.forge-workbench{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:12px;margin-top:13px}
+.forge-card{border:1px solid #d0bea1;border-radius:8px;background:rgba(255,252,244,.9);padding:14px}
+.forge-card h3{margin:0 0 10px;font:700 20px Georgia,"Times New Roman",serif;color:#3c4f57}
+.forge-card h4{margin:14px 0 7px;color:#5d4933}
+.forge-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.forge-form .wide{grid-column:1 / -1}
+.forge-field{display:grid;gap:4px}
+.forge-field label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#736653}
+.forge-field input,.forge-field select,.forge-field textarea{
+  width:100%;box-sizing:border-box;border:1px solid #c8b99f;border-radius:5px;background:#fffdf8;padding:8px;font:inherit;color:#313130
+}
+.forge-field textarea{min-height:68px;resize:vertical}
+.forge-help{font-size:10px;color:#7a6e5e;line-height:1.4}
+.forge-check{display:flex;gap:7px;align-items:flex-start;padding:8px;border:1px solid #d8ccb8;background:#faf5ea;border-radius:5px}
+.forge-check input{margin-top:3px}.forge-check small{display:block;color:#746858;margin-top:2px}
+.forge-plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.forge-plan-box{padding:9px;border:1px solid #d7cbb7;border-radius:6px;background:#f8f3e9}
+.forge-plan-box span{display:block;font-size:9px;text-transform:uppercase;color:#7a6e5f}.forge-plan-box b{display:block;margin-top:2px;color:#294557;font-size:16px}
+.forge-plan-box.emphasis{border-left:4px solid #b79249;background:#fff5df}
+.forge-plan-note{margin-top:9px;padding:9px 10px;border-left:4px solid #6f9188;background:#edf4f0;color:#465c55;font-size:11px;line-height:1.45}
+.forge-plan-note.warn{border-left-color:#b96550;background:#fff0eb;color:#754638}
+.forge-thresholds{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.forge-threshold{padding:6px;text-align:center;border:1px solid #d6c8b4;border-radius:5px;background:#faf7f0}
+.forge-threshold span{display:block;font-size:9px;color:#7c705f}.forge-threshold b{display:block;color:#35505d}
+.forge-threshold.extra{background:#e8f0df;border-color:#aebf93}
+.forge-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.forge-btn{border:1px solid #9c8a70;border-radius:5px;background:#fffaf0;color:#43545a;padding:7px 10px;font-weight:700;cursor:pointer}
+.forge-btn.primary{background:#315a52;border-color:#315a52;color:#fff}
+.forge-btn:disabled{opacity:.45;cursor:not-allowed}
+.forge-renewal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.forge-renewal{border:1px solid #d3c4ac;border-left:4px solid #6f9188;border-radius:6px;background:#fffdf8;padding:9px}
+.forge-renewal.undated{border-left-color:#b79249}
+.forge-renewal b{display:block;color:#324b58}.forge-renewal small{display:block;color:#786c5d;margin-top:3px;line-height:1.35}
+.forge-history-controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:9px}
+.forge-history-controls select{padding:6px 8px;border:1px solid #c8b99f;border-radius:5px;background:#fffdf8}
+.forge-history{display:grid;gap:7px}
+.forge-history-entry{display:grid;grid-template-columns:128px 1fr auto;gap:10px;padding:9px;border:1px solid #d7cbb8;border-radius:6px;background:#fffdf8}
+.forge-history-entry .date{font-size:10px;font-weight:800;color:#8a6b42}
+.forge-history-entry b{color:#314b58}.forge-history-entry p{margin:3px 0 0;font-size:11px;color:#6d6254;line-height:1.4}
+.forge-status{align-self:start;font-size:9px;font-weight:900;text-transform:uppercase;border-radius:999px;padding:3px 6px;background:#e7f1e4;color:#4d7047;white-space:nowrap}
+.forge-quality-ref{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.forge-quality-ref>div{border:1px solid #d8ccb8;border-radius:6px;background:#faf5ea;padding:8px}
+.forge-quality-ref b{display:block;color:#4b3c2f}.forge-quality-ref small{display:block;color:#74695b;margin-top:3px;line-height:1.35}
+.forge-source-note{margin-top:10px;font-size:10px;color:#7d705f;font-style:italic}
+@media(max-width:1100px){.forge-actions{grid-template-columns:repeat(2,1fr)}.forge-workbench{grid-template-columns:1fr}.forge-renewal-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.forge-page{padding:16px}.forge-head{align-items:flex-start;flex-direction:column}.forge-stats{grid-template-columns:repeat(2,1fr)}.forge-actions{grid-template-columns:1fr}.forge-form{grid-template-columns:1fr}.forge-form .wide{grid-column:auto}.forge-thresholds{grid-template-columns:repeat(2,1fr)}.forge-renewal-grid{grid-template-columns:1fr}.forge-history-entry{grid-template-columns:1fr}.forge-quality-ref{grid-template-columns:1fr}}
+
 </style>
 <script src="vorkana-runtime-publications.js?v=90791b646134493e"></script><script src="vorkana-runtime.js?v=20260919-general"></script><script src="vorkana-published.js?v=20260918"></script>
 <script src="earthdawn-realtime-config.js"></script>
@@ -1886,6 +1966,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 <button data-page="home"><span class="dot player"></span><span id="homeNavName">Essentiel</span></button>
 <button data-page="combat"><span class="dot w"></span>Combat</button>
 <button data-page="gear"><span class="dot th"></span>Équipement</button>
+<button data-page="forge"><span class="dot m"></span>Forge</button>
 <button data-page="archer"><span class="dot t"></span>Discipline</button>
 <button data-page="progression"><span class="dot k"></span>Progression</button>
 <button data-page="notes"><span class="dot sk"></span>Carnet de notes</button>
@@ -1923,7 +2004,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
     <div class="global-karma-core">
       <span class="global-health-label">Karma</span>
       <div class="global-karma-track" aria-label="Jauge de Karma"><span id="globalKarmaFill" class="global-karma-fill"></span></div>
-      <b id="globalKarmaValue">22 / 40</b>
+      <b id="globalKarmaValue">20 / 40</b>
     </div>
     <div class="global-recovery-mini">
       <span>Tests de récupération</span>
@@ -2537,6 +2618,89 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 </section>
 </section>
 
+
+<section class="view forge-page" id="page-forge">
+  <div class="head forge-head">
+    <div>
+      <div class="forge-kicker">ATELIER DE KALHA</div>
+      <h2>Forge</h2>
+      <p>Choisir ce que Kalha veut faire, voir immédiatement ce qu’il faut, le temps, le jet, la difficulté, les options de qualité et ce qui devra être renouvelé.</p>
+    </div>
+    <div class="badge">État mécanique : fiche publiée</div>
+  </div>
+
+  <div class="forge-stats">
+    <div class="forge-stat"><span>Perfectionnement de lame</span><b>Rang 4 • Niv. 11 / D10+D8</b></div>
+    <div class="forge-stat"><span>Demi-magie de Forgeron</span><b>Niv. 9 / D8+D6</b></div>
+    <div class="forge-stat"><span>Renforcement de flèches</span><b>Jusqu’à 4 projectiles</b></div>
+    <div class="forge-stat"><span>Karma courant</span><b id="forgeKarmaNow">20 / 40</b></div>
+  </div>
+
+  <div class="forge-question">Qu’est-ce que je peux faire ?</div>
+  <div class="forge-actions" id="forgeActions">
+    <button type="button" class="forge-action active" data-forge-op="blade">
+      <span class="forge-icon">⚒</span><b>Perfectionner une arme</b>
+      <small>Augmenter de +1 son niveau de dommages, ou renouveler une amélioration arrivée au maximum.</small>
+    </button>
+    <button type="button" class="forge-action" data-forge-op="arrows">
+      <span class="forge-icon">➶</span><b>Renforcer des projectiles</b>
+      <small>Jusqu’à 4 projectiles identiques. +1 niveau de dommages, jamais au test d’attaque.</small>
+    </button>
+    <button type="button" class="forge-action" data-forge-op="make">
+      <span class="forge-icon">▣</span><b>Fabriquer</b>
+      <small>Arme, projectile, armure, bouclier ou ouvrage métallique grâce à la Demi-magie.</small>
+    </button>
+    <button type="button" class="forge-action" data-forge-op="repair">
+      <span class="forge-icon">⛭</span><b>Réparer</b>
+      <small>Armes, armures et boucliers endommagés avec les outils appropriés.</small>
+    </button>
+  </div>
+
+  <div class="forge-workbench">
+    <section class="forge-card">
+      <h3 id="forgeOpTitle">Perfectionner une arme</h3>
+      <div id="forgeForm"></div>
+    </section>
+    <aside class="forge-card">
+      <h3>Plan de travail</h3>
+      <div id="forgePlan"></div>
+    </aside>
+  </div>
+
+  <div class="forge-question">Qu’est-ce que je devrai remettre à jour ?</div>
+  <section class="forge-card">
+    <div id="forgeRenewals" class="forge-renewal-grid"></div>
+    <div class="forge-source-note">Les effets de Perfectionnement de lame et de Renforcement de flèches durent un an et un jour après la dernière réussite. Quand la date précise n’est pas documentée, la fiche le signale au lieu de l’inventer.</div>
+  </section>
+
+  <div class="forge-question">Qualité des objets — repère rapide</div>
+  <section class="forge-card">
+    <div class="forge-quality-ref">
+      <div><b>Arme</b><small>Bonne : ×3, +1 interaction. Excellente : ×5, +2 interaction et +1 niveau de dommages.</small></div>
+      <div><b>Armure</b><small>Bonne : ×3, +1 interaction. Excellente : ×5, +2 interaction et +1 à la difficulté d’un Coup critique.</small></div>
+      <div><b>Outils</b><small>Bonne : ×2, +1 au test approprié. Excellente : ×4, +2 au test approprié.</small></div>
+      <div><b>Vêtements</b><small>Bonne : ×1,5, +1 interaction. Excellente : ×3, +2 interaction.</small></div>
+    </div>
+    <div class="forge-plan-note">Pour les bonus d’interaction, seul le bonus de qualité le plus élevé s’applique. Pour les flèches de bonne qualité, le bonus social n’intervient que si leur qualité compte réellement dans l’échange.</div>
+  </section>
+
+  <div class="forge-question">Historique de l’atelier</div>
+  <section class="forge-card">
+    <div class="forge-history-controls">
+      <label>Afficher
+        <select id="forgeHistoryFilter">
+          <option value="all">Tout</option>
+          <option value="validated">Joué / validé</option>
+          <option value="draft">Préparé</option>
+        </select>
+      </label>
+      <span class="small">Les travaux validés sont conservés comme historique ; une nouvelle préparation ne modifie pas automatiquement une autre fiche de PJ.</span>
+    </div>
+    <div id="forgeHistory" class="forge-history"></div>
+  </section>
+</section>
+
+
 <section class="view equipment-page" id="page-gear">
   <div class="head equipment-head">
     <div>
@@ -2710,7 +2874,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
       <div><span class="section-number">05</span><h3>État documentaire</h3></div>
       <p>Ce que la fiche sait avec certitude, et ce qui reste à préciser.</p>
     </div>
-    <div class="gear-documentation-grid"><div><b>Confirmé</b><p>Masse d’armes reforgée deux fois le 30 Strassa 1448 TH, cotte de mailles et targe. Outils de forge et d’inscription à détailler.</p></div><div><b>Poids documenté</b><p>Masse 3 kg ; cotte de mailles 18 kg ; targe 1 kg. Total connu : 22 kg, hors outils, bagages et monnaie.</p></div><div><b>À préciser</b><p>Monnaie, outils, contenants, rangement définitif. Aucun objet à filament confirmé. Une estimation locale reste une proposition au MJ.</p></div></div>
+    <div class="gear-documentation-grid"><div><b>Confirmé</b><p>Masse d’armes reforgée deux fois le 30 Strassa 1448 TH, cotte de mailles, targe et outils d’artisanat. Karma consolidé : 20 ; PL disponibles : 465.</p></div><div><b>Charge</b><p>Équipement actuellement porté : 22 kg. Les outils d’artisanat sont référencés à 2,5 kg mais restent marqués inaccessibles ; ils ne sont donc pas comptés dans la charge portée.</p></div><div><b>Organisation</b><p>Masse rangée dans le dos ; outils hors accès actuel. Aucun poids inconnu ne subsiste dans les objets listés. Monnaie et éventuels bagages non listés restent hors de ce calcul.</p></div></div>
   </section>
 
   <aside id="gearDrawer" class="gear-drawer" aria-hidden="true">
@@ -2761,7 +2925,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 <script src="vorkana-progression.js?v=20260918"></script>
 <script>
 "use strict";
-const P={"schemaVersion":"0.1","playerId":"pj_1","characterId":"kalha","name":"Kalha","usualName":"Kalha","fullName":"Kalha","player":"Florent","people":"Ork","discipline":"Forgeron","circle":3,"age":"10 ou 11 ans","birth":"1437 TH","origin":"Rocheville","physical":{"heightM":1.84,"weightKgIndicative":96},"legend":{"total":8685,"spent":8220,"available":465},"mentor":"Marda Braise-Sourde","traits":["Introvertie","Protectrice","Passion Feu"],"role":"Mémoire artisanale du groupe","attributes":{"Dextérité":{"value":16,"step":7,"dice":"D12"},"Force":{"value":13,"step":6,"dice":"D10"},"Constitution":{"value":14,"step":6,"dice":"D10"},"Perception":{"value":16,"step":7,"dice":"D12"},"Volonté":{"value":13,"step":6,"dice":"D10"},"Charisme":{"value":7,"step":4,"dice":"D6"}},"combat":{"initiative":{"step":4,"dice":"D6","note":"Dextérité 7 − malus d’armure 3"},"defenses":{"physical":9,"magical":9,"social":5},"armor":{"physical":8,"mystical":1,"label":"Cotte de mailles et targe"},"health":{"unconscious":42,"death":53,"woundThreshold":10},"recovery":{"max":3,"step":6,"dice":"D10","maxPerDay":3},"movement":{"combat":34,"run":68},"balance":{"step":6,"dice":"D10"},"karma":{"current":22,"max":40,"step":5,"dice":"D8"},"actions":[{"id":"mace","label":"Masse d’armes","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":14,"damageDice":"2D12","range":"Contact","karma":"no","effort":0},{"id":"shield","label":"Coup de bouclier","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":8,"damageDice":"2D6","range":"Contact","karma":"no","effort":1}],"reactions":[{"name":"Parade","rank":4,"step":10,"dice":"D10+D6","effort":1,"limit":"Contact","id":"parry","label":"Parade","usesPerRound":4,"karma":"no"},{"name":"Volonté de fer","rank":4,"step":10,"dice":"D10+D6","effort":1,"limit":"Attaques visant la Défense magique","karma":"optional","id":"ironWill","label":"Volonté de fer","usesPerRound":4}]},"talentsKnown":[{"name":"Armes de mêlée","rank":4,"step":11,"dice":"D10+D8","circle":1,"discipline":false,"action":true,"karma":"non","effort":0},{"name":"Évaluation","rank":2,"step":9,"dice":"D8+D6","circle":1,"discipline":false,"action":true,"karma":"non","effort":0},{"name":"Marchandage","rank":1,"step":5,"dice":"D8","circle":1,"discipline":true,"action":true,"karma":"possible","effort":0},{"name":"Perfectionnement de lame","rank":4,"step":11,"dice":"D10+D8","note":"Spécialisation : Renforcement de flèche","circle":1,"discipline":true,"action":true,"karma":"possible","effort":1},{"name":"Rituel de Karma","rank":2,"rollable":false,"note":"Rituel sans test d’action standard.","circle":1,"discipline":false,"action":false,"karma":"non","effort":0,"step":null,"dice":"—"},{"name":"Volonté de fer","rank":4,"step":10,"dice":"D10+D6","circle":1,"discipline":true,"action":false,"karma":"possible","effort":1},{"name":"Parade","rank":4,"step":10,"dice":"D10+D6","circle":2,"discipline":false,"action":false,"karma":"non","effort":1},{"name":"Endurance","rank":4,"rollable":false,"note":"Effet passif.","circle":2,"discipline":false,"action":false,"karma":"non","effort":0,"step":null,"dice":"—"},{"name":"Histoire des armes","rank":4,"step":11,"dice":"D10+D8","circle":2,"discipline":true,"action":true,"karma":"possible","effort":0},{"name":"Coup de bouclier","rank":2,"rollable":false,"note":"Jet de dommages intégré à l’action de combat.","circle":3,"discipline":false,"action":false,"karma":"non","effort":1,"step":8,"dice":"2D6"},{"name":"Contre-malédiction","rank":1,"step":7,"dice":"D12","circle":3,"discipline":true,"action":true,"karma":"possible","effort":1}],"skills":[{"name":"Connaissance : Histoire de Barsaive","rank":1,"step":8,"dice":"2D6"},{"name":"Connaissance : Légendes et héros","rank":2,"step":9,"dice":"D8+D6"},{"name":"Inscriptions runiques","rank":1,"step":5,"dice":"D8"},{"name":"Don des langues","rank":2,"step":9,"dice":"D8+D6"},{"name":"Médecine","rank":1,"step":8,"dice":"2D6"},{"name":"Attaque critique","rank":1,"rollable":false,"note":"Bonus conditionnel aux dommages, sans jet autonome."},{"name":"Cuisine","rank":1,"step":5,"dice":"D8"},{"name":"Lecture et écriture","rank":1,"step":8,"dice":"2D6"}],"languages":{"spoken":["throalique","or’zet"],"written":[]},"resources":{"money":{"gold":null,"silver":null,"confirmed":false,"confirmedGainsPA":160,"confirmedGainsCoins":{"gold":10,"silver":60,"copper":0}},"arrows":0,"items":["Masse d’armes reforgée deux fois","Cotte de mailles","Targe","Outils de forge et d’inscription"]},"relationships":[{"name":"Kal’Zakath","relation":"Grand frère"},{"name":"Doomir Vent de Glace","relation":"Père disparu"},{"name":"Marda Braise-Sourde","relation":"Mentor Forgeronne • Cercle 6"},{"name":"Barbak et Ogunta","relation":"Cousins"}],"historyHighlights":["Fille de Doomir Vent de Glace et petite sœur de Kal’Zakath, Kalha transforme la mémoire, les serments et les objets en choses tangibles.","Elle a forgé les médaillons de Vorkana et son expertise est devenue centrale depuis la découverte du Coffre d’Anesidora.","Son passage au troisième Cercle, « Le Cercle qui tient », lui a appris qu’une œuvre peut rester sienne sans lui appartenir seule.","Dans la nuit du 29 au 30 Sollus 1448, elle a défendu l’option d’exfiltration ayant permis de libérer Katsika sans alarme ni combat."],"snapshot":{"karma":22,"damage":0,"wounds":0,"recoveriesUsed":0,"arrows":0},"visibility":{"playerSafe":true,"gmSecretsIncluded":false,"notes":"Aucune vérité MJ cachée, horloge PNJ ou information non révélée n’est incluse."},"halfMagic":{"rank":2,"step":9,"dice":"D8+D6","text":"Création et réparation d’armes ou d’armures, avec Perception lorsque la Demi-magie de Forgeron s’applique."},"uiSemanticPalette":{"attribute":"#5b9bd5","talent":"#9aacc0","specialization":"#b39ad0","skill":"#d2ae5d","thread":"#7eaa7e","karma":"#8fc46d","magic":"#bfe2ae","wound":"#ff5b4d","player":"#111111","gm":"#b79249"},"portrait":"Tokens/pj_1_Kalha.png","location":"Rocnoir — à bord de l’Insoumise","gahad":["Lorsqu’une personne extérieure à ses proches manque de respect à Kal’Zakath.","Lorsqu’on dénigre ses œuvres ou l’art sans formuler une critique de connaisseur."],"specializations":[{"name":"Renforcement de flèches"}],"circleAllocationConfirmed":false,"campaignRewards":[{"id":"luxueux-1448-04-riag","label":"Le Luxueux — aventure achevée","date":"4 Riag 1448 TH","legendPoints":1400,"silverTotal":160,"coins":{"gold":10,"silver":60,"copper":0},"payment":"10 PO et 60 PA par personnage : règlement total de 160 PA, compté une seule fois"}]}, TC=[[1,100,200,300,500,200,800],[2,200,300,500,800,300,1300],[3,300,500,800,1300,500,2100],[4,500,800,1300,2100,800,3400],[5,800,1300,2100,3400,1300,5500],[6,1300,2100,3400,5500,2100,null],[7,2100,3400,5500,8900,3400,null],[8,3400,5500,8900,14400,5500,null],[9,5500,8900,14400,23300,8900,null],[10,8900,14400,23300,37700,14400,null],[11,14400,23300,37700,61000,23300,null],[12,23300,37700,61000,98700,37700,null],[13,37700,61000,98700,159700,61000,null],[14,61000,98700,159700,258400,98700,null],[15,98700,159700,258400,418100,159700,null]], CC=[[1,100],[2,200],[3,300],[4,500],[5,800],[6,1000],[7,1500],[8,2000],[9,2500],[10,3500],[11,5000],[12,7500],[13,10000],[14,15000],[15,20000]];
+const P={"schemaVersion":"0.1","playerId":"pj_1","characterId":"kalha","name":"Kalha","usualName":"Kalha","fullName":"Kalha","player":"Florent","people":"Ork","discipline":"Forgeron","circle":3,"age":"10 ou 11 ans","birth":"1437 TH","origin":"Rocheville","physical":{"heightM":1.84,"weightKgIndicative":96},"legend":{"total":8685,"spent":8220,"available":465},"mentor":"Marda Braise-Sourde","traits":["Introvertie","Protectrice","Passion Feu"],"role":"Mémoire artisanale du groupe","attributes":{"Dextérité":{"value":16,"step":7,"dice":"D12"},"Force":{"value":13,"step":6,"dice":"D10"},"Constitution":{"value":14,"step":6,"dice":"D10"},"Perception":{"value":16,"step":7,"dice":"D12"},"Volonté":{"value":13,"step":6,"dice":"D10"},"Charisme":{"value":7,"step":4,"dice":"D6"}},"combat":{"initiative":{"step":4,"dice":"D6","note":"Dextérité 7 − malus d’armure 3"},"defenses":{"physical":9,"magical":9,"social":5},"armor":{"physical":8,"mystical":1,"label":"Cotte de mailles et targe"},"health":{"unconscious":42,"death":53,"woundThreshold":10},"recovery":{"max":3,"step":6,"dice":"D10","maxPerDay":3},"movement":{"combat":34,"run":68},"balance":{"step":6,"dice":"D10"},"karma":{"current":20,"max":40,"step":5,"dice":"D8"},"actions":[{"id":"mace","label":"Masse d’armes","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":14,"damageDice":"2D12","range":"Contact","karma":"no","effort":0},{"id":"shield","label":"Coup de bouclier","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":8,"damageDice":"2D6","range":"Contact","karma":"no","effort":1}],"reactions":[{"name":"Parade","rank":4,"step":10,"dice":"D10+D6","effort":1,"limit":"Contact","id":"parry","label":"Parade","usesPerRound":4,"karma":"no"},{"name":"Volonté de fer","rank":4,"step":10,"dice":"D10+D6","effort":1,"limit":"Attaques visant la Défense magique","karma":"optional","id":"ironWill","label":"Volonté de fer","usesPerRound":4}]},"talentsKnown":[{"name":"Armes de mêlée","rank":4,"step":11,"dice":"D10+D8","circle":1,"discipline":false,"action":true,"karma":"non","effort":0},{"name":"Évaluation","rank":2,"step":9,"dice":"D8+D6","circle":1,"discipline":false,"action":true,"karma":"non","effort":0},{"name":"Marchandage","rank":1,"step":5,"dice":"D8","circle":1,"discipline":true,"action":true,"karma":"possible","effort":0},{"name":"Perfectionnement de lame","rank":4,"step":11,"dice":"D10+D8","note":"Spécialisation : Renforcement de flèche","circle":1,"discipline":true,"action":true,"karma":"possible","effort":1},{"name":"Rituel de Karma","rank":2,"rollable":false,"note":"Rituel sans test d’action standard.","circle":1,"discipline":false,"action":false,"karma":"non","effort":0,"step":null,"dice":"—"},{"name":"Volonté de fer","rank":4,"step":10,"dice":"D10+D6","circle":1,"discipline":true,"action":false,"karma":"possible","effort":1},{"name":"Parade","rank":4,"step":10,"dice":"D10+D6","circle":2,"discipline":false,"action":false,"karma":"non","effort":1},{"name":"Endurance","rank":4,"rollable":false,"note":"Effet passif.","circle":2,"discipline":false,"action":false,"karma":"non","effort":0,"step":null,"dice":"—"},{"name":"Histoire des armes","rank":4,"step":11,"dice":"D10+D8","circle":2,"discipline":true,"action":true,"karma":"possible","effort":0},{"name":"Coup de bouclier","rank":2,"rollable":false,"note":"Jet de dommages intégré à l’action de combat.","circle":3,"discipline":false,"action":false,"karma":"non","effort":1,"step":8,"dice":"2D6"},{"name":"Contre-malédiction","rank":1,"step":7,"dice":"D12","circle":3,"discipline":true,"action":true,"karma":"possible","effort":1}],"skills":[{"name":"Connaissance : Histoire de Barsaive","rank":1,"step":8,"dice":"2D6"},{"name":"Connaissance : Légendes et héros","rank":2,"step":9,"dice":"D8+D6"},{"name":"Inscriptions runiques","rank":1,"step":5,"dice":"D8"},{"name":"Don des langues","rank":2,"step":9,"dice":"D8+D6"},{"name":"Médecine","rank":1,"step":8,"dice":"2D6"},{"name":"Attaque critique","rank":1,"rollable":false,"note":"Bonus conditionnel aux dommages, sans jet autonome."},{"name":"Cuisine","rank":1,"step":5,"dice":"D8"},{"name":"Lecture et écriture","rank":1,"step":8,"dice":"2D6"}],"languages":{"spoken":["throalique","or’zet"],"written":[]},"resources":{"money":{"gold":null,"silver":null,"confirmed":false,"confirmedGainsPA":160,"confirmedGainsCoins":{"gold":10,"silver":60,"copper":0}},"arrows":0,"items":["Masse d’armes reforgée deux fois","Cotte de mailles","Targe","Outils de forge et d’inscription"]},"relationships":[{"name":"Kal’Zakath","relation":"Grand frère"},{"name":"Doomir Vent de Glace","relation":"Père disparu"},{"name":"Marda Braise-Sourde","relation":"Mentor Forgeronne • Cercle 6"},{"name":"Barbak et Ogunta","relation":"Cousins"}],"historyHighlights":["Fille de Doomir Vent de Glace et petite sœur de Kal’Zakath, Kalha transforme la mémoire, les serments et les objets en choses tangibles.","Elle a forgé les médaillons de Vorkana et son expertise est devenue centrale depuis la découverte du Coffre d’Anesidora.","Son passage au troisième Cercle, « Le Cercle qui tient », lui a appris qu’une œuvre peut rester sienne sans lui appartenir seule.","Dans la nuit du 29 au 30 Sollus 1448, elle a défendu l’option d’exfiltration ayant permis de libérer Katsika sans alarme ni combat."],"snapshot":{"karma":20,"damage":0,"wounds":0,"recoveriesUsed":0,"arrows":0},"visibility":{"playerSafe":true,"gmSecretsIncluded":false,"notes":"Aucune vérité MJ cachée, horloge PNJ ou information non révélée n’est incluse."},"halfMagic":{"rank":2,"step":9,"dice":"D8+D6","text":"Création et réparation d’armes ou d’armures, avec Perception lorsque la Demi-magie de Forgeron s’applique."},"uiSemanticPalette":{"attribute":"#5b9bd5","talent":"#9aacc0","specialization":"#b39ad0","skill":"#d2ae5d","thread":"#7eaa7e","karma":"#8fc46d","magic":"#bfe2ae","wound":"#ff5b4d","player":"#111111","gm":"#b79249"},"portrait":"Tokens/pj_1_Kalha.png","location":"Rocnoir — à bord de l’Insoumise","gahad":["Lorsqu’une personne extérieure à ses proches manque de respect à Kal’Zakath.","Lorsqu’on dénigre ses œuvres ou l’art sans formuler une critique de connaisseur."],"specializations":[{"name":"Renforcement de flèches"}],"circleAllocationConfirmed":false,"campaignRewards":[{"id":"luxueux-1448-04-riag","label":"Le Luxueux — aventure achevée","date":"4 Riag 1448 TH","legendPoints":1400,"silverTotal":160,"coins":{"gold":10,"silver":60,"copper":0},"payment":"10 PO et 60 PA par personnage : règlement total de 160 PA, compté une seule fois"}]}, TC=[[1,100,200,300,500,200,800],[2,200,300,500,800,300,1300],[3,300,500,800,1300,500,2100],[4,500,800,1300,2100,800,3400],[5,800,1300,2100,3400,1300,5500],[6,1300,2100,3400,5500,2100,null],[7,2100,3400,5500,8900,3400,null],[8,3400,5500,8900,14400,5500,null],[9,5500,8900,14400,23300,8900,null],[10,8900,14400,23300,37700,14400,null],[11,14400,23300,37700,61000,23300,null],[12,23300,37700,61000,98700,37700,null],[13,37700,61000,98700,159700,61000,null],[14,61000,98700,159700,258400,98700,null],[15,98700,159700,258400,418100,159700,null]], CC=[[1,100],[2,200],[3,300],[4,500],[5,800],[6,1000],[7,1500],[8,2000],[9,2500],[10,3500],[11,5000],[12,7500],[13,10000],[14,15000],[15,20000]];
 const STORE="earthdawn_player_kalha_reference_v034";
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function baseLocal(){return {version:"0.33.3",draft:clone(P.snapshot),proposals:[],notes:{free:"",interludes:[]},sync:{protocolVersion:"1.1",playerId:P.playerId,baseRevision:"local-base-1",status:"disconnected",lastAcceptedRevision:null,lastRejectedRevision:null,lastCockpitSeenAt:null}}}
@@ -2770,14 +2934,13 @@ if(!L.sync)L.sync=baseLocal().sync;
 if(!L.notes||typeof L.notes!=="object")L.notes={free:"",interludes:[]};
 if(!Array.isArray(L.notes.interludes))L.notes.interludes=[];
 
-/* Publication V0.44 — intègre les dépenses validées par le MJ du 29/09/2026.
-   La migration conserve les états locaux et applique uniquement le gain de 12 Karma
-   à l'ancien runtime, puis retire de la file locale les propositions désormais publiées. */
-const PUBLICATION_REVISION="kalha-v044-20260929";
+/* Publication V0.47 — état consolidé après l’atelier du 29/09/2026.
+   La fiche publiée devient l’autorité mécanique. Les 12 achats de Karma restent
+   comptabilisés dans les PL ; deux points ont ensuite été dépensés pendant l’atelier,
+   d’où l’état courant validé à 20. */
+const PUBLICATION_REVISION="kalha-v047-20260929";
 if(L.publicationRevision!==PUBLICATION_REVISION){
-  const previousKarma=Number(L.draft?.karma);
-  const basePreviousKarma=Number.isFinite(previousKarma)?previousKarma:10;
-  L.draft={...P.snapshot,...(L.draft||{}),karma:Math.min(P.combat.karma.max,Math.max(0,basePreviousKarma+12))};
+  L.draft={...P.snapshot,...(L.draft||{}),karma:20};
   const integratedLabels=new Set([
     "Coup de bouclier : rang 1 → 2",
     "Dextérité : première amélioration",
@@ -2788,11 +2951,11 @@ if(L.publicationRevision!==PUBLICATION_REVISION){
   L.publicationRevision=PUBLICATION_REVISION;
 }
 if(!L.stateReset034){L.draft={...L.draft,damage:0,wounds:0,recoveriesUsed:0};L.stateReset034=true}
-L.version="0.44";L.sync.protocolVersion="1.1";
+L.version="0.47";L.sync.protocolVersion="1.1";
 function save(){try{localStorage.setItem(STORE,JSON.stringify(L));window.dispatchEvent(new CustomEvent('vorkana-storage-restored'));return true;}catch(error){window.dispatchEvent(new CustomEvent('vorkana-storage-error',{detail:{note:'Sauvegarde locale impossible. Téléchargez une sauvegarde de votre dossier.'}}));return false;}}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function fmt(n){return Number(n).toLocaleString("fr-FR")}
-const titles={home:"Essentiel",progression:"Progression",legend:"Progression",combat:"Combat",archer:"Discipline",gear:"Équipement",notes:"Carnet de notes"};
+const titles={home:"Essentiel",progression:"Progression",legend:"Progression",combat:"Combat",archer:"Discipline",gear:"Équipement",forge:"Forge",notes:"Carnet de notes"};
 function openPage(id,push=true){if(id==="legend")id="progression";if(!document.getElementById("page-"+id))id="home";document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="page-"+id));document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===id));document.getElementById("topTitle").textContent=titles[id]||(P.fullName||P.name);if(typeof renderHealthState==="function")renderHealthState();if(id==="notes"&&typeof renderPlayerNotes==="function")renderPlayerNotes();if(push)location.hash=id;scrollTo(0,0)}
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>openPage(b.dataset.page));
 addEventListener("hashchange",()=>openPage(location.hash.slice(1)||"home",false));
@@ -2838,16 +3001,37 @@ function writePlayerVision(html){
 function requestPlayerVision(){
  playerVisionWin=window.open("","EarthdawnPlayerView","width=1280,height=800");
  if(!playerVisionWin){alert("Le navigateur a bloqué la fenêtre Vision joueur.");return}
- writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p></body></html>');
+ writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-Kalha"){
+      const forced={"mace":{"from":["unassigned"],"to":"back"},"tools":{"from":["unassigned"],"to":"inaccessible"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-Kalha";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>');
  if(!cockpitConnected){connectToCockpit();setTimeout(()=>playerPost({type:"earthdawn-player-view-request"}),1700);return}
  playerPost({type:"earthdawn-player-view-request"});
 }
 function playerProposalBundle(){
- const approvalKinds=["progression","money","inventory","healthState","catalogTransaction","magicDemo","combatState"],
+ const approvalKinds=["progression","money","inventory","healthState","catalogTransaction","magicDemo","combatState","forgeWork"],
        exportable=(L.proposals||[]).filter(p=>!approvalKinds.includes(p.kind)||normalizedProposalStatus(p)==="sent");
  return {type:"earthdawn-player-proposals",bundleType:"playerProposalBundle",protocolVersion:"1.1",playerId:P.playerId,
    baseRevision:L.sync?.baseRevision||"local-base-1",baseSnapshot:P.snapshot,proposedRuntime:L.draft,healthDraft:L.health||null,
-   runtimeStatus:"proposal_sent_not_authoritative",conflictPolicy:"reject_if_gm_base_revision_changed",proposals:clone(exportable),privateNotesIncluded:false};
+   runtimeStatus:"observation_only_sheet_authoritative",conflictPolicy:"events_idempotent_sheet_authoritative",proposals:clone(exportable),privateNotesIncluded:false};
 }
 function downloadProposalBundle(){const bundle=playerProposalBundle();bundle.transportType=bundle.type;bundle.type="playerProposalBundle";dl("Kalha_propositions_MJ.json",bundle)}
 function sendProposalBundleToCockpit(showFeedback=true){
@@ -2866,10 +3050,20 @@ function renderProposalSurfaces(){
  if(typeof renderProgression6==="function")renderProgression6();
  if(typeof renderCombatFlow==="function")renderCombatFlow();
  if(typeof renderPlayerNotes==="function")renderPlayerNotes();
+ if(typeof renderForgeAll==="function")renderForgeAll();
 }
 function applyCockpitRuntime(runtime){
- if(!runtime||typeof runtime!=="object")return;
- ["karma","damage","wounds","recoveriesUsed"].forEach(k=>{if(Number.isFinite(Number(runtime[k])))L.draft[k]=Number(runtime[k])});
+ if(!runtime||typeof runtime!=="object")return false;
+ L.sync=L.sync||{};
+ L.sync.lastRuntimeSnapshotObserved={
+   seenAt:new Date().toISOString(),
+   revision:runtime.runtimePublicationRevision||runtime.revision||null,
+   karma:Number.isFinite(Number(runtime.karma))?Number(runtime.karma):null,
+   damage:Number.isFinite(Number(runtime.damage))?Number(runtime.damage):null,
+   wounds:Number.isFinite(Number(runtime.wounds))?Number(runtime.wounds):null,
+   recoveriesUsed:Number.isFinite(Number(runtime.recoveriesUsed))?Number(runtime.recoveriesUsed):null
+ };
+ return false;
 }
 function applyProposalDecisions(decisions){
  if(!Array.isArray(decisions))return;
@@ -2878,13 +3072,14 @@ function applyProposalDecisions(decisions){
    p.status=d.decision==="approved"?"approved":"rejected";
    p.decisionAt=d.decidedAt||new Date().toISOString();
    p.decisionNote=d.note||"";
+   if(p.status==="approved"&&p.kind==="forgeWork"&&typeof forgeIntegrateApprovedProposal==="function")forgeIntegrateApprovedProposal(p);
  });
 }
 function applyCockpitSnapshot(d){
  cockpitConnected=true;lastCockpitSeen=Date.now();cockpitWin=d.__source||cockpitWin;
  L.sync.status="connected";L.sync.lastCockpitSeenAt=new Date().toISOString();
  if(d.revision)L.sync.baseRevision=String(d.revision);
- applyProposalDecisions(d.decisions);applyCockpitRuntime(d.runtime);
+ applyProposalDecisions(d.decisions);applyCockpitEvents(d.events||d.runtimeEvents||[]);applyCockpitRuntime(d.runtime);
  const incoming=d.combat||{},c=combatFlow();
  if(incoming.active){
    if(!c.active){crStart("cockpit",{round:incoming.round,situation:incoming.situation})}
@@ -2909,6 +3104,9 @@ function handleCockpitMessage(e){
  }
  if(d.type==="earthdawn-player-proposal-decisions"){
    applyProposalDecisions(d.decisions);save();renderProposalSurfaces();return
+ }
+ if(d.type==="earthdawn-cockpit-events"){
+   applyCockpitEvents(d.events||[]);save();renderProposalSurfaces();return
  }
  if(d.type==="earthdawn-player-view-render"){
    if(writePlayerVision(d.html)){
@@ -3361,7 +3559,7 @@ const GEAR_ITEM_STATES={
   temporarilyLost:"Perdu provisoirement",consumed:"Consommé",inaccessible:"Inaccessible"
 };
 
-const GEAR_BASE_ITEMS=[{"id":"armor","name":"Cotte de mailles","category":"Armure","weight":18,"weightStatus":"official","location":"torso","fixed":true,"effect":"Armure physique 7 ; pénalité d’Initiative 3. Portée. L’Armure mystique naturelle 1 est distincte."},{"id":"mace","name":"Masse d’armes — deux reforges","category":"Arme","weight":3,"weightStatus":"official","location":"unassigned","usableIn":"combat","effect":"Taille 4, niveau de dommages de l’arme 8 (6 +2 reforges) ; avec Force 6 : dommages niveau 14 / 2D12. Reforges du 30 Strassa 1448 TH ; emplacement à préciser."},{"id":"shield","name":"Targe","category":"Bouclier","weight":1,"weightStatus":"official","location":"hand","usableIn":"combat","effect":"Armure physique +1 ; permet Coup de bouclier. Lors de ce coup, la protection est perdue contre les autres adversaires jusqu’à la fin du round."},{"id":"tools","name":"Outils de forge et d’inscription","category":"Artisanat","weight":null,"weightStatus":"unknown","location":"unassigned","effect":"Contenu détaillé, contenant, poids et disponibilité à confirmer. Ne tient pas lieu de forge équipée.","state":"inaccessible"}];
+const GEAR_BASE_ITEMS=[{"id":"armor","name":"Cotte de mailles","category":"Armure","weight":18,"weightStatus":"official","location":"torso","fixed":true,"effect":"Armure physique 7 ; pénalité d’Initiative 3. Portée. L’Armure mystique naturelle 1 est distincte."},{"id":"mace","name":"Masse d’armes — deux reforges","category":"Arme","weight":3,"weightStatus":"official","location":"back","usableIn":"combat","effect":"Taille 4, niveau de dommages de l’arme 8 (6 +2 reforges) ; avec Force 6 : dommages niveau 14 / 2D12. Reforges du 30 Strassa 1448 TH ; portée dans le dos hors usage."},{"id":"shield","name":"Targe","category":"Bouclier","weight":1,"weightStatus":"official","location":"hand","usableIn":"combat","effect":"Armure physique +1 ; permet Coup de bouclier. Lors de ce coup, la protection est perdue contre les autres adversaires jusqu’à la fin du round."},{"id":"tools","name":"Outils de forge et d’inscription","category":"Artisanat","weight":2.5,"weightStatus":"official","location":"inaccessible","effect":"Charge de référence d’un jeu d’outils d’artisanat : 2,5 kg (Recueil). Outils de forge et d’inscription ; ne tient pas lieu de forge équipée. État actuel : inaccessible.","state":"inaccessible"}];
 const GEAR_PURSE_DEFAULTS=[{"id":"unallocated","name":"Monnaie à renseigner","location":"unassigned","gold":null,"silver":null,"confirmed":false}];
 function gearState(){
   if(!L.inventory||typeof L.inventory!=="object"){
@@ -3509,6 +3707,11 @@ function gearItemTags(i){
   tags.push(`<span class="gear-tag ${i.location==="bag"?"stowed":i.location==="unassigned"?"unknown":"ready"}">${esc(access)}</span>`);
   if(i.weightStatus==="unknown"&&!Number.isFinite(i.weight))tags.push(`<span class="gear-tag unknown">Poids à préciser</span>`);
   if(i.weightStatus==="derived")tags.push(`<span class="gear-tag">Poids dérivé du lot de 20</span>`);
+  if(i.weightStatus==="estimate")tags.push(`<span class="gear-tag">Poids de gestion</span>`);
+  if(i.weightStatus==="negligible")tags.push(`<span class="gear-tag">Poids négligeable</span>`);
+  if(i.quality==="good")tags.push(`<span class="gear-tag ready">Bonne qualité</span>`);
+  if(i.quality==="excellent")tags.push(`<span class="gear-tag ready">Excellente qualité</span>`);
+  if(i.enhancement&&Number(i.enhancement.bonusDamageLevel)>0)tags.push(`<span class="gear-tag">Renforcé +${i.enhancement.bonusDamageLevel} dégâts</span>`);
   tags.push(`<span class="gear-tag ${i.state==="available"?"ready":"unknown"}">${esc(GEAR_ITEM_STATES[i.state]||i.state)}</span>`);
   if(i.demoOnly)tags.push(`<span class="gear-tag unknown">Hors continuité</span>`);
   return tags.join("");
@@ -5741,10 +5944,520 @@ if(document.readyState==="loading"){
 }
 
 
+
+/* =========================================================
+   V0.47 — Atelier de Forge : aide de décision + historique
+   ========================================================= */
+const FORGE_SEED_HISTORY=[
+  {
+    id:"forge_seed_kalha_mace_30_strassa",date:"30 Strassa 1448 TH",owner:"Kalha",object:"Masse d’armes",
+    operation:"Perfectionnement / reforges",status:"validated",
+    outcome:"Deux reforges déjà documentées",effect:"Améliorations déjà comprises dans l’arme actuelle.",
+    renewal:true,renewalText:"À renouveler un an et un jour après la dernière réussite du 30 Strassa 1448 TH.",
+    quality:"—",note:"Historique antérieur conservé par la fiche."
+  },
+  {
+    id:"forge_seed_ogunta_staff",date:"Interlude après 4 Riag 1448 TH",owner:"Ogunta",object:"Bâton décoratif",
+    operation:"Finition / qualité",status:"validated",outcome:"Bonne qualité",
+    effect:"+1 aux interactions sociales lorsque l’apparence ou la qualité du bâton peut raisonnablement influencer l’échange.",
+    renewal:false,quality:"Bonne",note:"Décoratif, non magique, et non considéré comme une arme réelle."
+  },
+  {
+    id:"forge_seed_ogunta_mace",date:"Interlude après 4 Riag 1448 TH",owner:"Ogunta",object:"Masse d’armes",
+    operation:"Amélioration d’arme",status:"validated",outcome:"Réussite",
+    effect:"+1 niveau de dommages sur la masse.",renewal:true,renewalText:"Date exacte de réussite à consigner ; renouvellement un an et un jour après celle-ci.",quality:"—",
+    note:"La masse reste l’arme réelle d’Ogunta. À ce Cercle, le +1 est suivi comme effet de Perfectionnement de lame : durée un an et un jour."
+  },
+  {
+    id:"forge_seed_jaskar_sword",date:"Interlude après 4 Riag 1448 TH",owner:"Jaskar",object:"Épée large",
+    operation:"Amélioration d’arme",status:"validated",outcome:"Extraordinaire",
+    effect:"+1 normal ; l’épée devient aussi de bonne qualité : +1 aux interactions sociales lorsque sa qualité est pertinente.",
+    renewal:true,renewalText:"Date exacte de réussite à consigner ; renouvellement du +1 dommages un an et un jour après celle-ci. La bonne qualité demeure.",quality:"Bonne",note:"Décision MJ active : le résultat extraordinaire déclenche la bonne qualité. Le +1 de dommages est suivi comme effet de Perfectionnement de lame ; la qualité, elle, n’expire pas."
+  },
+  {
+    id:"forge_seed_gulrak_sword",date:"Interlude après 4 Riag 1448 TH",owner:"Gul’Rak",object:"Épée courte",
+    operation:"Tentative d’amélioration",status:"validated",outcome:"Échec",
+    effect:"Aucune modification mécanique ni de qualité.",renewal:false,quality:"—",note:"Échec joué / validé."
+  },
+  {
+    id:"forge_seed_zraul_arrows",date:"Interlude après 4 Riag 1448 TH",owner:"Zra’Ul",object:"Lot de 4 flèches",
+    operation:"Renforcement de flèches",status:"validated",outcome:"Réussite",
+    effect:"+1 niveau de dommages pour chacune des 4 flèches ; aucun bonus au test d’attaque.",
+    renewal:true,renewalText:"Date exacte de réussite à consigner ; renouvellement un an et un jour après celle-ci.",
+    quality:"Normale",note:"Pas de changement particulier de qualité."
+  },
+  {
+    id:"forge_seed_kalzakath_tips",date:"Interlude après 4 Riag 1448 TH",owner:"Kal’Zakath",object:"Pointes déjà modifiées montées sur flèches d’arc elfique",
+    operation:"Montage / adaptation",status:"validated",outcome:"Montage réussi",
+    effect:"L’amélioration des pointes est conservée : +1 niveau de dommages, sans bonus au test d’attaque.",
+    renewal:true,renewalText:"Conserver la date de la réussite initiale du renforcement ; elle n’est pas documentée dans cette entrée.",
+    quality:"—",note:"Le montage n’ajoute pas une seconde amélioration."
+  },
+  {
+    id:"forge_seed_kalzakath_new_arrows",date:"Interlude après 4 Riag 1448 TH",owner:"Kal’Zakath",object:"Nouveau lot de 4 flèches",
+    operation:"Renforcement de flèches",status:"validated",outcome:"Extraordinaire",
+    effect:"+1 niveau de dommages, sans bonus au test d’attaque ; le lot devient de bonne qualité.",
+    renewal:true,renewalText:"Date exacte de réussite à consigner ; renouvellement un an et un jour après celle-ci.",
+    quality:"Bonne",note:"Le +1 social de bonne qualité n’est pertinent que si la qualité des flèches intervient réellement dans l’échange."
+  },
+  {
+    id:"forge_seed_karma_workshop",date:"Interlude après 4 Riag 1448 TH",owner:"Kalha",object:"Ressource de l’atelier",
+    operation:"Karma dépensé pendant les travaux",status:"validated",outcome:"−2 Karma",
+    effect:"État consolidé après l’atelier : 20 Karma. Les achats ayant porté temporairement la réserve à 22 restent déjà comptabilisés dans les PL dépensés.",
+    renewal:false,quality:"—",note:"Répartition exacte des deux dépenses entre les différents tests non documentée : ne pas l’inventer."
+  }
+];
+
+let FORGE_ACTIVE_OP="blade";
+
+function forgeState(){
+  if(!L.forge||typeof L.forge!=="object")L.forge={version:"0.48",history:[],drafts:[]};
+  if(!Array.isArray(L.forge.history))L.forge.history=[];
+  if(!Array.isArray(L.forge.drafts))L.forge.drafts=[];
+  const have=new Map(L.forge.history.map((x,i)=>[x.id,i]));
+  FORGE_SEED_HISTORY.forEach(x=>{
+    const idx=have.get(x.id);
+    if(idx===undefined)L.forge.history.push(clone(x));
+    else L.forge.history[idx]={...L.forge.history[idx],...clone(x)};
+  });
+  L.forge.version="0.48";
+  return L.forge;
+}
+function forgeNum(id,def=0){
+  const v=Number(document.getElementById(id)?.value);
+  return Number.isFinite(v)?v:def;
+}
+function forgeVal(id,def=""){
+  const el=document.getElementById(id);return el?String(el.value):def;
+}
+function forgeChecked(id){return !!document.getElementById(id)?.checked}
+function forgeMultiplier(v){
+  return v==="poor3"?3:v==="poor2"?2:v==="good"?0.5:1;
+}
+function forgeForgeLabel(v){
+  return v==="poor3"?"Forge pauvre — temps ×3":v==="poor2"?"Forge pauvre — temps ×2":v==="good"?"Forge très bien équipée — temps ÷2":"Forge convenablement équipée — temps normal";
+}
+function forgeTimeLabel(value,unit){
+  if(!Number.isFinite(value))return "À fixer";
+  const rounded=Math.round(value*10)/10;
+  return `${String(rounded).replace(".",",")} ${unit}${rounded>1?"s":""}`;
+}
+function forgeThresholdData(dn){
+  const n=Math.max(2,Math.min(40,Math.round(Number(dn)||2)));
+  const t=NC_RESULT_DEGREES[n];
+  if(!t)return {medium:n,good:null,excellent:null,extra:null};
+  return {medium:t[1],good:t[2],excellent:t[3],extra:t[4]};
+}
+function forgeThresholdHtml(dn,qualityMode=""){
+  const t=forgeThresholdData(dn);
+  const qExtra=qualityMode==="improvement"?" • Bonne qualité si règle active applicable":"";
+  const qCraft=qualityMode==="craft"?" • qualité améliorable avec accord MJ":"";
+  return `<div class="forge-thresholds">
+    <div class="forge-threshold"><span>Moyen</span><b>${t.medium??"—"}</b></div>
+    <div class="forge-threshold"><span>Bon${qCraft}</span><b>${t.good??"—"}</b></div>
+    <div class="forge-threshold"><span>Excellent${qCraft}</span><b>${t.excellent??"—"}</b></div>
+    <div class="forge-threshold extra"><span>Extraordinaire${qExtra}</span><b>${t.extra??"—"}</b></div>
+  </div>`;
+}
+function forgeCommonForgeSelect(){
+  return `<div class="forge-field"><label>Qualité de la forge</label>
+    <select id="forgeQuality">
+      <option value="normal">Convenablement équipée — temps normal</option>
+      <option value="good">Très bien équipée — temps ÷2</option>
+      <option value="poor2">Pauvre — temps ×2</option>
+      <option value="poor3">Pauvre — temps ×3</option>
+    </select><div class="forge-help">Le MJ détermine quelle option correspond réellement à l’atelier disponible.</div></div>`;
+}
+function forgeFormHtml(op){
+  if(op==="blade")return `
+    <div class="forge-form">
+      <div class="forge-field wide"><label>Objet / propriétaire</label><input id="forgeObject" value="Arme à perfectionner" placeholder="Ex. Épée large de Jaskar"></div>
+      <div class="forge-field"><label>Taille de l’arme</label><input id="forgeSize" type="number" min="1" max="20" value="3"></div>
+      <div class="forge-field"><label>Niveau de dommages initial</label><input id="forgeBaseDamage" type="number" min="1" max="30" value="5"></div>
+      <div class="forge-field"><label>Bonus de Perfectionnement déjà actif</label><input id="forgeExistingBonus" type="number" min="0" max="20" value="0"></div>
+      ${forgeCommonForgeSelect()}
+      <div class="forge-check wide"><input id="forgeThread" type="checkbox"><div><b>Arme à filament</b><small>Ignorer les bonus de dommages accordés par les filaments pour le calcul, mais conserver les perfectionnements précédents. Un résultat Bon est nécessaire.</small></div></div>
+    </div>`;
+  if(op==="arrows")return `
+    <div class="forge-form">
+      <div class="forge-field wide"><label>Lot / propriétaire</label><input id="forgeObject" value="Lot de projectiles" placeholder="Ex. 4 flèches de Zra’Ul"></div>
+      <div class="forge-field"><label>Taille de l’arme qui les propulse</label><input id="forgeLauncherSize" type="number" min="1" max="20" value="3"></div>
+      <div class="forge-field"><label>Nombre de projectiles</label><input id="forgeProjectileCount" type="number" min="1" max="4" value="4"></div>
+      <div class="forge-check wide"><input id="forgeAlreadyReinforced" type="checkbox"><div><b>Déjà renforcés</b><small>Le bonus maximal est +1. Si le lot est déjà renforcé, la prochaine réussite sert seulement au suivi/renouvellement si le MJ l’autorise.</small></div></div>
+    </div>`;
+  if(op==="make")return `
+    <div class="forge-form">
+      <div class="forge-field wide"><label>Type de fabrication</label>
+        <select id="forgeMakeType">
+          <option value="weapon">Arme</option>
+          <option value="projectile">Projectiles</option>
+          <option value="armor">Armure</option>
+          <option value="shield">Bouclier</option>
+          <option value="metal">Objet métallique forgé courant</option>
+        </select>
+      </div>
+      <div id="forgeMakeFields" class="wide"></div>
+    </div>`;
+  return `
+    <div class="forge-form">
+      <div class="forge-field wide"><label>Type de réparation</label>
+        <select id="forgeRepairType">
+          <option value="weapon">Arme</option>
+          <option value="armor">Armure / bouclier</option>
+        </select>
+      </div>
+      <div id="forgeRepairFields" class="wide"></div>
+    </div>`;
+}
+function forgeMakeFieldsHtml(type){
+  if(type==="weapon")return `<div class="forge-form">
+    <div class="forge-field wide"><label>Objet à fabriquer</label><input id="forgeObject" value="Arme neuve"></div>
+    <div class="forge-field"><label>Taille</label><input id="forgeSize" type="number" min="1" max="20" value="3"></div>
+    <div class="forge-field"><label>Niveau de dommages</label><input id="forgeBaseDamage" type="number" min="1" max="30" value="5"></div>
+    <div class="forge-field"><label>Prix normal (PA)</label><input id="forgeBasePrice" type="number" min="0" step="0.1" value="25"></div>
+    <div class="forge-field"><label>Jours supplémentaires (0 à 3)</label><input id="forgeExtraTime" type="number" min="0" max="3" value="0"></div>
+    ${forgeCommonForgeSelect()}
+  </div>`;
+  if(type==="projectile")return `<div class="forge-form">
+    <div class="forge-field wide"><label>Projectiles à fabriquer</label><input id="forgeObject" value="Projectiles neufs"></div>
+    <div class="forge-field"><label>Taille de l’arme de tir</label><input id="forgeLauncherSize" type="number" min="1" max="20" value="3"></div>
+    <div class="forge-field"><label>Niveau de dommages de l’arme de tir</label><input id="forgeBaseDamage" type="number" min="1" max="30" value="5"></div>
+    <div class="forge-field"><label>Prix normal du lot (PA)</label><input id="forgeBasePrice" type="number" min="0" step="0.1" value="1"></div>
+    ${forgeCommonForgeSelect()}
+  </div>`;
+  if(type==="armor"||type==="shield")return `<div class="forge-form">
+    <div class="forge-field wide"><label>Objet à fabriquer</label><input id="forgeObject" value="${type==="shield"?"Bouclier neuf":"Armure neuve"}"></div>
+    <div class="forge-field"><label>Armure physique</label><input id="forgePhys" type="number" min="0" max="30" value="${type==="shield"?1:5}"></div>
+    <div class="forge-field"><label>Armure mystique</label><input id="forgeMyst" type="number" min="0" max="30" value="${type==="shield"?0:1}"></div>
+    <div class="forge-field"><label>Prix normal (PA)</label><input id="forgeBasePrice" type="number" min="0" step="0.1" value="${type==="shield"?20:50}"></div>
+    <div class="forge-field"><label>Semaines supplémentaires (0 à 3)</label><input id="forgeExtraTime" type="number" min="0" max="3" value="0"></div>
+    ${forgeCommonForgeSelect()}
+  </div>`;
+  return `<div class="forge-form">
+    <div class="forge-field wide"><label>Ouvrage métallique</label><input id="forgeObject" value="Objet métallique forgé" placeholder="Ex. fer à cheval, cerclage de tonneau"></div>
+    <div class="forge-plan-note wide">La Discipline autorise un test de Demi-magie basé sur la Dextérité à la place d’Artisanat pour fabriquer ou réparer un objet en métal forgé. Le texte fourni ne fixe pas ici de Difficulté, de durée ni de coût génériques : ils restent à déterminer avec le MJ selon l’objet.</div>
+  </div>`;
+}
+function forgeRepairFieldsHtml(type){
+  if(type==="weapon")return `<div class="forge-form">
+    <div class="forge-field wide"><label>Arme à réparer</label><input id="forgeObject" value="Arme endommagée"></div>
+    <div class="forge-field"><label>Niveau de dommages de l’arme</label><input id="forgeBaseDamage" type="number" min="1" max="30" value="5"></div>
+    <div class="forge-field"><label>Niveaux de dommages à réparer</label><input id="forgeRepairPoints" type="number" min="1" max="20" value="1"></div>
+  </div>`;
+  return `<div class="forge-form">
+    <div class="forge-field wide"><label>Armure / bouclier à réparer</label><input id="forgeObject" value="Armure endommagée"></div>
+    <div class="forge-field"><label>Armure physique de création</label><input id="forgePhys" type="number" min="0" max="30" value="5"></div>
+    <div class="forge-field"><label>Armure mystique de création</label><input id="forgeMyst" type="number" min="0" max="30" value="1"></div>
+    <div class="forge-field"><label>Points d’Armure à réparer</label><input id="forgeRepairPoints" type="number" min="1" max="20" value="1"></div>
+  </div>`;
+}
+function forgeRenderNestedFields(){
+  if(FORGE_ACTIVE_OP==="make"){
+    const type=forgeVal("forgeMakeType","weapon"),host=document.getElementById("forgeMakeFields");
+    if(host){host.innerHTML=forgeMakeFieldsHtml(type);forgeBindInputs()}
+  }else if(FORGE_ACTIVE_OP==="repair"){
+    const type=forgeVal("forgeRepairType","weapon"),host=document.getElementById("forgeRepairFields");
+    if(host){host.innerHTML=forgeRepairFieldsHtml(type);forgeBindInputs()}
+  }
+}
+function forgeBindInputs(){
+  document.querySelectorAll("#forgeForm input,#forgeForm select,#forgeForm textarea").forEach(el=>{
+    el.oninput=forgeRenderPlan;el.onchange=()=>{
+      if(el.id==="forgeMakeType"||el.id==="forgeRepairType"){forgeRenderNestedFields()}
+      forgeRenderPlan();
+    };
+  });
+}
+function forgePlanData(){
+  const op=FORGE_ACTIVE_OP,object=forgeVal("forgeObject","Objet");
+  if(op==="blade"){
+    const size=Math.max(1,forgeNum("forgeSize",1)),
+          base=Math.max(1,forgeNum("forgeBaseDamage",1)),
+          bonus=Math.max(0,forgeNum("forgeExistingBonus",0)),
+          thread=forgeChecked("forgeThread"),
+          maxBonus=Math.min(base,size),
+          renewal=bonus>=maxBonus,
+          dn=base+bonus+9,
+          q=forgeVal("forgeQuality","normal"),mult=forgeMultiplier(q),
+          days=size*mult,rate=40,cost=days*rate;
+    return {
+      op,object,label:`${renewal?"Renouveler":"Perfectionner"} — ${object}`,
+      step:11,dice:"D10+D8",karma:"Possible",effort:1,dn,
+      time:forgeTimeLabel(days,"jour"),materials:"Forge équipée + arme ; matières consommables non tarifées automatiquement",
+      cost:`Service indicatif : ${String(Math.round(cost*10)/10).replace(".",",")} PA (${rate} PA/jour)`,
+      result:renewal?"Renouvelle la durée sans augmenter davantage les dommages.":"+1 niveau de dommages sur réussite.",
+      notes:[
+        `${forgeForgeLabel(q)}.`,
+        `Maximum de Perfectionnement : ${maxBonus}. Bonus déjà indiqué : ${bonus}.`,
+        thread?"Arme à filament : résultat Bon requis ; les bonus de filaments sont ignorés pour le calcul de la Difficulté.":"Objet ordinaire : résultat Moyen suffit pour l’effet normal.",
+        "Durée d’un perfectionnement réussi : un an et un jour.",
+        "Un résultat Pathétique détruit une arme normale ; la règle des uns détruit un objet à filament."
+      ],
+      qualityMode:"improvement",renewal
+    };
+  }
+  if(op==="arrows"){
+    const size=Math.max(1,forgeNum("forgeLauncherSize",1)),
+          count=Math.max(1,Math.min(4,forgeNum("forgeProjectileCount",4))),
+          already=forgeChecked("forgeAlreadyReinforced"),
+          dn=size+10;
+    return {
+      op,object,label:`Renforcement — ${object}`,step:11,dice:"D10+D8",karma:"Possible",effort:2,dn,
+      time:"Non chiffré par le texte de la spécialisation",materials:`${count} projectile${count>1?"s":""} de même type + outillage de forge`,
+      cost:"Aucun coût automatique documenté",
+      result:already?"Bonus déjà au maximum (+1) : ne pas cumuler ; suivre l’échéance.":`Jusqu’à ${count} projectile${count>1?"s":""} : +1 niveau de dommages, aucun bonus d’attaque.`,
+      notes:[
+        `Kalha peut travailler au plus 4 projectiles à la fois (rang 4).`,
+        "Difficulté = Taille de l’arme qui les propulse +10.",
+        "Règle active : durée un an et un jour après la dernière réussite ; récupération/perte après tir dépend de la situation.",
+        "Un résultat extraordinaire peut déclencher la bonne qualité selon l’arbitrage actif applicable à l’atelier ; pour des flèches, le bonus social reste situationnel."
+      ],
+      qualityMode:"improvement",renewal:true
+    };
+  }
+  if(op==="make"){
+    const type=forgeVal("forgeMakeType","weapon");
+    if(type==="metal")return {
+      op,object,label:`Fabriquer — ${object}`,step:9,dice:"D8+D6",karma:"Selon le test demandé",effort:0,dn:null,
+      time:"À fixer avec le MJ",materials:"Métal et outillage appropriés — quantité selon l’objet",cost:"À fixer avec le MJ",
+      result:"Demi-magie basée sur la Dextérité à la place d’Artisanat.",notes:["Le texte fourni ne donne pas de barème générique pour ces ouvrages courants."],qualityMode:"craft"
+    };
+    if(type==="weapon"){
+      const size=Math.max(1,forgeNum("forgeSize",1)),base=Math.max(1,forgeNum("forgeBaseDamage",1)),
+            extra=Math.max(0,Math.min(3,forgeNum("forgeExtraTime",0))),price=Math.max(0,forgeNum("forgeBasePrice",0)),
+            q=forgeVal("forgeQuality","normal"),mult=forgeMultiplier(q),
+            dn=Math.max(2,base+6-extra),days=(size+base+extra)*mult,allowed=size<=P.circle;
+      return {
+        op,object,label:`Fabriquer une arme — ${object}`,step:9,dice:"D8+D6",karma:"Possible (1 par test)",effort:0,dn,
+        time:forgeTimeLabel(days,"jour"),materials:`Matériel de base : ${String(Math.round(price*5)/10).replace(".",",")} PA (50 % du prix normal saisi)`,
+        cost:`Prix normal saisi : ${price} PA`,result:allowed?"Création possible par Demi-magie de Forgeron.":`Bloqué par la Demi-magie : Taille ${size} > Cercle ${P.circle}.`,
+        notes:[
+          `${forgeForgeLabel(q)}.`,
+          `Base : Taille ${size} + dommages ${base} = ${size+base} jours, avant modificateur de forge.`,
+          extra?`${extra} jour(s) supplémentaire(s) : Difficulté réduite de ${extra} (maximum −3).`:"Jusqu’à 3 jours supplémentaires peuvent réduire la Difficulté de 1 chacun.",
+          "Un échec fait perdre le temps ; un résultat Pathétique détruit l’arme et le matériel de base.",
+          "Sur résultat Bon ou Excellent, la qualité peut être améliorée ; un surcoût de matières premières peut être demandé par le MJ."
+        ],
+        qualityMode:"craft",blocked:!allowed
+      };
+    }
+    if(type==="projectile"){
+      const size=Math.max(1,forgeNum("forgeLauncherSize",1)),base=Math.max(1,forgeNum("forgeBaseDamage",1)),
+            price=Math.max(0,forgeNum("forgeBasePrice",0)),dn=base+6;
+      return {
+        op,object,label:`Fabriquer des projectiles — ${object}`,step:9,dice:"D8+D6",karma:"Possible (1 par test)",effort:0,dn,
+        time:"À arbitrer : le texte et son exemple de durée se contredisent",materials:`Matériel de base : ${String(Math.round(price*5)/10).replace(".",",")} PA (50 % du prix du lot saisi)`,
+        cost:`Prix normal du lot saisi : ${price} PA`,
+        result:`Un test réussi crée le lot standard correspondant à l’arme de tir.`,
+        notes:[
+          `Les projectiles prennent la Taille ${size} et le niveau de dommages ${base} de l’arme qui les propulse pour la difficulté.`,
+          "Le texte indique ensuite une durée égale seulement à la Taille, mais son exemple de carreaux Taille 4 / dommages 5 annonce 9 jours. La fiche ne tranche pas cette contradiction : arbitrage MJ requis.",
+          "Sur résultat Bon ou Excellent, la qualité peut être améliorée ; un surcoût de matières premières peut être demandé par le MJ."
+        ],
+        qualityMode:"craft"
+      };
+    }
+    const shield=type==="shield",phys=Math.max(0,forgeNum("forgePhys",0)),myst=Math.max(0,forgeNum("forgeMyst",0)),
+          total=phys+myst,extra=Math.max(0,Math.min(3,forgeNum("forgeExtraTime",0))),price=Math.max(0,forgeNum("forgeBasePrice",0)),
+          q=forgeVal("forgeQuality","normal"),mult=forgeMultiplier(q),
+          dn=Math.max(2,total+6-extra),baseWeeks=shield?Math.ceil(total/2):total,weeks=(baseWeeks+extra)*mult,
+          average=total/2,allowed=average<=P.circle;
+    return {
+      op,object,label:`Fabriquer ${shield?"un bouclier":"une armure"} — ${object}`,step:9,dice:"D8+D6",karma:"Possible (1 par test)",effort:0,dn,
+      time:forgeTimeLabel(weeks,"semaine"),materials:`Matériel de base : ${String(Math.round(price*5)/10).replace(".",",")} PA (50 % du prix normal saisi)`,
+      cost:`Prix normal saisi : ${price} PA`,
+      result:allowed?"Création possible par Demi-magie de Forgeron.":`Bloqué par la Demi-magie : moyenne Phys/Myst ${String(average).replace(".",",")} > Cercle ${P.circle}.`,
+      notes:[
+        `${forgeForgeLabel(q)}.`,
+        `${shield?"Bouclier : (Phys + Myst) / 2, arrondi au supérieur,":"Armure : Phys + Myst,"} soit ${baseWeeks} semaine(s) de base.`,
+        extra?`${extra} semaine(s) supplémentaire(s) : Difficulté réduite de ${extra} (maximum −3).`:"Jusqu’à 3 semaines supplémentaires peuvent réduire la Difficulté de 1 chacune.",
+        "Un échec fait perdre le temps ; un résultat Pathétique détruit l’objet et le matériel de base.",
+        "Sur résultat Bon ou Excellent, la qualité peut être améliorée ; un surcoût de matières premières peut être demandé par le MJ."
+      ],qualityMode:"craft",blocked:!allowed
+    };
+  }
+  const type=forgeVal("forgeRepairType","weapon"),points=Math.max(1,forgeNum("forgeRepairPoints",1));
+  if(type==="weapon"){
+    const base=Math.max(1,forgeNum("forgeBaseDamage",1)),dn=base+6;
+    return {
+      op,object,label:`Réparer une arme — ${object}`,step:9,dice:"D8+D6",karma:"Possible (1 par test)",effort:0,dn,
+      time:forgeTimeLabel(points,"jour"),materials:"Outils appropriés ; matériel de réparation non chiffré ici",cost:"Aucun coût automatique documenté",
+      result:`${points} niveau${points>1?"x":""} de dommages à réparer : ${points} test${points>1?"s":""} séparé${points>1?"s":""}.`,
+      notes:["Difficulté égale à la Difficulté de création de l’arme.","Une journée de travail par test de Demi-magie effectué."],qualityMode:""
+    };
+  }
+  const phys=Math.max(0,forgeNum("forgePhys",0)),myst=Math.max(0,forgeNum("forgeMyst",0)),dn=phys+myst+6;
+  return {
+    op,object,label:`Réparer une armure / un bouclier — ${object}`,step:9,dice:"D8+D6",karma:"Possible (1 par test)",effort:0,dn,
+    time:forgeTimeLabel(points,"jour"),materials:"Outils appropriés ; matériel de réparation non chiffré ici",cost:"Aucun coût automatique documenté",
+    result:`${points} point${points>1?"s":""} d’Armure à réparer : ${points} test${points>1?"s":""} séparé${points>1?"s":""}.`,
+    notes:["Difficulté égale à la Difficulté de création de l’armure ou du bouclier.","Une journée de travail par test de Demi-magie effectué."],qualityMode:""
+  };
+}
+function forgeRenderPlan(){
+  const host=document.getElementById("forgePlan");if(!host)return;
+  const p=forgePlanData(),dn=p.dn;
+  host.innerHTML=`
+    <div class="forge-plan-grid">
+      <div class="forge-plan-box emphasis"><span>Jet de Kalha</span><b>Niv. ${p.step} / ${p.dice}</b></div>
+      <div class="forge-plan-box"><span>Difficulté</span><b>${dn==null?"MJ":dn}</b></div>
+      <div class="forge-plan-box"><span>Karma</span><b>${esc(p.karma)}</b></div>
+      <div class="forge-plan-box"><span>Effort</span><b>${p.effort}</b></div>
+      <div class="forge-plan-box"><span>Temps</span><b>${esc(p.time)}</b></div>
+      <div class="forge-plan-box"><span>Matériaux</span><b>${esc(p.materials)}</b></div>
+    </div>
+    ${dn!=null?forgeThresholdHtml(dn,p.qualityMode):""}
+    <div class="forge-plan-note${p.blocked?" warn":""}"><b>Résultat :</b> ${esc(p.result)}<br><b>Coût / repère :</b> ${esc(p.cost)}</div>
+    ${(p.notes||[]).map(n=>`<div class="forge-plan-note">${esc(n)}</div>`).join("")}
+    <div class="forge-toolbar">
+      <button type="button" class="forge-btn" onclick="forgePrepare(false)" ${p.blocked?"disabled":""}>Ajouter à la préparation</button>
+      <button type="button" class="forge-btn primary" onclick="forgePrepare(true)" ${p.blocked?"disabled":""}>Préparer et transmettre au MJ</button>
+    </div>`;
+}
+function forgeProposalStatusLabel(p){
+  const s=normalizedProposalStatus(p);
+  return s==="approved"?"Joué / validé":s==="rejected"?"Refusé":s==="sent"?"Transmis":"Préparé";
+}
+function forgePrepare(sendNow){
+  const data=forgePlanData();if(data.blocked)return;
+  const id="forge_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
+  const p={
+    id,kind:"forgeWork",label:data.label,domain:"forge",status:sendNow?"sent":"draft",
+    createdAt:new Date().toISOString(),sentAt:sendNow?new Date().toISOString():null,
+    forgeData:clone(data),note:"Préparation d’atelier — aucun effet mécanique avant validation MJ."
+  };
+  L.proposals=L.proposals||[];L.proposals.push(p);save();
+  forgeState().drafts.push(id);save();renderForgeAll();
+  if(sendNow&&cockpitConnected)setTimeout(()=>sendProposalBundleToCockpit(false),0);
+}
+function forgeIntegrateApprovedProposal(p){
+  if(!p||p.kind!=="forgeWork"||normalizedProposalStatus(p)!=="approved")return;
+  const fs=forgeState(),hid="history_"+p.id;
+  if(fs.history.some(x=>x.id===hid))return;
+  const d=p.forgeData||{};
+  fs.history.push({
+    id:hid,date:p.decisionAt?"Validation MJ — "+new Date(p.decisionAt).toLocaleDateString("fr-FR"):"Validation MJ",
+    owner:"Kalha / atelier",object:d.object||p.label,operation:p.label,status:"validated",
+    outcome:"Validé par le MJ",effect:d.result||p.note||"Travail validé.",
+    renewal:!!d.renewal,renewalText:d.renewal?"Un an et un jour après la dernière réussite — date de campagne à consigner.":null,
+    quality:"Selon résultat validé",note:"Entrée créée depuis une proposition de Forge approuvée."
+  });
+}
+function forgeRenderRenewals(){
+  const host=document.getElementById("forgeRenewals");if(!host)return;
+  const rows=forgeState().history.filter(x=>x.status==="validated"&&x.renewal);
+  host.innerHTML=rows.length?rows.map(x=>`<div class="forge-renewal ${/date|dater|consigner|conserver/i.test(x.renewalText||"")?"undated":""}">
+    <b>${esc(x.object)} <small>• ${esc(x.owner)}</small></b>
+    <small>${esc(x.renewalText||"Un an et un jour après la dernière réussite.")}</small>
+  </div>`).join(""):`<div class="forge-plan-note">Aucune amélioration temporaire suivie.</div>`;
+}
+function forgeRenderHistory(){
+  const host=document.getElementById("forgeHistory");if(!host)return;
+  const filter=forgeVal("forgeHistoryFilter","all"),base=forgeState().history;
+  const local=(L.proposals||[]).filter(p=>p.kind==="forgeWork"&&normalizedProposalStatus(p)!=="approved").map(p=>({
+    id:p.id,date:p.createdAt?new Date(p.createdAt).toLocaleString("fr-FR"):"Préparation",
+    owner:"Kalha",object:p.forgeData?.object||p.label,operation:p.label,
+    status:normalizedProposalStatus(p),outcome:forgeProposalStatusLabel(p),
+    effect:p.forgeData?.result||p.note||"",quality:"—",note:p.note||""
+  }));
+  let rows=[...base,...local];
+  if(filter==="validated")rows=rows.filter(x=>x.status==="validated");
+  if(filter==="draft")rows=rows.filter(x=>x.status!=="validated");
+  host.innerHTML=rows.slice().reverse().map(x=>`<div class="forge-history-entry">
+    <div class="date">${esc(x.date||"Date non documentée")}</div>
+    <div><b>${esc(x.owner||"")} — ${esc(x.object||"")}</b><p>${esc(x.operation||"")} • ${esc(x.outcome||"")}<br>${esc(x.effect||"")}${x.note?`<br><em>${esc(x.note)}</em>`:""}</p></div>
+    <span class="forge-status">${esc(x.status==="validated"?"Joué / validé":x.status==="sent"?"Transmis":x.status==="rejected"?"Refusé":"Préparé")}</span>
+  </div>`).join("");
+}
+function renderForgeAll(){
+  const karma=document.getElementById("forgeKarmaNow");if(karma)karma.textContent=`${Math.max(0,Number(L.draft?.karma ?? P.combat.karma.current))} / ${P.combat.karma.max}`;
+  forgeRenderPlan();forgeRenderRenewals();forgeRenderHistory();
+}
+function forgeOpenOp(op){
+  FORGE_ACTIVE_OP=op;
+  document.querySelectorAll("[data-forge-op]").forEach(b=>b.classList.toggle("active",b.dataset.forgeOp===op));
+  const titles={blade:"Perfectionner une arme",arrows:"Renforcer des projectiles",make:"Fabriquer",repair:"Réparer"};
+  const t=document.getElementById("forgeOpTitle");if(t)t.textContent=titles[op]||"Forge";
+  const form=document.getElementById("forgeForm");if(form)form.innerHTML=forgeFormHtml(op);
+  if(op==="make"||op==="repair")forgeRenderNestedFields();else forgeBindInputs();
+  forgeRenderPlan();
+}
+function initForgeV047(){
+  forgeState();save();
+  document.querySelectorAll("[data-forge-op]").forEach(b=>b.addEventListener("click",()=>forgeOpenOp(b.dataset.forgeOp)));
+  document.getElementById("forgeHistoryFilter")?.addEventListener("change",forgeRenderHistory);
+  forgeOpenOp("blade");forgeRenderRenewals();forgeRenderHistory();
+}
+
+/* ===== Synchronisation V0.47 — fiche publiée autoritaire, événements idempotents ===== */
+function applyCockpitEvents(events){
+  if(!Array.isArray(events))return;
+  if(!Array.isArray(L.appliedCockpitEvents))L.appliedCockpitEvents=[];
+  const seen=new Set(L.appliedCockpitEvents);
+  events.forEach(ev=>{
+    if(!ev||!ev.id||seen.has(ev.id))return;
+    const field=String(ev.field||ev.resource||"");
+    if(["karma","damage","wounds","recoveriesUsed"].includes(field)){
+      const current=Number(L.draft[field]||0);
+      if(ev.mode==="set"&&Number.isFinite(Number(ev.value)))L.draft[field]=Number(ev.value);
+      else if(Number.isFinite(Number(ev.delta)))L.draft[field]=current+Number(ev.delta);
+      if(field==="karma")L.draft[field]=Math.max(0,Math.min(P.combat.karma.max,Number(L.draft[field])||0));
+      if(["damage","wounds","recoveriesUsed"].includes(field))L.draft[field]=Math.max(0,Number(L.draft[field])||0);
+    }
+    seen.add(ev.id);L.appliedCockpitEvents.push(ev.id);
+  });
+  if(L.appliedCockpitEvents.length>500)L.appliedCockpitEvents=L.appliedCockpitEvents.slice(-500);
+}
+
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initForgeV047,{once:true});
+else initForgeV047();
+
+
 installVorkanaProgression();
 </script>
 <script src="Kalha_V0_34_adapter.js?v=0.40.0"></script>
 <script src="vorkana-combat-options.js?v=0.40.0"></script>
 <script src="vorkana-combat-sync.js?v=0.38.0"></script>
 <script src="vorkana-sauvegarde.js?v=0.40.0"></script>
-<script src="vorkana-navigation.js?v=0.43.1"></script><script>applyCockpitRuntime=VorkanaRuntime.player(P,L,save,renderProposalSurfaces);</script></body></html>
+<script src="vorkana-navigation.js?v=0.43.1"></script><script>
+/* V0.47 — la fiche publiée est l’autorité mécanique.
+   Le Cockpit peut observer l’état, valider des propositions et transmettre des
+   événements uniques ; un snapshot ancien ne réécrit plus les ressources publiées. */
+const _kalhaRuntimeApply=VorkanaRuntime.player(P,L,save,renderProposalSurfaces);
+applyCockpitRuntime=function(runtime){
+  if(runtime&&typeof runtime==="object"){
+    L.sync=L.sync||{};
+    L.sync.lastRuntimeSnapshotObserved={
+      seenAt:new Date().toISOString(),
+      revision:runtime.runtimePublicationRevision||runtime.revision||null,
+      karma:Number.isFinite(Number(runtime.karma))?Number(runtime.karma):null,
+      damage:Number.isFinite(Number(runtime.damage))?Number(runtime.damage):null,
+      wounds:Number.isFinite(Number(runtime.wounds))?Number(runtime.wounds):null,
+      recoveriesUsed:Number.isFinite(Number(runtime.recoveriesUsed))?Number(runtime.recoveriesUsed):null
+    };
+    save();
+  }
+  return false;
+};
+</script><script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-Kalha"){
+      const forced={"mace":{"from":["unassigned"],"to":"back"},"tools":{"from":["unassigned"],"to":"inaccessible"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-Kalha";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script></body></html>
