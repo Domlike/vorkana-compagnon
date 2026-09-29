@@ -2822,28 +2822,7 @@ function writePlayerVision(html){
 function requestPlayerVision(){
  playerVisionWin=window.open("","EarthdawnPlayerView","width=1280,height=800");
  if(!playerVisionWin){alert("Le navigateur a bloqué la fenêtre Vision joueur.");return}
- writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p><script>
-/* AUDIT_INVENTAIRE_20260929 */
-(function(){
-  try{
-    const st=gearState();
-    if(st.auditInventoryRevision!=="2026-09-29-Ogunta"){
-      const forced={"gear_0":{"from":["bag"],"to":"beltRight"},"gear_3":{"from":["bag"],"to":"back"}};
-      Object.entries(forced).forEach(([id,rule])=>{
-        const row=st.items&&st.items[id]; if(!row)return;
-        if(rule.from.includes(row.location))row.location=rule.to;
-      });
-      if(Array.isArray(st.purses)){
-        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
-        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
-      }
-      st.auditInventoryRevision="2026-09-29-Ogunta";
-      save();
-      if(typeof renderGear==="function")renderGear();
-    }
-  }catch(e){console.warn("Migration inventaire",e)}
-})();
-</script></body></html>');
+ writePlayerVision('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Earthdawn — Vision joueur</title></head><body style="margin:0;background:#17191b;color:#ead9b8;font:16px Georgia;padding:32px"><b>Connexion à la Vision joueur…</b><p style="color:#b9b1a5">Le Cockpit prépare la vue partagée, utilisable en combat comme hors combat.</p></body></html>');
  if(!cockpitConnected){connectToCockpit();setTimeout(()=>playerPost({type:"earthdawn-player-view-request"}),1700);return}
  playerPost({type:"earthdawn-player-view-request"});
 }
@@ -5788,4 +5767,27 @@ applyCockpitRuntime=function(runtime){
     }
   }catch(e){console.warn("Migration inventaire",e)}
 })();
-</script></body></html>
+</script>
+<script>
+/* AUDIT_INVENTAIRE_20260929 */
+(function(){
+  try{
+    const st=gearState();
+    if(st.auditInventoryRevision!=="2026-09-29-Ogunta"){
+      const forced={"gear_0":{"from":["bag"],"to":"beltRight"},"gear_3":{"from":["bag"],"to":"back"}};
+      Object.entries(forced).forEach(([id,rule])=>{
+        const row=st.items&&st.items[id]; if(!row)return;
+        if(rule.from.includes(row.location))row.location=rule.to;
+      });
+      if(Array.isArray(st.purses)){
+        const defaults=Object.fromEntries(GEAR_PURSE_DEFAULTS.map(p=>[p.id,p]));
+        st.purses.forEach(p=>{const d=defaults[p.id];if(d&&p.id!=="unallocated"&&p.location==="unassigned"&&d.location!=="unassigned")p.location=d.location;});
+      }
+      st.auditInventoryRevision="2026-09-29-Ogunta";
+      save();
+      if(typeof renderGear==="function")renderGear();
+    }
+  }catch(e){console.warn("Migration inventaire",e)}
+})();
+</script>
+</body></html>
