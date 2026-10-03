@@ -2844,7 +2844,7 @@ function recalculateConfirmedMechanics(){
   P.carryCapacity=table[attributes.Force.value][3];P.liftCapacity=table[attributes.Force.value][4];
   P.referenceConfig.capacity=P.carryCapacity;P.referenceConfig.lift=P.liftCapacity;
   const sources={warbow:['talent','Armes de tir'],throw:['skill','Armes de jet'],sword:['talent','Armes de mêlée'],hatchet:['talent','Armes de mêlée'],second:['skill','Deuxième attaque'],second_shot:['skill','Deuxième tir'],silent:['talent','Déplacement silencieux'],sprint:['talent','Sprint'],astral:['talent','Vision astrale']};
-  for(const a of c.actions){const [kind,name]=sources[a.id],t=(kind==='talent'?P.talentsKnown:P.skills).find(t=>t.name===name);a.attackStep=t.step;a.attackDice=t.dice;if(a.damageStep!=null){a.damageStep+=stepDelta('Force');a.damageDice=edStepDiceLabel(a.damageStep);}}
+  for(const a of c.actions){const [kind,name]=sources[a.id.replace(/_reinforced$/,'')],t=(kind==='talent'?P.talentsKnown:P.skills).find(t=>t.name===name);a.attackStep=t.step;a.attackDice=t.dice;if(a.damageStep!=null){a.damageStep+=stepDelta('Force');a.damageDice=edStepDiceLabel(a.damageStep);}}
   for(const r of c.reactions){const t=P.talentsKnown.find(t=>t.name===r.name);if(t){r.rank=t.rank;r.step=t.step;r.dice=t.dice;r.usesPerRound=t.rank;}}
   P.halfMagic={...base.halfMagic,step:base.halfMagic.step+stepDelta('Perception')};P.halfMagic.dice=edStepDiceLabel(P.halfMagic.step);
   for(const a of NC_ACTIONS){
@@ -3016,6 +3016,7 @@ function applyCockpitSnapshot(d){
  save();renderCockpitStatus();renderProposalSurfaces();
 }
 function handleCockpitMessage(e){
+ if(!window.VorkanaSessionAuthority?.ready){const q=window.VorkanaPendingCockpitMessages ||= [];q.push(e);if(q.length>100)q.shift();return;}
  const d=e.data;if(!d||typeof d!=="object")return;
  if(!String(d.type||"").startsWith("earthdawn-"))return;
  if(d.type==="earthdawn-cockpit-hello"||d.type==="earthdawn-cockpit-state"){
@@ -6054,4 +6055,5 @@ applyCockpitRuntime=function(runtime){
   }catch(e){console.warn("Migration inventaire",e)}
 })();
 </script>
+<script src="vorkana-session-loader.js?v=20261003-1"></script>
 </body></html>
