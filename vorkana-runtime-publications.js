@@ -19,8 +19,8 @@ window.VorkanaRuntimePublications={
   },
   "pj_1": {
     "karma": {
-      "value": 10,
-      "revision": "b97474ecd88d49e0"
+      "value": 20,
+      "revision": "08daa80325b72a5e"
     },
     "damage": {
       "value": 0,
@@ -55,8 +55,8 @@ window.VorkanaRuntimePublications={
   },
   "pj_3": {
     "karma": {
-      "value": 9,
-      "revision": "a8bbfce0568f2f0c"
+      "value": 23,
+      "revision": "c923e0659f97af00"
     },
     "damage": {
       "value": 0,
@@ -73,12 +73,12 @@ window.VorkanaRuntimePublications={
   },
   "pj_4": {
     "karma": {
-      "value": 8,
-      "revision": "f7c60203b6b28058"
+      "value": 16,
+      "revision": "2cd9d3e8ba27ebe3"
     },
     "damage": {
-      "value": 0,
-      "revision": "a28e12293a0affc3"
+      "value": 1,
+      "revision": "5d486ec71f905ffa"
     },
     "wounds": {
       "value": 0,

@@ -92,10 +92,15 @@
     const html=visible.map(m=>{
       const delivery=Sync.delivery(m.messageId),receipts=delivery.recipients||{},target=m.to||'gm';
       const receipt=target==='all'?(Object.values(receipts).includes('read')?'Lu par au moins un destinataire':Object.values(receipts).length?'Reçu par au moins un destinataire':'Réception à confirmer'):receipts[target]==='read'?'Lu par le destinataire':receipts[target]==='received'?'Reçu par le destinataire':'Réception à confirmer';
+      const date=new Date(m.sentAt||Date.now()),today=new Date();
+      const stamp=date.toDateString()===today.toDateString()?date.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+      const shortStatus=m.mine?(receipt.startsWith('Lu')?'Lu':receipt.startsWith('Reçu')?'Reçu':delivery.saved?'Envoyé':'En attente'):'';
+      const song=m.kind==='song'&&typeof m.lyrics==='string';
+      const body=song?'<details class="vui-song" data-song-id="'+esc(m.messageId)+'"><summary><b>♫ '+esc(m.title||'Chanson')+'</b><small>'+esc(m.author||'')+' · Afficher les paroles</small></summary><pre>'+esc(m.lyrics)+'</pre></details>':'<div>'+esc(m.text||'')+'</div>';
       const status=m.mine?`${delivery.saved?'Conservé dans la mémoire partagée':'Sauvegarde distante en attente'} · ${receipt}`:'';
-      return `<div class="zmsg-item ${m.fromId==='gm'?'from-gm':'from-player'} ${m.mine?'mine':''}"><b>${esc(m.from||participantName(m.fromId))}</b> → ${esc(m.toLabel||participantName(m.to))}<div>${esc(m.text||'')}</div><small>${esc(new Date(m.sentAt||Date.now()).toLocaleString('fr-FR'))}${status?' · '+esc(status):''}</small></div>`;
+      return `<div class="zmsg-item ${m.fromId==='gm'?'from-gm':'from-player'} ${m.mine?'mine':''}"><b>${esc(m.from||participantName(m.fromId))}</b> → ${esc(m.toLabel||participantName(m.to))}${body}<small class="vui-meta" title="${esc(date.toLocaleString('fr-FR')+(status?' · '+status:''))}">${esc(stamp)}${shortStatus?' · '+esc(shortStatus):''}</small></div>`;
     }).join('')||'<p>Aucun message pour le moment.</p>';
-    if(feed.innerHTML!==html){feed.innerHTML=html;feed.scrollTop=bottom?feed.scrollHeight:previousTop;}
+    if(feed.innerHTML!==html){const opened=new Set(Array.from(feed.querySelectorAll('details[open][data-song-id]')).map(el=>el.dataset.songId));feed.innerHTML=html;feed.querySelectorAll('details[data-song-id]').forEach(el=>{el.open=opened.has(el.dataset.songId);});feed.scrollTop=bottom?feed.scrollHeight:previousTop;}
     document.getElementById('zmsgOlder').hidden=messages.length<=messageLimit;
   }
 
