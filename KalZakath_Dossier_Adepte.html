@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kal’Zakath — Dossier d’Adepte V0.52</title>
+<title>Kal’Zakath — Dossier d’Adepte V0.54</title>
 <style>
 :root{--paper:#f8f6f0;--white:#fff;--ink:#252525;--muted:#747474;--line:#d8d6cf;--side:#f2f2ef;
 --attribute:#5b9bd5;--talent:#9aacc0;--specialization:#b39ad0;--skill:#d2ae5d;
@@ -1893,6 +1893,17 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 <script src="vorkana-runtime-publications.js?v=683952db4a7b43f9"></script><script src="vorkana-runtime.js?v=20260919-general"></script><script src="vorkana-published.js?v=20260918"></script>
 <script src="earthdawn-realtime-config.js"></script>
 <script src="earthdawn-sync.js?v=0.40.0"></script>
+
+<style>
+.prog-project-actions{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;
+}
+.prog-project-actions #kalProjectsOpen{
+  padding:10px 18px;background:#315c50;color:#fff;border:1px solid #62746a;
+  border-radius:5px;cursor:pointer;font-weight:700;
+}
+.prog-project-actions span{color:#655846;font-size:13px}
+</style>
 </head>
 <body><div class="app">
 <aside>
@@ -2214,6 +2225,13 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
   <div class="head">
     <h2>Progression</h2>
     <div class="progress-subtitle">Dépenser les Points de Légende, préparer les entraînements et suivre la trajectoire vers le Cercle suivant.</div>
+  </div>
+
+  <div class="prog-project-actions">
+    <button type="button" id="kalProjectsOpen" aria-haspopup="dialog" aria-controls="kalProjects" aria-label="Ouvrir les projets de progression">
+      Projets
+    </button>
+    <span>Explorer la progression future de Kal’Zakath sans modifier la fiche réelle.</span>
   </div>
 
   <div class="prog-top">
@@ -2792,7 +2810,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
 
 <script>
 "use strict";
-const P={"schemaVersion":"0.1","playerId":"pj_2","characterId":"kalzakath","name":"Kal’Zakath","usualName":"Kal’Zakath","fullName":"Kal’Zakath","player":"Loïc","people":"Ork","discipline":"Éclaireur","circle":3,"age":"13 ou 14 ans","birth":"1434 TH","origin":"Rocheville","physical":{"heightM":1.96,"weightKgIndicative":105},"legend":{"total":8685,"spent":8600,"available":85,"breakdown":{"attribute":0,"talent":5800,"specialization":0,"skill":2800,"thread":0,"karma":0,"magic":0}},"mentor":"Harkan Brumepente","traits":["Inventif","Créatif","Logique","Attentif","Patient","Sarcastique","Destin supérieur discret"],"role":"Le Regard des routes","attributes":{"Dextérité":{"value":16,"step":7,"dice":"D12"},"Force":{"value":13,"step":6,"dice":"D10"},"Constitution":{"value":14,"step":6,"dice":"D10"},"Perception":{"value":16,"step":7,"dice":"D12"},"Volonté":{"value":8,"step":4,"dice":"D6"},"Charisme":{"value":11,"step":5,"dice":"D8"}},"combat":{"initiative":{"step":7,"dice":"D12"},"defenses":{"physical":9,"magical":9,"social":7},"armor":{"physical":5,"mystical":0,"label":"Cuir rembourré et targe"},"health":{"unconscious":48,"death":60,"woundThreshold":10},"recovery":{"max":3,"step":6,"dice":"D10","maxPerDay":3},"movement":{"combat":32,"run":64},"balance":{"step":6,"dice":"D10"},"karma":{"current":9,"max":40,"step":5,"dice":"D8"},"actions":[{"id":"warbow","label":"Souffle de Dragon — arc de guerre","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":11,"damageDice":"D10+D8","karma":"no","effort":0,"range":"Selon portée de l’arc","weapon":true,"ranged":true,"ammo":"arrows"},{"id":"warbow_reinforced","label":"Souffle de Dragon — flèche renforcée","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":12,"damageDice":"2D10","karma":"no","effort":0,"range":"Selon portée de l’arc","weapon":true,"ranged":true,"ammo":"arrows","note":"Utiliser avec une flèche renforcée : +1 niveau de dommages, sans bonus au test d’attaque."},{"id":"throw","label":"Griffes de Dragon — dague de jet","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":8,"damageDice":"2D6","karma":"no","effort":0,"range":"Selon portée de jet","weapon":true,"ranged":true,"ammo":"daggers"},{"id":"sword","label":"Queue de Dragon — épée large","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":13,"damageDice":"D12+D10","karma":"no","effort":0,"range":"Contact","weapon":true},{"id":"hatchet","label":"Corne de Dragon — hachette","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":10,"damageDice":"D10+D6","karma":"no","effort":0,"range":"Contact","weapon":true},{"id":"second","label":"Deuxième attaque — même arme","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":13,"damageDice":"D12+D10","karma":"no","effort":2,"range":"Contact","repeat":"melee"},{"id":"second_shot","label":"Deuxième tir — même arc","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":11,"damageDice":"D10+D8","karma":"no","effort":2,"range":"Contact","repeat":"bow"},{"id":"second_shot_reinforced","label":"Deuxième tir — flèche renforcée","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":12,"damageDice":"2D10","karma":"no","effort":2,"range":"Contact","repeat":"bow","note":"Utiliser avec une flèche renforcée."},{"id":"silent","label":"Déplacement silencieux","type":"utility","attackStep":10,"attackDice":"D10+D6","damageStep":null,"damageDice":null,"karma":"optional","effort":0,"range":"Contact"},{"id":"sprint","label":"Sprint","type":"utility","attackStep":8,"attackDice":"2D6","damageStep":null,"damageDice":null,"karma":"no","effort":1,"range":"Contact"},{"id":"astral","label":"Vision astrale","type":"utility","attackStep":10,"attackDice":"D10+D6","damageStep":null,"damageDice":null,"karma":"optional","effort":1,"range":"Contact"}],"reactions":[{"id":"dodge","label":"Esquive","name":"Esquive","rank":4,"step":11,"dice":"D10+D8","effort":1,"usesPerRound":4,"actionCost":0,"karma":"optional"}]},"talentsKnown":[{"name":"Armes de tir","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":true,"discipline":false,"karma":"non","effort":0,"action":true},{"name":"Déplacement silencieux","rank":3,"step":10,"dice":"D10+D6","circle":1,"optional":true,"discipline":true,"karma":"possible","effort":0,"action":false},{"name":"Escalade","rank":1,"step":8,"dice":"2D6","circle":1,"optional":false,"discipline":true,"karma":"possible","effort":0,"action":true},{"name":"Pistage","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":true},{"name":"Esquive","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":true,"discipline":true,"karma":"possible","effort":1,"action":false},{"name":"Rituel de Karma","rank":2,"rollable":false,"note":"Rituel sans test d’action standard.","step":null,"dice":"—","circle":1,"optional":false,"discipline":false,"karma":"non","effort":0,"action":false},{"name":"Endurance","rank":4,"rollable":false,"note":"Effet passif.","step":null,"dice":"—","circle":2,"optional":false,"discipline":false,"karma":"non","effort":0,"action":false},{"name":"Don des langues","rank":4,"step":11,"dice":"D10+D8","circle":2,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":true},{"name":"Armes de mêlée","rank":1,"step":8,"dice":"2D6","circle":2,"optional":true,"discipline":false,"karma":"non","effort":0,"action":true},{"name":"Sprint","rank":1,"step":8,"dice":"2D6","circle":3,"optional":true,"discipline":false,"karma":"non","effort":1,"action":false},{"name":"Vision astrale","rank":3,"step":10,"dice":"D10+D6","circle":3,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":false}],"skills":[{"name":"Connaissance : Sciences des créatures","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Médecine","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Substances naturelles","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Artisanat : Fabrication de pièges","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Attaque critique","rank":3,"rollable":false,"note":"Bonus conditionnel aux dommages, sans jet autonome.","effort":0},{"name":"Lecture et écriture","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Deuxième tir","rank":1,"step":8,"dice":"2D6","effort":2},{"name":"Deuxième attaque","rank":1,"step":8,"dice":"2D6","effort":2},{"name":"Armes de jet","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Analyse de créature","rank":1,"step":8,"dice":"2D6","effort":1},{"name":"Saut de géant","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Analyse des indices","rank":1,"step":8,"dice":"2D6","effort":1},{"name":"Recherche","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Dragons","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Sang-froid","rank":1,"step":5,"dice":"D8","effort":0},{"name":"Apprivoisement","rank":1,"step":6,"dice":"D10","effort":0},{"name":"Dressage","rank":1,"step":6,"dice":"D10","effort":0},{"name":"Lecture sur les lèvres","rank":1,"step":6,"dice":"D10","effort":2},{"name":"Connaissance : Disciplines","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Itinéraire marchand","rank":1,"step":8,"dice":"2D6","effort":0}],"languages":{"spoken":["or’zet","throalique","obsidien","t’skrang"],"written":["throalique"]},"resources":{"money":{"gold":49,"silver":87,"copper":57,"confirmed":true},"arrows":20,"items":["Arc de guerre elfique « Souffle de Dragon »","Dagues de jet « Griffes de Dragon »","Épée large « Queue de Dragon »","Hachette « Corne de Dragon »","Targe « Écaille de Dragon »","Armure de cuir rembourré","Œil de Dragon","Kit de soins","Mousse d’argent","Matériel d’artisanat (piège)","Allume-feu","Fioles et préparations","3 bourses dont une bourse silencieuse"],"hiddenGoldRecorded":"2026-10-06"},"relationships":[{"name":"Kalha","relation":"petite sœur"},{"name":"Doomir Vent de Glace","relation":"père disparu"},{"name":"Barbak et Ogunta","relation":"cousins"},{"name":"Mâche-Fer","relation":"chien de guerre harmonisé"},{"name":"Le groupe","relation":"éclaireur et lecteur des dangers"}],"historyHighlights":["Fils de Doomir Vent de Glace et grand frère de Kalha, Kal’Zakath est l’éclaireur du groupe et lit les traces, les pièges et les routes.","Son intuition de destin supérieur reste un signe discret plutôt qu’une promesse spectaculaire.","Pendant son passage au troisième Cercle, il a appris à suivre les conséquences et la place qu’il occupe dans le monde plutôt que le seul mouvement.","À Kelpoya, il a manipulé une rune du coffre et déclenché un nuage vert empoisonné.","Dans la nuit du 29 au 30 Sollus, il a participé à l’exfiltration de Katsika et revendiqué le sauvetage au nom de Vorkana."],"snapshot":{"karma":9,"damage":0,"wounds":0,"recoveriesUsed":0,"arrows":20,"stunDamage":0},"visibility":{"playerSafe":true,"gmSecretsIncluded":false,"notes":"Aucune vérité MJ cachée, horloge PNJ ou information non révélée n’est incluse."},"halfMagic":{"rank":2,"step":9,"dice":"D8+D6","text":"Reconnaître traces et pistes dans la nature ou en milieu urbain ; repérer pièges et portes secrètes ; remplacer certains tests de Survie, Orientation ou Cartographie par la demi-magie."},"uiSemanticPalette":{"attribute":"#5b9bd5","talent":"#9aacc0","specialization":"#b39ad0","skill":"#d2ae5d","thread":"#7eaa7e","karma":"#8fc46d","magic":"#bfe2ae","wound":"#ff5b4d","player":"#111111","gm":"#b79249"},"portrait":"assets/portraits/kalzakath.png","location":"Rocnoir — à bord de l’Insoumise","gahad":["Lorsqu’il estime qu’une situation met Kalha en danger, y compris par ses propres choix, sauf s’il juge ce danger inévitable ; également lorsque le Gahad de Kalha s’éveille, sauf mauvaise intention absente."],"specializations":[],"circleAllocationConfirmed":true,"carryCapacity":55,"liftCapacity":110,"companion":{"name":"Mâche-Fer","state":"Indemne • lien harmonisé","note":"Chien de guerre sensible au danger et aux ordres contradictoires ; l’harmonisation ne le transforme pas en automate.","initiative":5,"defenses":"7 / 5 / 5","health":"21 / 30","attack":"Morsure 8 • dommages 11","movement":"32 / 64"},"referenceConfig":{"id":"kalzakath","prefix":"KalZakath","height":1.96,"weight":105,"capacity":55,"lift":110,"mentor":"Harkan Brumepente","parents":"Doomir Vent de Glace — disparu ; mère à renseigner","role":"Le Regard des routes","money":{"gold":36,"silver":27,"copper":57},"moneyNote":"46 PO, 87 PA et 57 PC. Le contenu de la bourse ne présume aucune somme supplémentaire appartenant à Kalha.","languages":["or’zet","throalique","obsidien","t’skrang"],"written":["throalique"],"page":21,"endurance":"6/5","essential":{"Escalade":1,"Pistage":1,"Rituel de Karma":1,"Endurance":2,"Don des langues":2,"Vision astrale":3},"d":["Déplacement silencieux","Escalade","Pistage","Esquive","Don des langues","Vision astrale"],"nc":["Déplacement silencieux","Escalade","Pistage","Don des langues","Vision astrale"],"optional":{"Armes de tir":1,"Déplacement silencieux":1,"Esquive":1,"Armes de mêlée":2,"Sprint":3},"disclaimer":"État validé après les dépenses récentes : talents de Discipline (Karma utilisable) — Déplacement silencieux, Escalade, Pistage, Esquive, Don des langues et Vision astrale. Talents essentiels — Escalade, Pistage, Rituel de Karma, Endurance, Don des langues et Vision astrale. Talents optionnels acquis — Armes de tir, Déplacement silencieux, Esquive, Armes de mêlée et Sprint. Les spécialisations affichées sont des préparations futures et ne sont pas acquises. Transport / levage : 55 / 110 kg (table basse, décision du 06).","way":"L’Éclaireur apprend à lire le monde et la place qu’il y occupe. Traces, terrain, dangers et habitants forment un tout : reconnaître une piste ne suffit pas à comprendre ce qu’elle engage. Harkan a appris à Kal’Zakath à suivre les conséquences autant que les pas.","ritual":"Réserver une demi-heure au rituel personnel d’Éclaireur. Le rang détermine les points de Karma préparables et leur coût en PL dans Progression. Ce rituel ne remplace pas un test de Pistage ou de Survie.","extraHistory":"Pour le troisième Cercle, Harkan lui présenta trois pistes : une urgence trompeuse, un chariot dangereux à signaler et un ork en fuite à aider sans le contraindre. Kal’Zakath retrouva le camp en comprenant les relations entre les événements, pas seulement leurs traces.","path":[{"c":1,"e":"Escaladeᴰ • Natation • Pistageᴰ • Rituel de Karma • Survieᴰ • Vigilance","o":"Armes de tir • Déplacement silencieuxᴰ • Esquiveᴰ","bonus":"","status":"Initié"},{"c":2,"e":"Endurance (6/5) • Don des languesᴰ","o":"Armes de mêlée","bonus":"","status":"Novice"},{"c":3,"e":"Vision astraleᴰ (arbitrage MJ, Recueil) • Orientationᴰ (Concepteur, rang non documenté)","o":"Sprint","bonus":"","status":"Novice"},{"c":4,"e":"Tissage de filament (Tissage d’éclaireur)ᴰ","o":"Choix à déterminer","bonus":"Sens améliorés optionnels : 1 dommage permanent.","status":"Novice"},{"c":5,"e":"Analyse des indicesᴰ • Rituel du maître fantômeᴰ","o":"Choix à déterminer","bonus":"Karma sur les tests restreints de Perception.","status":"Compagnon"},{"c":6,"e":"Vision astraleᴰ — déjà acquise au Cercle 3 par arbitrage MJ","o":"Choix à déterminer","bonus":"Karma sur les tests restreints de Dextérité.","status":"Compagnon"},{"c":7,"e":"Sens empathiqueᴰ","o":"Choix à déterminer","bonus":"+1 Défense physique.","status":"Compagnon"},{"c":8,"e":"Commandement • Guide élémentaireᴰ","o":"Choix à déterminer","bonus":"+1 Défense magique.","status":"Compagnon"},{"c":9,"e":"Détection du poisonᴰ • Endurance au froidᴰ","o":"Choix à déterminer","bonus":"Karma sur les récupérations ; +1 Initiative.","status":"Gardien"},{"c":10,"e":"Vision véritableᴰ","o":"Choix à déterminer","bonus":"Camouflage optionnel : 2 dommages permanents.","status":"Gardien"},{"c":11,"e":"Défense amélioréeᴰ","o":"Choix à déterminer","bonus":"+1 Défenses physique et sociale.","status":"Gardien"},{"c":12,"e":"Détection des mensongesᴰ","o":"Choix à déterminer","bonus":"+1 Défenses magique et sociale.","status":"Gardien"},{"c":13,"e":"Localisation par échoᴰ • Trame de talent","o":"Choix à déterminer","bonus":"+1 Défense physique ; réserve de Karma +25.","status":"Maître"},{"c":14,"e":"Caméléonᴰ","o":"Choix à déterminer","bonus":"+1 Défenses magique et physique ; +1 Initiative.","status":"Maître"},{"c":15,"e":"Deuxième chanceᴰ • Trame d’attribut","o":"Choix à déterminer","bonus":"+1 Défense physique, Initiative et récupération.","status":"Maître"}],"pools":[{"status":"Initié","minCircle":1,"maxCircle":1,"names":["Analyse de créature","Armes de mêlée","Armes de tir","Déplacement silencieux","Esquive"]},{"status":"Novice","minCircle":2,"maxCircle":4,"names":["Anticipation","Armes de jet","Déguisement magique","Détection des armes","Détection des pièges","Lecture et écriture","Recherche","Sprint"]},{"status":"Compagnon","minCircle":5,"maxCircle":8,"names":["Acrobatie en selle","Crochetage","Désamorçage des pièges","Dissimulation d’armes","Esquive des pièges","Flèche de direction","Langage du vent","Lecture sur les lèvres","Manœuvre","Marche sur les vents","Mort feinte","Stabilité"]},{"status":"Gardien","minCircle":9,"maxCircle":12,"names":["Altération d’arme de tir","Désarmement","Détection de la vie","Détection des influences","Détection du danger","Endurcissement","Escamotage","Localisation du tireur","Œil d’aigle","Résistance au poison","Ultime sursaut","Vivacité du tigre"]},{"status":"Maître","minCircle":13,"maxCircle":15,"names":["Abri végétal","Attaque du cobra","Arme éthérée","Arme spirituelle","Détection des défauts d’armure","Esprit du lion","Multilinguisme","Pensée secrète","Projection astrale"]}],"specs":[{"name":"Identification de traces","talent":"Pistage","min":5,"effort":"2","effect":"Reconnaître davantage d’informations à partir de traces. Recueil p.224.","parentCircle":1},{"name":"Meilleur ami de l’adepte","talent":"Pistage","min":5,"effort":"3 (4)","effect":"Mettre le lien avec un animal au service du pistage. Recueil p.224.","parentCircle":1},{"name":"Pistage astral","talent":"Pistage","min":9,"effort":"2","effect":"Suivre une trace astrale selon les conditions de perception. Recueil p.227.","parentCircle":1},{"name":"Voltige dans le gréement","talent":"Escalade","min":3,"effort":"0","effect":"Se déplacer dans le gréement par un test d’Escalade, difficulté de base 8. Recueil p.229.","parentCircle":1},{"name":"Du bout des doigts","talent":"Escalade","min":5,"effort":"2","effect":"Tenter de se rattraper après un échec d’Escalade ; une seule nouvelle tentative. Recueil p.221.","parentCircle":1},{"name":"Déplacement dans les ombres","talent":"Déplacement silencieux","min":3,"effort":"1","effect":"Étendre la discrétion à la vue en zone d’ombre, à demi-vitesse. Pour Kal’Zakath, Déplacement silencieux est traité comme Talent de Discipline par arbitrage MJ : aucun +2 au rang minimum. Recueil p.220.","parentCircle":1},{"name":"Tir en puissance","talent":"Armes de tir","min":5,"effort":"2/attaque","effect":"Augmenter la puissance du tir dans les conditions de la spécialisation. Minimum augmenté de 2 ici. Recueil p.229.","parentCircle":1},{"name":"Arme improvisée","talent":"Armes de mêlée","min":5,"effort":"1","effect":"Manier un objet improvisé ; taille et dommages restent fixés par le MJ. Recueil p.217.","parentCircle":1},{"name":"Parade améliorée","talent":"Armes de mêlée","min":5,"effort":"1","effect":"Échanger de l’efficacité offensive contre une meilleure défense en mêlée. Recueil p.226.","parentCircle":1},{"name":"Passe-armure","talent":"Armes de mêlée","min":7,"effort":"3","effect":"Frapper une faille de l’armure ; conditions et degré requis à examiner avant apprentissage. Recueil p.226.","parentCircle":1},{"name":"Amortissement","talent":"Esquive","min":7,"effort":"2","effect":"Amortir les dommages d’une chute grâce au rang d’Esquive. Recueil p.216.","parentCircle":1}],"spells":[],"critical":3},"campaignRewards":[{"id":"luxueux-1448-04-riag","label":"Le Luxueux — aventure achevée","date":"4 Riag 1448 TH","legendPoints":1400,"silverTotal":160,"coins":{"gold":10,"silver":60,"copper":0},"payment":"10 PO et 60 PA par personnage : règlement total de 160 PA, compté une seule fois"}]}, TC=[[1,100,200,300,500,200,800],[2,200,300,500,800,300,1300],[3,300,500,800,1300,500,2100],[4,500,800,1300,2100,800,3400],[5,800,1300,2100,3400,1300,5500],[6,1300,2100,3400,5500,2100,null],[7,2100,3400,5500,8900,3400,null],[8,3400,5500,8900,14400,5500,null],[9,5500,8900,14400,23300,8900,null],[10,8900,14400,23300,37700,14400,null],[11,14400,23300,37700,61000,23300,null],[12,23300,37700,61000,98700,37700,null],[13,37700,61000,98700,159700,61000,null],[14,61000,98700,159700,258400,98700,null],[15,98700,159700,258400,418100,159700,null]], CC=[[1,100],[2,200],[3,300],[4,500],[5,800],[6,1000],[7,1500],[8,2000],[9,2500],[10,3500],[11,5000],[12,7500],[13,10000],[14,15000],[15,20000]];
+const P={"schemaVersion":"0.1","playerId":"pj_2","characterId":"kalzakath","name":"Kal’Zakath","usualName":"Kal’Zakath","fullName":"Kal’Zakath","player":"Loïc","people":"Ork","discipline":"Éclaireur","circle":3,"age":"13 ou 14 ans","birth":"1434 TH","origin":"Rocheville","physical":{"heightM":1.96,"weightKgIndicative":105},"legend":{"total":8685,"spent":8600,"available":85,"breakdown":{"attribute":0,"talent":5800,"specialization":0,"skill":2800,"thread":0,"karma":0,"magic":0}},"mentor":"Harkan Brumepente","traits":["Inventif","Créatif","Logique","Attentif","Patient","Sarcastique","Destin supérieur discret"],"role":"Le Regard des routes","attributes":{"Dextérité":{"value":16,"step":7,"dice":"D12"},"Force":{"value":13,"step":6,"dice":"D10"},"Constitution":{"value":14,"step":6,"dice":"D10"},"Perception":{"value":16,"step":7,"dice":"D12"},"Volonté":{"value":8,"step":4,"dice":"D6"},"Charisme":{"value":11,"step":5,"dice":"D8"}},"combat":{"initiative":{"step":7,"dice":"D12"},"defenses":{"physical":9,"magical":9,"social":7},"armor":{"physical":5,"mystical":0,"label":"Cuir rembourré et targe"},"health":{"unconscious":48,"death":60,"woundThreshold":10},"recovery":{"max":3,"step":6,"dice":"D10","maxPerDay":3},"movement":{"combat":32,"run":64},"balance":{"step":6,"dice":"D10"},"karma":{"current":9,"max":40,"step":5,"dice":"D8"},"actions":[{"id":"warbow","label":"Souffle de Dragon — arc de guerre","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":11,"damageDice":"D10+D8","karma":"no","effort":0,"range":"Selon portée de l’arc","weapon":true,"ranged":true,"ammo":"arrows"},{"id":"warbow_reinforced","label":"Souffle de Dragon — flèche renforcée","type":"attack","attackStep":11,"attackDice":"D10+D8","damageStep":12,"damageDice":"2D10","karma":"no","effort":0,"range":"Selon portée de l’arc","weapon":true,"ranged":true,"ammo":"arrows","note":"Utiliser avec une flèche renforcée : +1 niveau de dommages, sans bonus au test d’attaque."},{"id":"throw","label":"Griffes de Dragon — dague de jet","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":8,"damageDice":"2D6","karma":"no","effort":0,"range":"Selon portée de jet","weapon":true,"ranged":true,"ammo":"daggers"},{"id":"sword","label":"Queue de Dragon — épée large","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":13,"damageDice":"D12+D10","karma":"no","effort":0,"range":"Contact","weapon":true},{"id":"hatchet","label":"Corne de Dragon — hachette","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":10,"damageDice":"D10+D6","karma":"no","effort":0,"range":"Contact","weapon":true},{"id":"second","label":"Deuxième attaque — même arme","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":13,"damageDice":"D12+D10","karma":"no","effort":2,"range":"Contact","repeat":"melee"},{"id":"second_shot","label":"Deuxième tir — même arc","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":11,"damageDice":"D10+D8","karma":"no","effort":2,"range":"Contact","repeat":"bow"},{"id":"second_shot_reinforced","label":"Deuxième tir — flèche renforcée","type":"attack","attackStep":8,"attackDice":"2D6","damageStep":12,"damageDice":"2D10","karma":"no","effort":2,"range":"Contact","repeat":"bow","note":"Utiliser avec une flèche renforcée."},{"id":"silent","label":"Déplacement silencieux","type":"utility","attackStep":10,"attackDice":"D10+D6","damageStep":null,"damageDice":null,"karma":"optional","effort":0,"range":"Contact"},{"id":"sprint","label":"Sprint","type":"utility","attackStep":8,"attackDice":"2D6","damageStep":null,"damageDice":null,"karma":"no","effort":1,"range":"Contact"},{"id":"astral","label":"Vision astrale","type":"utility","attackStep":10,"attackDice":"D10+D6","damageStep":null,"damageDice":null,"karma":"optional","effort":1,"range":"Contact"}],"reactions":[{"id":"dodge","label":"Esquive","name":"Esquive","rank":4,"step":11,"dice":"D10+D8","effort":1,"usesPerRound":4,"actionCost":0,"karma":"optional"}]},"talentsKnown":[{"name":"Armes de tir","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":true,"discipline":false,"karma":"non","effort":0,"action":true},{"name":"Déplacement silencieux","rank":3,"step":10,"dice":"D10+D6","circle":1,"optional":true,"discipline":true,"karma":"possible","effort":0,"action":false},{"name":"Escalade","rank":1,"step":8,"dice":"2D6","circle":1,"optional":false,"discipline":true,"karma":"possible","effort":0,"action":true},{"name":"Pistage","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":true},{"name":"Esquive","rank":4,"step":11,"dice":"D10+D8","circle":1,"optional":true,"discipline":true,"karma":"possible","effort":1,"action":false},{"name":"Rituel de Karma","rank":2,"rollable":false,"note":"Rituel sans test d’action standard.","step":null,"dice":"—","circle":1,"optional":false,"discipline":false,"karma":"non","effort":0,"action":false},{"name":"Endurance","rank":4,"rollable":false,"note":"Effet passif.","step":null,"dice":"—","circle":2,"optional":false,"discipline":false,"karma":"non","effort":0,"action":false},{"name":"Don des langues","rank":4,"step":11,"dice":"D10+D8","circle":2,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":true},{"name":"Armes de mêlée","rank":1,"step":8,"dice":"2D6","circle":2,"optional":true,"discipline":false,"karma":"non","effort":0,"action":true},{"name":"Sprint","rank":1,"step":8,"dice":"2D6","circle":3,"optional":true,"discipline":false,"karma":"non","effort":1,"action":false},{"name":"Vision astrale","rank":3,"step":10,"dice":"D10+D6","circle":3,"optional":false,"discipline":true,"karma":"possible","effort":1,"action":false}],"skills":[{"name":"Connaissance : Sciences des créatures","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Médecine","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Substances naturelles","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Artisanat : Fabrication de pièges","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Attaque critique","rank":3,"rollable":false,"note":"Bonus conditionnel aux dommages, sans jet autonome.","effort":0},{"name":"Lecture et écriture","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Deuxième tir","rank":1,"step":8,"dice":"2D6","effort":2},{"name":"Deuxième attaque","rank":1,"step":8,"dice":"2D6","effort":2},{"name":"Armes de jet","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Analyse de créature","rank":1,"step":8,"dice":"2D6","effort":1},{"name":"Saut de géant","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Analyse des indices","rank":1,"step":8,"dice":"2D6","effort":1},{"name":"Recherche","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Dragons","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Sang-froid","rank":1,"step":5,"dice":"D8","effort":0},{"name":"Apprivoisement","rank":1,"step":6,"dice":"D10","effort":0},{"name":"Dressage","rank":1,"step":6,"dice":"D10","effort":0},{"name":"Lecture sur les lèvres","rank":1,"step":6,"dice":"D10","effort":2},{"name":"Connaissance : Disciplines","rank":1,"step":8,"dice":"2D6","effort":0},{"name":"Connaissance : Itinéraire marchand","rank":1,"step":8,"dice":"2D6","effort":0}],"languages":{"spoken":["or’zet","throalique","obsidien","t’skrang"],"written":["throalique"]},"resources":{"money":{"gold":49,"silver":87,"copper":57,"confirmed":true},"arrows":20,"items":["Arc de guerre elfique « Souffle de Dragon »","Dagues de jet « Griffes de Dragon »","Épée large « Queue de Dragon »","Hachette « Corne de Dragon »","Targe « Écaille de Dragon »","Armure de cuir rembourré","Œil de Dragon","Kit de soins","Mousse d’argent","Matériel d’artisanat (piège)","Allume-feu","Fioles et préparations","3 bourses dont une bourse silencieuse"],"hiddenGoldRecorded":"2026-10-06"},"relationships":[{"name":"Kalha","relation":"petite sœur"},{"name":"Doomir Vent de Glace","relation":"père disparu"},{"name":"Barbak et Ogunta","relation":"cousins"},{"name":"Mâche-Fer","relation":"chien de guerre harmonisé"},{"name":"Le groupe","relation":"éclaireur et lecteur des dangers"}],"historyHighlights":["Fils de Doomir Vent de Glace et grand frère de Kalha, Kal’Zakath est l’éclaireur du groupe et lit les traces, les pièges et les routes.","Son intuition de destin supérieur reste un signe discret plutôt qu’une promesse spectaculaire.","Pendant son passage au troisième Cercle, il a appris à suivre les conséquences et la place qu’il occupe dans le monde plutôt que le seul mouvement.","À Kelpoya, il a manipulé une rune du coffre et déclenché un nuage vert empoisonné.","Dans la nuit du 29 au 30 Sollus, il a participé à l’exfiltration de Katsika et revendiqué le sauvetage au nom de Vorkana."],"snapshot":{"karma":9,"damage":0,"wounds":0,"recoveriesUsed":0,"arrows":20,"stunDamage":0},"visibility":{"playerSafe":true,"gmSecretsIncluded":false,"notes":"Aucune vérité MJ cachée, horloge PNJ ou information non révélée n’est incluse."},"halfMagic":{"rank":2,"step":9,"dice":"D8+D6","text":"Reconnaître traces et pistes dans la nature ou en milieu urbain ; repérer pièges et portes secrètes ; remplacer certains tests de Survie, Orientation ou Cartographie par la demi-magie."},"uiSemanticPalette":{"attribute":"#5b9bd5","talent":"#9aacc0","specialization":"#b39ad0","skill":"#d2ae5d","thread":"#7eaa7e","karma":"#8fc46d","magic":"#bfe2ae","wound":"#ff5b4d","player":"#111111","gm":"#b79249"},"portrait":"assets/portraits/kalzakath.png","location":"Rocnoir — à bord de l’Insoumise","gahad":["Lorsqu’il estime qu’une situation met Kalha en danger, y compris par ses propres choix, sauf s’il juge ce danger inévitable ; également lorsque le Gahad de Kalha s’éveille, sauf mauvaise intention absente."],"specializations":[],"circleAllocationConfirmed":true,"carryCapacity":55,"liftCapacity":110,"companion":{"name":"Mâche-Fer","state":"Indemne • lien harmonisé","note":"Chien de guerre sensible au danger et aux ordres contradictoires ; l’harmonisation ne le transforme pas en automate.","initiative":5,"defenses":"7 / 5 / 5","health":"21 / 30","attack":"Morsure 8 • dommages 11","movement":"32 / 64"},"referenceConfig":{"id":"kalzakath","prefix":"KalZakath","height":1.96,"weight":105,"capacity":55,"lift":110,"mentor":"Harkan Brumepente","parents":"Doomir Vent de Glace — disparu ; mère à renseigner","role":"Le Regard des routes","money":{"gold":36,"silver":27,"copper":57},"moneyNote":"46 PO, 87 PA et 57 PC. Le contenu de la bourse ne présume aucune somme supplémentaire appartenant à Kalha.","languages":["or’zet","throalique","obsidien","t’skrang"],"written":["throalique"],"page":21,"endurance":"6/5","essential":{"Escalade":1,"Pistage":1,"Rituel de Karma":1,"Endurance":2,"Don des langues":2,"Vision astrale":3},"d":["Déplacement silencieux","Escalade","Pistage","Esquive","Don des langues","Vision astrale"],"nc":["Déplacement silencieux","Escalade","Pistage","Don des langues","Vision astrale"],"optional":{"Armes de tir":1,"Déplacement silencieux":1,"Esquive":1,"Armes de mêlée":2,"Sprint":3},"disclaimer":"État validé après les dépenses récentes : talents de Discipline (Karma utilisable) — Déplacement silencieux, Escalade, Pistage, Esquive, Don des langues et Vision astrale. Talents essentiels — Escalade, Pistage, Rituel de Karma, Endurance, Don des langues et Vision astrale. Talents optionnels acquis — Armes de tir, Déplacement silencieux, Esquive, Armes de mêlée et Sprint. Les spécialisations affichées sont des préparations futures et ne sont pas acquises. Transport / levage : 55 / 110 kg (table basse, décision du 06).","way":"L’Éclaireur apprend à lire le monde et la place qu’il y occupe. Traces, terrain, dangers et habitants forment un tout : reconnaître une piste ne suffit pas à comprendre ce qu’elle engage. Harkan a appris à Kal’Zakath à suivre les conséquences autant que les pas.","ritual":"Réserver une demi-heure au rituel personnel d’Éclaireur. Le rang détermine les points de Karma préparables et leur coût en PL dans Progression. Ce rituel ne remplace pas un test de Pistage ou de Survie.","extraHistory":"Pour le troisième Cercle, Harkan lui présenta trois pistes : une urgence trompeuse, un chariot dangereux à signaler et un ork en fuite à aider sans le contraindre. Kal’Zakath retrouva le camp en comprenant les relations entre les événements, pas seulement leurs traces.","path":[{"c":1,"e":"Escaladeᴰ • Natation • Pistageᴰ • Rituel de Karma • Survieᴰ • Vigilance","o":"Armes de tir • Déplacement silencieuxᴰ • Esquiveᴰ","bonus":"","status":"Initié"},{"c":2,"e":"Endurance (6/5) • Don des languesᴰ","o":"Armes de mêlée","bonus":"","status":"Novice"},{"c":3,"e":"Vision astraleᴰ (arbitrage MJ, Recueil) • Orientationᴰ (Concepteur, rang non documenté)","o":"Sprint","bonus":"","status":"Novice"},{"c":4,"e":"Tissage de filament (Tissage d’éclaireur)ᴰ","o":"Choix à déterminer","bonus":"Sens améliorés optionnels : 1 dommage permanent.","status":"Novice"},{"c":5,"e":"Analyse des indicesᴰ • Rituel du maître fantômeᴰ","o":"Choix à déterminer","bonus":"Karma sur les tests restreints de Perception.","status":"Compagnon"},{"c":6,"e":"Vision astraleᴰ — déjà acquise au Cercle 3 par arbitrage MJ","o":"Choix à déterminer","bonus":"Karma sur les tests restreints de Dextérité.","status":"Compagnon"},{"c":7,"e":"Sens empathiqueᴰ","o":"Choix à déterminer","bonus":"+1 Défense physique.","status":"Compagnon"},{"c":8,"e":"Commandement • Guide élémentaireᴰ","o":"Choix à déterminer","bonus":"+1 Défense magique.","status":"Compagnon"},{"c":9,"e":"Détection du poisonᴰ • Endurance au froidᴰ","o":"Choix à déterminer","bonus":"Karma sur les récupérations ; +1 Initiative.","status":"Gardien"},{"c":10,"e":"Vision véritableᴰ","o":"Choix à déterminer","bonus":"Camouflage optionnel : 2 dommages permanents.","status":"Gardien"},{"c":11,"e":"Défense amélioréeᴰ","o":"Choix à déterminer","bonus":"+1 Défenses physique et sociale.","status":"Gardien"},{"c":12,"e":"Détection des mensongesᴰ","o":"Choix à déterminer","bonus":"+1 Défenses magique et sociale.","status":"Gardien"},{"c":13,"e":"Localisation par échoᴰ • Trame de talent","o":"Choix à déterminer","bonus":"+1 Défense physique ; réserve de Karma +25.","status":"Maître"},{"c":14,"e":"Caméléonᴰ","o":"Choix à déterminer","bonus":"+1 Défenses magique et physique ; +1 Initiative.","status":"Maître"},{"c":15,"e":"Deuxième chanceᴰ • Trame d’attribut","o":"Choix à déterminer","bonus":"+1 Défense physique, Initiative et récupération.","status":"Maître"}],"pools":[{"status":"Initié","minCircle":1,"maxCircle":1,"names":["Analyse de créature","Armes de mêlée","Armes de tir","Déplacement silencieux","Esquive"]},{"status":"Novice","minCircle":2,"maxCircle":4,"names":["Anticipation","Armes de jet","Déguisement magique","Détection des armes","Détection des pièges","Lecture et écriture","Recherche","Sprint"]},{"status":"Compagnon","minCircle":5,"maxCircle":8,"names":["Acrobatie en selle","Crochetage","Désamorçage des pièges","Dissimulation d’armes","Esquive des pièges","Flèche de direction","Langage du vent","Lecture sur les lèvres","Manœuvre","Marche des vents","Mort feinte","Stabilité"]},{"status":"Gardien","minCircle":9,"maxCircle":12,"names":["Altération d’une arme de tir","Désarmement","Détection de la vie","Détection d’influence","Détection du danger","Endurcissement","Escamotage","Localisation de tireur","Œil d’aigle","Résistance au poison","Ultime sursaut","Vivacité du tigre"]},{"status":"Maître","minCircle":13,"maxCircle":15,"names":["Abri végétal","Attaque du cobra","Arme éthérée","Arme spirituelle","Détection des défauts d’armure","Esprit du lion","Multilinguisme","Pensée secrète","Projection astrale"]}],"specs":[{"name":"Identification de traces","talent":"Pistage","min":5,"effort":"2","effect":"Reconnaître davantage d’informations à partir de traces. Recueil p.224.","parentCircle":1},{"name":"Meilleur ami de l’adepte","talent":"Pistage","min":5,"effort":"3 (4)","effect":"Mettre le lien avec un animal au service du pistage. Recueil p.224.","parentCircle":1},{"name":"Pistage astral","talent":"Pistage","min":9,"effort":"2","effect":"Suivre une trace astrale selon les conditions de perception. Recueil p.227.","parentCircle":1},{"name":"Voltige dans le gréement","talent":"Escalade","min":3,"effort":"0","effect":"Se déplacer dans le gréement par un test d’Escalade, difficulté de base 8. Recueil p.229.","parentCircle":1},{"name":"Du bout des doigts","talent":"Escalade","min":5,"effort":"2","effect":"Tenter de se rattraper après un échec d’Escalade ; une seule nouvelle tentative. Recueil p.221.","parentCircle":1},{"name":"Déplacement dans les ombres","talent":"Déplacement silencieux","min":3,"effort":"1","effect":"Étendre la discrétion à la vue en zone d’ombre, à demi-vitesse. Pour Kal’Zakath, Déplacement silencieux est traité comme Talent de Discipline par arbitrage MJ : aucun +2 au rang minimum. Recueil p.220.","parentCircle":1},{"name":"Tir en puissance","talent":"Armes de tir","min":5,"effort":"2/attaque","effect":"Augmenter la puissance du tir dans les conditions de la spécialisation. Minimum augmenté de 2 ici. Recueil p.229.","parentCircle":1},{"name":"Arme improvisée","talent":"Armes de mêlée","min":5,"effort":"1","effect":"Manier un objet improvisé ; taille et dommages restent fixés par le MJ. Recueil p.217.","parentCircle":1},{"name":"Parade améliorée","talent":"Armes de mêlée","min":5,"effort":"1","effect":"Échanger de l’efficacité offensive contre une meilleure défense en mêlée. Recueil p.226.","parentCircle":1},{"name":"Passe-armure","talent":"Armes de mêlée","min":7,"effort":"3","effect":"Frapper une faille de l’armure ; conditions et degré requis à examiner avant apprentissage. Recueil p.226.","parentCircle":1},{"name":"Amortissement","talent":"Esquive","min":7,"effort":"2","effect":"Amortir les dommages d’une chute grâce au rang d’Esquive. Recueil p.216.","parentCircle":1}],"spells":[],"critical":3},"campaignRewards":[{"id":"luxueux-1448-04-riag","label":"Le Luxueux — aventure achevée","date":"4 Riag 1448 TH","legendPoints":1400,"silverTotal":160,"coins":{"gold":10,"silver":60,"copper":0},"payment":"10 PO et 60 PA par personnage : règlement total de 160 PA, compté une seule fois"}]}, TC=[[1,100,200,300,500,200,800],[2,200,300,500,800,300,1300],[3,300,500,800,1300,500,2100],[4,500,800,1300,2100,800,3400],[5,800,1300,2100,3400,1300,5500],[6,1300,2100,3400,5500,2100,null],[7,2100,3400,5500,8900,3400,null],[8,3400,5500,8900,14400,5500,null],[9,5500,8900,14400,23300,8900,null],[10,8900,14400,23300,37700,14400,null],[11,14400,23300,37700,61000,23300,null],[12,23300,37700,61000,98700,37700,null],[13,37700,61000,98700,159700,61000,null],[14,61000,98700,159700,258400,98700,null],[15,98700,159700,258400,418100,159700,null]], CC=[[1,100],[2,200],[3,300],[4,500],[5,800],[6,1000],[7,1500],[8,2000],[9,2500],[10,3500],[11,5000],[12,7500],[13,10000],[14,15000],[15,20000]];
 /* État mécanique confirmé : projection unique du socle HTML et du ledger.
    Recueil du Joueur p.46 (caractéristiques), p.184 (Endurance 6/5).
    Les brouillons ne participent jamais à cette projection. */
@@ -3121,7 +3139,7 @@ function renderProposals(){if(typeof renderCombatFlow==="function")renderCombatF
 
 
 const ARCHER_TALENT_EFFECTS={"Armes de mêlée":"Test d’attaque au contact contre la Défense physique. Les dommages se lancent ensuite avec l’arme utilisée. Le Karma dépend de la marque de Discipline, pas du fait que ce soit un talent.","Armes de tir":"Attaque à distance contre la Défense physique, modifiée par la portée, les obstacles et les situations indiquées par le MJ. Un projectile est consommé par tir, même manqué.","Armes de jet":"Compétence d’attaque à distance : Dextérité + rang, sans Karma. L’objet lancé doit être disponible ; sa récupération reste à confirmer.","Combat à mains nues":"Attaque sans arme contre la Défense physique ; dommages de Force. Une empoignade ou une immobilisation est une manœuvre particulière, à annoncer au MJ. Recueil p.175.","Esquive":"Opposer le test au résultat d’attaque : réussite Moyenne au contact, Bonne à distance. Impossible si Surpris ou Pris au dépourvu ; résultat Pathétique : À terre. Une tentative par attaque. Talent : au plus rang utilisations, hors plafond d’actions ; compétence : une fois par round, une action simple. Effort 1. Recueil p.186 et décision de table.","Peau de bois":"Dépenser un test de récupération disponible et obligatoirement un Karma, puis lancer Constitution + rang. Ajouter le résultat aux seuils d’inconscience et de mort pendant rang heures. Ce n’est pas une armure et cela ne soigne pas. Le résultat et la durée sont proposés au MJ, sans modifier définitivement les seuils. Recueil p.198.","Danse des airs":"Initiative : Dextérité + rang − malus d’armure ; Effort 1. Exige d’utiliser tout ou partie du déplacement de combat. Un résultat Excellent contre l’initiative adverse peut permettre une attaque supplémentaire après l’action de cet adversaire, à confirmer avec le MJ. Recueil p.178.","Anticipation":"Initiative supérieure à celle de la cible, puis test Perception + rang contre sa Défense magique. En cas de réussite : +rang à la Défense physique contre cet adversaire pour le round ; attendre son attaque permet aussi +rang à la prochaine attaque. Au plus rang adversaires ; Effort 1 par utilisation. Recueil p.170.","Coup de pied rapide":"Attaque supplémentaire avec une jambe libre, uniquement si l’initiative est supérieure à celle de la cible. Dextérité + rang contre Défense physique ; dommages de Force. Effort 1. Recueil p.177.","Stabilité":"Remplace le test de Force pour résister à une perte d’équilibre, notamment après une blessure grave. Force + rang ; aucun Effort. Ne donne pas automatiquement une réussite. Recueil p.207.","Manœuvre":"Action ordinaire contre un adversaire. Le résultat remplace la Défense physique contre lui pour le round, même s’il est inférieur. Si l’adversaire ne touche pas, le prochain round peut donner +rang à la prochaine attaque de mêlée et à ses dommages. Aucun Effort. Recueil p.193.","Deuxième attaque":"Compétence : une attaque supplémentaire par round avec la même arme que la première attaque. Dextérité + rang ; dommages de cette arme. Action simple, Effort 2, sans Karma. Recueil p.242.","Deuxième tir":"Compétence : un tir supplémentaire après un premier tir avec la même arme. Dextérité + rang ; dommages de cette arme, un nouveau projectile. Une fois par round, action simple, Effort 2, sans Karma. Recueil p.242.","Attaque critique":"Compétence au rang 3 : sur une attaque Excellent ou mieux, +3 niveaux aux dommages et Effort 1. Aucun jet autonome ; le bonus est proposé pour cette attaque, sans cumul automatique. Recueil, compétences.","Charge dévastatrice":"S’applique à une charge montée : remplace la Force par Force + rang dans les dommages de la charge. Ce n’est pas un bonus aux attaques à pied. Aucun Effort. Recueil p.175.","Déplacement silencieux":"Le résultat devient la difficulté pour entendre le déplacement. Ne rend pas invisible. Vitesse réduite de moitié ; action simple, sans Effort. Recueil p.179.","Escalade":"Test contre la difficulté de la surface. Au plus rang × 2 mètres par round, sans dépasser le déplacement de combat. Pathétique : chute. Action ordinaire, aucun Effort. Recueil p.185.","Pistage":"Suivre des traces contre la difficulté fixée selon leur ancienneté, le terrain et les conditions. Le degré de réussite précise les informations disponibles ; le test ne révèle pas automatiquement une destination inconnue. Effort 1. Recueil p.200.","Sprint":"Le résultat du test Dextérité + rang augmente le déplacement de combat en mètres ; doubler cet ajout pour la course. Effort 1. Ne se cumule pas avec un autre talent augmentant le déplacement. Recueil p.207.","Don des langues":"Talent : écouter au moins une minute une langue, puis tenter de l’apprendre si un rang est encore disponible ; Effort 1. Un échec interdit de réessayer cette langue avant l’augmentation du rang. Parler une langue déjà connue ne demande pas ce test. La compétence utilise un apprentissage ordinaire, sans Karma. Recueil p.183.","Lecture et écriture":"Compétence permettant de lire et écrire les langues apprises. Pas de jet systématique pour un texte ordinaire dans une langue connue ; le MJ peut demander un test pour un texte difficile.","Vision astrale":"Perception + rang ; Effort 1. Difficulté normale 6, modifiée par la pollution astrale. Portée rang × 10 m, durée rang rounds. Repérer une forme puis étudier sa trame contre sa Défense magique sont des étapes distinctes. Recueil p.212.","Incantation":"Perception + rang contre la Défense magique de la cible ou la difficulté du sort. Chaque sort garde ses filaments, sa portée et ses effets propres. Une action ordinaire. Recueil p.190.","Lecture et écriture de la magie":"Lire la notation magique et étudier les sorts selon leur difficulté et le temps requis. Ne prépare pas automatiquement un sort dans une matrice. Recueil p.192.","Tissage de filament (Nécromancie)":"Perception + rang contre la difficulté de tissage du sort. Le tissage précède l’Incantation lorsque le sort exige des filaments ; chaque action de tissage et son résultat restent distincts. Recueil p.209 et magie des sorts.","Langue des esprits":"Perception + rang contre la Défense magique de l’esprit. Communication pendant rang minutes : cela n’oblige pas l’esprit à obéir. Karma obligatoire et Effort 1. Recueil p.191.","Regard terrifiant":"Contact visuel, puis Volonté + rang contre la Défense magique. En cas de réussite, la cible fuit pendant rang rounds ; elle peut résister chaque round par un test de Volonté contre le niveau du talent. Action ordinaire, Karma obligatoire. Recueil p.203.","Chant émouvant":"Après au moins 30 minutes de représentation, test contre la plus haute Défense sociale du public. Affecte 25/50/75/100 % du public selon le degré de réussite, au plus rang × 10 personnes. Oriente les émotions, sans commander les actes. Effet jusqu’à rang jours. Recueil p.174–175.","Imitation de voix":"Reproduire une voix ou un son déjà entendu avec Perception + rang. Le MJ détermine l’opposition de l’auditeur ; n’accorde ni le langage ni les connaissances de la personne imitée. Aucun Effort. Recueil p.189.","Première impression":"Charisme + rang contre la Défense sociale lors d’une première rencontre. Améliore l’attitude selon le degré de réussite ; ne force ni un accord ni l’obéissance. Recueil p.201.","Déguisement magique":"Modifier magiquement son apparence. Perception + rang fixe la difficulté de détection ; les connaissances et capacités de la personne imitée ne sont pas acquises. Karma obligatoire. Recueil p.179.","Histoire des objets":"Porter l’objet une semaine et l’étudier une heure chaque soir, puis Perception + rang contre sa Défense magique ; Karma obligatoire. Révèle 1/2/3/4 connaissances selon le degré, dans la limite du rang au total par objet. Chaque nouvel examen demande une semaine. Ne tisse pas un filament. Recueil p.188.","Sens empathique":"Charisme + rang contre la Défense sociale, à 10 m : percevoir l’état émotionnel, pas les pensées exactes. Le degré précise les informations et peut aider l’interaction selon le MJ. Durée rang minutes, Effort 1. Un lien durable par harmonisation est un rituel distinct avec dommage permanent, jamais appliqué automatiquement. Recueil p.206.","Marchandage":"Charisme + rang contre la Défense sociale. Une réussite modifie le prix de 5 % en faveur du personnage ; au plus rang tentatives, arrêt au premier échec. Ne rend pas disponible un bien absent du marché. Recueil p.193.","Analyse des indices":"Étudier les indices matériels pour reconstituer un événement. Le MJ fixe la difficulté, le temps et les renseignements accessibles. Effort 1 ; compétence, sans Karma.","Analyse de créature":"Observer une créature pour en reconnaître certaines capacités selon le degré obtenu. Ne fournit pas toute sa fiche. Compétence ; Effort 1, sans Karma.","Lecture sur les lèvres":"Observer une bouche visible dans une langue connue ; Charisme + rang. Compétence, Effort 2, sans Karma. La visibilité et la distance limitent l’interprétation.","Rituel de Karma":"Réserver une demi-heure au rituel personnel d’Éclaireur. Le rang détermine les points de Karma préparables et leur coût en PL dans Progression. Ce rituel ne remplace pas un test de Pistage ou de Survie.","Endurance":"Effet permanent déjà compris dans les seuils. Progression 6/5 de Éclaireur ; aucun jet et aucun ajout supplémentaire. Concepteur p.21."};
-const ARCHER_OPTIONAL_POOLS=[{"status":"Initié","minCircle":1,"maxCircle":1,"names":["Analyse de créature","Armes de mêlée","Armes de tir","Déplacement silencieux","Esquive"],"items":[["Analyse de créature","Observer une créature pour en reconnaître certaines capacités selon le degré obtenu. Ne fournit pas toute sa fiche. Compétence ; Effort 1, sans Karma."],["Armes de mêlée","Test d’attaque au contact contre la Défense physique. Les dommages se lancent ensuite avec l’arme utilisée. Le Karma dépend de la marque de Discipline, pas du fait que ce soit un talent."],["Armes de tir","Attaque à distance contre la Défense physique, modifiée par la portée, les obstacles et les situations indiquées par le MJ. Un projectile est consommé par tir, même manqué."],["Déplacement silencieux","Le résultat devient la difficulté pour entendre le déplacement. Ne rend pas invisible. Vitesse réduite de moitié ; action simple, sans Effort. Recueil p.179."],["Esquive","Opposer le test au résultat d’attaque : réussite Moyenne au contact, Bonne à distance. Impossible si Surpris ou Pris au dépourvu ; résultat Pathétique : À terre. Une tentative par attaque. Talent : au plus rang utilisations, hors plafond d’actions ; compétence : une fois par round, une action simple. Effort 1. Recueil p.186 et décision de table."]]},{"status":"Novice","minCircle":2,"maxCircle":4,"names":["Anticipation","Armes de jet","Déguisement magique","Détection des armes","Détection des pièges","Lecture et écriture","Recherche","Sprint"],"items":[["Anticipation","Initiative supérieure à celle de la cible, puis test Perception + rang contre sa Défense magique. En cas de réussite : +rang à la Défense physique contre cet adversaire pour le round ; attendre son attaque permet aussi +rang à la prochaine attaque. Au plus rang adversaires ; Effort 1 par utilisation. Recueil p.170."],["Armes de jet","Compétence d’attaque à distance : Dextérité + rang, sans Karma. L’objet lancé doit être disponible ; sa récupération reste à confirmer."],["Déguisement magique","Modifier magiquement son apparence. Perception + rang fixe la difficulté de détection ; les connaissances et capacités de la personne imitée ne sont pas acquises. Karma obligatoire. Recueil p.179."],["Détection des armes","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Lecture et écriture","Compétence permettant de lire et écrire les langues apprises. Pas de jet systématique pour un texte ordinaire dans une langue connue ; le MJ peut demander un test pour un texte difficile."],["Recherche","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Sprint","Le résultat du test Dextérité + rang augmente le déplacement de combat en mètres ; doubler cet ajout pour la course. Effort 1. Ne se cumule pas avec un autre talent augmentant le déplacement. Recueil p.207."]]},{"status":"Compagnon","minCircle":5,"maxCircle":8,"names":["Acrobatie en selle","Crochetage","Désamorçage des pièges","Dissimulation d’armes","Esquive des pièges","Flèche de direction","Langage du vent","Lecture sur les lèvres","Manœuvre","Marche sur les vents","Mort feinte","Stabilité"],"items":[["Acrobatie en selle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Crochetage","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Désamorçage des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Dissimulation d’armes","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Esquive des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Flèche de direction","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Langage du vent","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Lecture sur les lèvres","Observer une bouche visible dans une langue connue ; Charisme + rang. Compétence, Effort 2, sans Karma. La visibilité et la distance limitent l’interprétation."],["Manœuvre","Action ordinaire contre un adversaire. Le résultat remplace la Défense physique contre lui pour le round, même s’il est inférieur. Si l’adversaire ne touche pas, le prochain round peut donner +rang à la prochaine attaque de mêlée et à ses dommages. Aucun Effort. Recueil p.193."],["Marche sur les vents","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Mort feinte","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Stabilité","Remplace le test de Force pour résister à une perte d’équilibre, notamment après une blessure grave. Force + rang ; aucun Effort. Ne donne pas automatiquement une réussite. Recueil p.207."]]},{"status":"Gardien","minCircle":9,"maxCircle":12,"names":["Altération d’arme de tir","Désarmement","Détection de la vie","Détection des influences","Détection du danger","Endurcissement","Escamotage","Localisation du tireur","Œil d’aigle","Résistance au poison","Ultime sursaut","Vivacité du tigre"],"items":[["Altération d’arme de tir","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Désarmement","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection de la vie","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection des influences","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection du danger","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Endurcissement","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Escamotage","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Localisation du tireur","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Œil d’aigle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Résistance au poison","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Ultime sursaut","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Vivacité du tigre","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."]]},{"status":"Maître","minCircle":13,"maxCircle":15,"names":["Abri végétal","Attaque du cobra","Arme éthérée","Arme spirituelle","Détection des défauts d’armure","Esprit du lion","Multilinguisme","Pensée secrète","Projection astrale"],"items":[["Abri végétal","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Attaque du cobra","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Arme éthérée","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Arme spirituelle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection des défauts d’armure","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Esprit du lion","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Multilinguisme","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Pensée secrète","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Projection astrale","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."]]}];
+const ARCHER_OPTIONAL_POOLS=[{"status":"Initié","minCircle":1,"maxCircle":1,"names":["Analyse de créature","Armes de mêlée","Armes de tir","Déplacement silencieux","Esquive"],"items":[["Analyse de créature","Observer une créature pour en reconnaître certaines capacités selon le degré obtenu. Ne fournit pas toute sa fiche. Compétence ; Effort 1, sans Karma."],["Armes de mêlée","Test d’attaque au contact contre la Défense physique. Les dommages se lancent ensuite avec l’arme utilisée. Le Karma dépend de la marque de Discipline, pas du fait que ce soit un talent."],["Armes de tir","Attaque à distance contre la Défense physique, modifiée par la portée, les obstacles et les situations indiquées par le MJ. Un projectile est consommé par tir, même manqué."],["Déplacement silencieux","Le résultat devient la difficulté pour entendre le déplacement. Ne rend pas invisible. Vitesse réduite de moitié ; action simple, sans Effort. Recueil p.179."],["Esquive","Opposer le test au résultat d’attaque : réussite Moyenne au contact, Bonne à distance. Impossible si Surpris ou Pris au dépourvu ; résultat Pathétique : À terre. Une tentative par attaque. Talent : au plus rang utilisations, hors plafond d’actions ; compétence : une fois par round, une action simple. Effort 1. Recueil p.186 et décision de table."]]},{"status":"Novice","minCircle":2,"maxCircle":4,"names":["Anticipation","Armes de jet","Déguisement magique","Détection des armes","Détection des pièges","Lecture et écriture","Recherche","Sprint"],"items":[["Anticipation","Initiative supérieure à celle de la cible, puis test Perception + rang contre sa Défense magique. En cas de réussite : +rang à la Défense physique contre cet adversaire pour le round ; attendre son attaque permet aussi +rang à la prochaine attaque. Au plus rang adversaires ; Effort 1 par utilisation. Recueil p.170."],["Armes de jet","Compétence d’attaque à distance : Dextérité + rang, sans Karma. L’objet lancé doit être disponible ; sa récupération reste à confirmer."],["Déguisement magique","Modifier magiquement son apparence. Perception + rang fixe la difficulté de détection ; les connaissances et capacités de la personne imitée ne sont pas acquises. Karma obligatoire. Recueil p.179."],["Détection des armes","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Lecture et écriture","Compétence permettant de lire et écrire les langues apprises. Pas de jet systématique pour un texte ordinaire dans une langue connue ; le MJ peut demander un test pour un texte difficile."],["Recherche","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Sprint","Le résultat du test Dextérité + rang augmente le déplacement de combat en mètres ; doubler cet ajout pour la course. Effort 1. Ne se cumule pas avec un autre talent augmentant le déplacement. Recueil p.207."]]},{"status":"Compagnon","minCircle":5,"maxCircle":8,"names":["Acrobatie en selle","Crochetage","Désamorçage des pièges","Dissimulation d’armes","Esquive des pièges","Flèche de direction","Langage du vent","Lecture sur les lèvres","Manœuvre","Marche des vents","Mort feinte","Stabilité"],"items":[["Acrobatie en selle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Crochetage","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Désamorçage des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Dissimulation d’armes","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Esquive des pièges","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Flèche de direction","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Langage du vent","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Lecture sur les lèvres","Observer une bouche visible dans une langue connue ; Charisme + rang. Compétence, Effort 2, sans Karma. La visibilité et la distance limitent l’interprétation."],["Manœuvre","Action ordinaire contre un adversaire. Le résultat remplace la Défense physique contre lui pour le round, même s’il est inférieur. Si l’adversaire ne touche pas, le prochain round peut donner +rang à la prochaine attaque de mêlée et à ses dommages. Aucun Effort. Recueil p.193."],["Marche des vents","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Mort feinte","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Stabilité","Remplace le test de Force pour résister à une perte d’équilibre, notamment après une blessure grave. Force + rang ; aucun Effort. Ne donne pas automatiquement une réussite. Recueil p.207."]]},{"status":"Gardien","minCircle":9,"maxCircle":12,"names":["Altération d’une arme de tir","Désarmement","Détection de la vie","Détection d’influence","Détection du danger","Endurcissement","Escamotage","Localisation de tireur","Œil d’aigle","Résistance au poison","Ultime sursaut","Vivacité du tigre"],"items":[["Altération d’une arme de tir","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Désarmement","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection de la vie","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection d’influence","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection du danger","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Endurcissement","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Escamotage","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Localisation de tireur","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Œil d’aigle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Résistance au poison","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Ultime sursaut","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Vivacité du tigre","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."]]},{"status":"Maître","minCircle":13,"maxCircle":15,"names":["Abri végétal","Attaque du cobra","Arme éthérée","Arme spirituelle","Détection des défauts d’armure","Esprit du lion","Multilinguisme","Pensée secrète","Projection astrale"],"items":[["Abri végétal","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Attaque du cobra","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Arme éthérée","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Arme spirituelle","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Détection des défauts d’armure","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Esprit du lion","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Multilinguisme","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Pensée secrète","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."],["Projection astrale","Option de Éclaireur, Concepteur p.21. Non acquise automatiquement ; effet complet à consulter avant apprentissage."]]}];
 const ARCHER_OPTIONAL_CHOSEN=new Set(["Armes de tir","Déplacement silencieux","Esquive","Armes de mêlée","Sprint"]);
 const ARCHER_SPECIALIZATION_EFFECTS={"Identification de traces":"Reconnaître davantage d’informations à partir de traces. Recueil p.224.","Meilleur ami de l’adepte":"Mettre le lien avec un animal au service du pistage. Recueil p.224.","Pistage astral":"Suivre une trace astrale selon les conditions de perception. Recueil p.227.","Voltige dans le gréement":"Se déplacer dans le gréement par un test d’Escalade, difficulté de base 8. Recueil p.229.","Du bout des doigts":"Tenter de se rattraper après un échec d’Escalade ; une seule nouvelle tentative. Recueil p.221.","Déplacement dans les ombres":"Étendre la discrétion à la vue en zone d’ombre, à demi-vitesse. Pour Kal’Zakath, Déplacement silencieux est traité comme Talent de Discipline par arbitrage MJ : aucun +2 au rang minimum. Recueil p.220.","Tir en puissance":"Augmenter la puissance du tir dans les conditions de la spécialisation. Minimum augmenté de 2 ici. Recueil p.229.","Arme improvisée":"Manier un objet improvisé ; taille et dommages restent fixés par le MJ. Recueil p.217.","Parade améliorée":"Échanger de l’efficacité offensive contre une meilleure défense en mêlée. Recueil p.226.","Passe-armure":"Frapper une faille de l’armure ; conditions et degré requis à examiner avant apprentissage. Recueil p.226.","Amortissement":"Amortir les dommages d’une chute grâce au rang d’Esquive. Recueil p.216."};
 // Arbitrage MJ actif : malgré la règle publiée, Escalade et Déplacement silencieux
@@ -6062,5 +6080,663 @@ applyCockpitRuntime=function(runtime){
 </script>
 <script src="vorkana-session-loader.js?v=20261006-reprise1"></script>
 <script src="vorkana-ui-feedback.js?v=20261006-2"></script>
-<script src="kalzakath-atelier.js?v=20261006-4"></script>
+<script>
+window.KalFutureProject=function(baseline,plan){let P=clone(baseline);const KAL_MECHANICAL_BASE=baseline,kalMechanicalReady=true,NC_ACTIONS=[],NC_TRAIT_ACTIONS=[],L={progressionLedger:{attributeAdv:plan.attributes,talentRanks:plan.talents,skillRanks:plan.skills}};
+function recalculateConfirmedMechanics(){
+  if(!kalMechanicalReady)return;
+  const base=KAL_MECHANICAL_BASE,ledger=L.progressionLedger;
+  const table={
+    1:[2,2,6,3,5,19,10,3,.5,0],2:[2,3,7,5,10,20,11,4,.5,0],3:[2,3,8,8,15,22,13,4,1,0],
+    4:[3,4,9,10,20,23,14,5,1,0],5:[3,4,10,13,25,24,15,5,1,0],6:[3,4,12,15,30,26,17,6,1,0],
+    7:[4,5,14,20,40,27,18,6,1,0],8:[4,5,16,25,50,28,19,7,2,0],9:[4,6,18,30,60,30,21,7,2,0],
+    10:[5,6,20,35,70,31,22,8,2,0],11:[5,7,22,40,80,32,24,8,2,1],12:[5,7,24,48,95,34,26,9,2,1],
+    13:[6,7,26,55,110,35,27,9,2,1],14:[6,8,28,63,125,36,28,10,3,2],15:[6,8,30,70,140,38,30,10,3,2],
+    16:[7,9,32,80,160,39,31,11,3,2],17:[7,9,34,90,180,40,32,11,3,3],18:[7,10,36,100,200,42,34,12,3,3],
+    19:[8,10,38,115,230,43,35,12,3,3],20:[8,10,40,130,260,44,36,13,4,4],21:[8,11,43,145,290,46,39,13,4,4]
+  };
+  const attributes=clone(base.attributes);
+  for(const [name,a] of Object.entries(attributes)){
+    a.value=base.attributes[name].value+Number(ledger.attributeAdv[name]||0);
+    if(!table[a.value])throw Error('Valeur d’attribut hors table vérifiée : '+name+' '+a.value);
+    a.step=table[a.value][0];a.dice=edStepDiceLabel(a.step);
+  }
+  P.attributes=attributes;
+  const delta=(name,column)=>table[attributes[name].value][column]-table[base.attributes[name].value][column];
+  const stepDelta=name=>attributes[name].step-base.attributes[name].step;
+  const talentAttrs={"Armes de tir":"Dextérité","Déplacement silencieux":"Dextérité","Escalade":"Dextérité","Pistage":"Perception","Esquive":"Dextérité","Don des langues":"Perception","Armes de mêlée":"Dextérité","Sprint":"Dextérité","Vision astrale":"Perception"};
+  const skillAttrs={"Artisanat : Fabrication de pièges":"Dextérité","Deuxième tir":"Dextérité","Deuxième attaque":"Dextérité","Armes de jet":"Dextérité","Saut de géant":"Dextérité","Sang-froid":"Volonté","Apprivoisement":"Charisme","Dressage":"Charisme","Lecture sur les lèvres":"Charisme"};
+  function project(items,ranks,attrs){return items.map(t=>{
+    const x={...t,rank:Number(ranks[t.name]??t.rank)};
+    if(t.rollable!==false&&t.step!=null){x.step=t.step+(x.rank-t.rank)+stepDelta(attrs[t.name]||'Perception');x.dice=edStepDiceLabel(x.step);}
+    return x;
+  });}
+  P.talentsKnown=project(base.talentsKnown,ledger.talentRanks,talentAttrs);
+  P.skills=project(base.skills,ledger.skillRanks,skillAttrs);
+  P.referenceConfig.critical=Number(P.skills.find(t=>t.name==='Attaque critique')?.rank||0);
+  P.specializations=[...new Map([...(base.specializations||[]),...(ledger.specializations||[])].map(x=>[x.name||x,x])).values()];
+  P.combat=clone(base.combat);
+  const c=P.combat;
+  c.initiative.step+=stepDelta('Dextérité');c.initiative.dice=edStepDiceLabel(c.initiative.step);
+  for(const [key,name] of Object.entries({physical:'Dextérité',magical:'Perception',social:'Charisme'}))c.defenses[key]+=delta(name,1);
+  c.movement.combat+=delta('Dextérité',2);c.movement.run=c.movement.combat*2;
+  const endurance=P.talentsKnown.find(t=>t.name==='Endurance').rank,con=table[attributes.Constitution.value];
+  c.health.death=con[5]+6*endurance;c.health.unconscious=con[6]+5*endurance;c.health.woundThreshold=con[7];
+  c.recovery.maxPerDay+=delta('Constitution',8);c.recovery.max=c.recovery.maxPerDay;
+  c.recovery.step+=stepDelta('Constitution');c.recovery.dice=edStepDiceLabel(c.recovery.step);
+  c.balance.step+=stepDelta('Force');c.balance.dice=edStepDiceLabel(c.balance.step);
+  c.armor.mystical+=delta('Volonté',9);
+  P.carryCapacity=table[attributes.Force.value][3];P.liftCapacity=table[attributes.Force.value][4];
+  P.referenceConfig.capacity=P.carryCapacity;P.referenceConfig.lift=P.liftCapacity;
+  const sources={warbow:['talent','Armes de tir'],throw:['skill','Armes de jet'],sword:['talent','Armes de mêlée'],hatchet:['talent','Armes de mêlée'],second:['skill','Deuxième attaque'],second_shot:['skill','Deuxième tir'],silent:['talent','Déplacement silencieux'],sprint:['talent','Sprint'],astral:['talent','Vision astrale']};
+  for(const a of c.actions){const [kind,name]=sources[a.id.replace(/_reinforced$/,'')],t=(kind==='talent'?P.talentsKnown:P.skills).find(t=>t.name===name);a.attackStep=t.step;a.attackDice=t.dice;if(a.damageStep!=null){a.damageStep+=stepDelta('Force');a.damageDice=edStepDiceLabel(a.damageStep);}}
+  for(const r of c.reactions){const t=P.talentsKnown.find(t=>t.name===r.name);if(t){r.rank=t.rank;r.step=t.step;r.dice=t.dice;r.usesPerRound=t.rank;}}
+  P.halfMagic={...base.halfMagic,step:base.halfMagic.step+stepDelta('Perception')};P.halfMagic.dice=edStepDiceLabel(P.halfMagic.step);
+  for(const a of NC_ACTIONS){
+    const trait=NC_TRAIT_ACTIONS.find(t=>t.id===a.id),t=P.talentsKnown.find(t=>t.name===a.label),s=P.skills.find(t=>t.name===a.label);
+    const source=trait?attributes[trait.key]:attributes[a.source]||(a.id==='intimidate'?attributes.Charisme:null)||(a.id==='halfm'?P.halfMagic:null)||t||s;
+    if(source&&source.step!=null){a.step=source.step;a.dice=source.dice;if(source.value!=null)a.value=source.value;if(source.rank!=null&&a.hint)a.hint=a.hint.replace(/rang \d+/g,'rang '+source.rank);}
+    for(const v of a.variants||[]){const name=Object.keys(attributes).find(n=>v.label.includes(n));if(name)Object.assign(v,attributes[name]);}
+  }
+}
+
+recalculateConfirmedMechanics();return P;};
+/* Kal’Zakath : carnet d’herboristerie et projections sans incidence sur la fiche. */
+(function(){
+'use strict';
+if(typeof P==='undefined'||P.playerId!=='pj_2')return;
+const $=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),e=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),n=x=>Number(x)||0;
+const base=copy(P),key=STORE+':atelier:1';
+const blank=()=>({name:'Mon projet d’Éclaireur',target:Math.max(10000,base.legend.total),circle:Math.min(15,base.circle+1),talents:{},skills:{},attributes:{},optional:{},specializations:[],aptitudes:{}});
+let data;try{data=JSON.parse(localStorage.getItem(key));}catch(_){}
+if(!data||data.version!==1)data={version:1,plan:blank(),projects:[],herbs:{stock:{},rules:{},log:[]}};
+data.plan ||= blank();data.herbs ||= {stock:{},rules:{},log:[]};
+function persist(){localStorage.setItem(key,JSON.stringify(data));}
+function download(name,text,type='text/plain'){const u=URL.createObjectURL(new Blob([text],{type:type+';charset=utf-8'})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+const herbs=[
+ {id:'arnica',name:'Arnica',en:'Arnica',part:'Feuilles',method:'Ingestion',page:3,cost:10,weight:.25,effect:'Après au moins 5 dommages dus au froid : +3 niveaux au prochain test de récupération concerné. Ne donne pas de récupération supplémentaire.'},
+ {id:'queue',name:'Queue-de-chat',en:'Cat’s Tail',part:'Liane',method:'Fumigation',page:3,cost:15,weight:.5,effect:'Après au moins 5 dommages dus à l’inhalation de fumée ou d’eau : +3 niveaux au prochain test de récupération concerné. Ne donne pas de récupération supplémentaire.'},
+ {id:'couture',name:'Feuille-couture',en:'Stitch Leaf',part:'Lot de trois feuilles',method:'Application',page:4,cost:25,weight:.25,effect:'Referme les bords de la plaie et arrête le saignement. Laisser en place 15 minutes ; un effort pendant ce délai rouvre la plaie. Aucun soin chiffré de dommages ou de blessure grave n’est indiqué.'},
+ {id:'oeil',name:'Œil-de-faucon',en:'Hawk Eye',part:'Tiges',method:'Teinture',page:4,cost:25,weight:.25,effect:'+1 niveau aux tests visuels de Perception pendant 15 minutes, y compris la perception astrale. Coût : 1 Effort. Ne confère pas la Vision astrale.'},
+ {id:'souffle',name:'Souffle d’ange',en:'Angel Breath',part:'Pétales',method:'Vaporisation',page:3,cost:40,weight:.25,effect:'+1 niveau de Charisme pendant 2 heures ; masque aussi les mauvaises odeurs. Inefficace sur certains donneurs-de-noms, notamment les Écorcheurs orks, avec un possible effet inverse : appréciation du MJ.'}
+];
+const style=document.createElement('style');style.textContent=`
+.kw{padding:24px;color:#3b392d;background:#eee3cb;border:1px solid #bca881;border-radius:10px;margin:16px 0}.kw h2,.kw h3{font-family:Georgia,serif;color:#264d4d}.kw h2{font-size:28px;margin:0 0 10px}.kw p{max-width:85ch}.kw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.kw label{display:block;font-weight:600;font-size:13px}.kw input,.kw select,.kw textarea{width:100%;padding:9px;border:1px solid #aa9774;border-radius:5px;background:#fffaf0;color:#302e28;font:inherit}.kw button{padding:8px 12px;border:1px solid #62746a;border-radius:5px;background:#315c50;color:#fff;cursor:pointer;margin:4px 4px 4px 0}.kw button.secondary{background:#ebe0c9;color:#334a40}.kw-card{padding:14px;background:#f9f2e2;border:1px solid #cdbb99;border-radius:7px}.kw-card h3{margin:0 0 8px}.kw small{display:block;color:#685d49}.kw summary{cursor:pointer;font-weight:700;padding:9px}.kw details{border-top:1px solid #c4b496;margin-top:12px}.kw table{width:100%;border-collapse:collapse}.kw th,.kw td{padding:7px;border-bottom:1px solid #cdbc9b;text-align:left}.kw td input{max-width:90px}.kw-scroll{overflow:auto}.kw .kw-bad{color:#892f24;font-weight:700}.kw .kw-good{color:#255d3d;font-weight:700}.kw-stats{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.kw-stats div{padding:12px;background:#d8c6a4;border-radius:6px;min-width:120px}.kw-stats b{display:block;font-size:21px}.kw-status{padding:10px;border-left:4px solid #a17a35;background:#e6d7b9}.kw pre{white-space:pre-wrap;overflow-wrap:anywhere}.kw input[type=checkbox]{width:auto}.kw-note{font-size:13px}.kw-row{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center}.kw-log{max-height:260px;overflow:auto}.kw-log p{border-bottom:1px solid #cdbc9b;padding:6px}.kw .kw-recipe{min-height:210px}@media(max-width:600px){.kw{padding:12px}.kw h2{font-size:24px}.kw-grid{grid-template-columns:1fr}.kw th,.kw td{padding:5px}.kw-row{grid-template-columns:1fr 85px}}
+`;document.head.append(style);
+// New navigation item, using the existing page switcher.
+titles.herbs='Herboristerie';
+const nav=Array.from(document.querySelectorAll('nav')).find(el=>el.querySelector('[data-page]')),button=document.createElement('button');button.dataset.page='herbs';button.innerHTML='<span class="dot sk"></span>Herboristerie';button.onclick=()=>{openPage('herbs');if(innerWidth<700)requestAnimationFrame(()=>herbHost.scrollIntoView());};nav.append(button);
+const herbHost=document.createElement('section');herbHost.id='page-herbs';herbHost.className='view';document.querySelector('main').append(herbHost);
+const sim=document.createElement('section');sim.id='kalSimulator';sim.className='kw';const projectDialog=document.createElement('dialog');projectDialog.id='kalProjects';projectDialog.setAttribute('aria-labelledby','kalProjectsTitle');
+projectDialog.innerHTML='<header class="kw-dialog-header"><h2 id="kalProjectsTitle">Projet de Voie</h2><button type="button" id="kalProjectsClose" aria-label="Fermer les projets">Fermer</button></header>';
+projectDialog.append(sim);document.body.append(projectDialog);
+const projectsButton=$('kalProjectsOpen')||document.createElement('button');
+projectsButton.id='kalProjectsOpen';projectsButton.type='button';
+if(!projectsButton.textContent.trim())projectsButton.textContent='Projets';
+projectsButton.setAttribute('aria-haspopup','dialog');projectsButton.setAttribute('aria-controls','kalProjects');
+if(!projectsButton.isConnected)$('page-progression').prepend(projectsButton);
+projectsButton.onclick=()=>projectDialog.showModal();$('kalProjectsClose').onclick=()=>projectDialog.close();
+projectDialog.addEventListener('close',()=>projectsButton.focus({preventScroll:true}));
+const dialogStyle=document.createElement('style');dialogStyle.textContent=`
+#kalProjects{width:min(1180px,96vw);max-width:96vw;max-height:92dvh;padding:0;border:1px solid #bca881;border-radius:10px;background:#eee3cb;color:#3b392d;overflow:auto}
+#kalProjects::backdrop{background:rgba(0,0,0,.65)}
+.kw-dialog-header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 20px;background:#eee3cb;border-bottom:1px solid #bca881}
+.kw-dialog-header h2{margin:0;font-family:Georgia,serif}
+.kw-dialog-header button,#kalProjectsOpen{padding:10px 18px;background:#315c50;color:#fff;border:1px solid #62746a;border-radius:5px;cursor:pointer}
+#kalProjectsOpen{margin:16px 0}
+#kalProjects .kw{margin:0;border:0;border-radius:0}
+.kw .kw-warn{color:#6c541a;border-left-color:#b79249;background:#f4e8c9}
+.kf-tree-head{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(320px,1.1fr);gap:18px;align-items:end;margin:24px 0 10px}
+.kf-tree-head h3{margin:2px 0 0}
+.kf-tree-head p{margin:0}
+.kf-source-note{padding:10px 12px;border:1px solid #c8b486;border-left:4px solid #8d7141;border-radius:6px;background:#f7edda;margin-bottom:14px}
+.kf-tree{position:relative;margin:0 0 18px}
+.kf-tree::before{content:"";position:absolute;left:37px;top:22px;bottom:22px;width:2px;background:#9c8966}
+.kf-node{position:relative;display:grid;grid-template-columns:76px 1fr;gap:10px;margin:0 0 12px}
+.kf-node-spine{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px}
+.kf-node-spine span{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#455e5a;color:white;border:3px solid #e8dbc1;font:700 17px Georgia,serif;box-shadow:0 0 0 1px #8b7857}
+.kf-node-spine small{margin-top:4px;padding:2px 6px;border-radius:999px;background:#eee3cb;color:#6a5a42;font-size:10px}
+.kf-node.current .kf-node-spine span{background:#8b6a2e}
+.kf-node-main{background:#faf4e7;border:1px solid #c9b896;border-radius:8px;overflow:hidden}
+.kf-node-main>header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #d8c8aa;background:#f3e8d2}
+.kf-node-main>header b{font:700 17px Georgia,serif;color:#2f4b49}
+.kf-badge{margin-left:auto;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:999px;border:1px solid #bba77c}
+.kf-badge.valid{background:#e7f0df;color:#4d6745}
+.kf-badge.ref{background:#efe7d6;color:#725f40}
+.kf-continuity{padding:8px 12px;background:#fff6df;border-bottom:1px solid #ddcda9;font-size:12px}
+.kf-continuity b{margin-right:7px;color:#795d25}
+.kf-branches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.kf-branches>section{padding:12px;min-height:132px;border-right:1px solid #ded0b7}
+.kf-branches>section:last-child{border-right:0}
+.kf-branches h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#6b5d48}
+.kf-branches ul{margin:0;padding-left:18px}
+.kf-essential{margin:3px 0}
+.kf-essential em{display:block;font-size:10px;color:#7e725f;font-style:normal}
+.kf-essential.known em,.kf-essential.moved em{color:#4f754f}
+.kf-essential.uncertain em{color:#9b6d27}
+.kf-option-label,.kf-aptitude{display:block}
+.kf-selected{margin:8px 0 0;padding:8px;border-left:3px solid #658a76;background:#edf4ea}
+.kf-selected b,.kf-selected small{display:block}
+.kf-open{margin:8px 0 0;color:#8a6a2e;font-style:italic}
+.kf-muted{color:#786e60}
+.kf-aptitude{padding:8px;border:1px solid #cdb98e;border-radius:6px;background:#f6ead0}
+.kf-aptitude b,.kf-aptitude small{display:block}
+.kf-projected{margin-top:14px}
+.kf-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+@media(max-width:850px){
+ .kf-tree-head{grid-template-columns:1fr}
+ .kf-branches{grid-template-columns:1fr}
+ .kf-branches>section{border-right:0;border-bottom:1px solid #ded0b7;min-height:0}
+ .kf-branches>section:last-child{border-bottom:0}
+}
+@media(max-width:600px){
+ #kalProjects{width:96vw}
+ .kw-dialog-header{padding:10px 12px}
+ .kf-node{grid-template-columns:58px 1fr}
+ .kf-tree::before{left:28px}
+ .kf-node-spine span{width:42px;height:42px}
+}
+`;document.head.append(dialogStyle);
+
+const SCOUT_OPTION_ALIASES={
+ 'Marche sur les vents':'Marche des vents',
+ 'Altération d’arme de tir':'Altération d’une arme de tir',
+ 'Détection des influences':'Détection d’influence',
+ 'Localisation du tireur':'Localisation de tireur'
+};
+function normaliseFuturePlan(raw){
+ const p={...blank(),...(raw||{})};
+ p.talents={...((raw&&raw.talents)||{})};
+ p.skills={...((raw&&raw.skills)||{})};
+ p.attributes={...((raw&&raw.attributes)||{})};
+ p.optional={...((raw&&raw.optional)||{})};
+ p.specializations=[...(((raw&&raw.specializations)||[]))];
+ p.aptitudes={...((raw&&raw.aptitudes)||{})};
+ for(const [oldName,newName] of Object.entries(SCOUT_OPTION_ALIASES)){
+   if(Object.prototype.hasOwnProperty.call(p.optional,oldName)&&!Object.prototype.hasOwnProperty.call(p.optional,newName)){
+     p.optional[newName]=p.optional[oldName];
+   }
+   if(Object.prototype.hasOwnProperty.call(p.talents,oldName)&&!Object.prototype.hasOwnProperty.call(p.talents,newName)){
+     p.talents[newName]=p.talents[oldName];
+   }
+   delete p.optional[oldName];delete p.talents[oldName];
+ }
+ p.circle=Math.max(base.circle,Math.min(15,n(p.circle)||Math.min(15,base.circle+1)));
+ p.target=Math.max(base.legend.total,n(p.target)||base.legend.total);
+ return p;
+}
+data.plan=normaliseFuturePlan(data.plan);
+data.projects=(data.projects||[]).map(normaliseFuturePlan);
+persist();
+
+const SCOUT_CIRCLES=[
+ {c:1,status:'Initié',essentials:[
+   {name:'Escalade',label:'Escaladeᴰ'},{name:'Natation',label:'Natation',projectable:false},{name:'Pistage',label:'Pistageᴰ'},
+   {name:'Rituel de Karma',label:'Rituel de Karma'},{name:'Survie',label:'Survieᴰ',projectable:false},{name:'Vigilance',label:'Vigilance',projectable:false}
+ ]},
+ {c:2,status:'Novice',essentials:[
+   {name:'Endurance',label:'Endurance (6/5)'},{name:'Don des langues',label:'Don des languesᴰ'}
+ ]},
+ {c:3,status:'Novice',essentials:[
+   {name:'Orientation',label:'Orientationᴰ',uncertain:true,projectable:false}
+ ],continuity:'Vision astraleᴰ a été validée au Cercle 3 pour Kal’Zakath. La progression de référence la place normalement au Cercle 6. Le rang d’Orientation reste non documenté.'},
+ {c:4,status:'Novice',essentials:[
+   {name:'Tissage de filament',label:'Tissage de filament (Tissage d’éclaireur)ᴰ'}
+ ],aptitude:{id:'enhanced_senses',name:'Sens améliorés',damage:1,detail:'Aptitude optionnelle : l’apprendre coûte 1 point de dommage permanent.'}},
+ {c:5,status:'Compagnon',essentials:[
+   {name:'Analyse des indices',label:'Analyse des indicesᴰ'},{name:'Rituel du maître fantôme',label:'Rituel du maître fantômeᴰ'}
+ ],benefit:'Karma : 1 point sur les tests restreints de Perception.'},
+ {c:6,status:'Compagnon',essentials:[
+   {name:'Vision astrale',label:'Vision astraleᴰ',alreadyMoved:true}
+ ],benefit:'Karma : 1 point sur les tests restreints de Dextérité.',continuity:'Vision astrale est déjà acquise depuis le Cercle 3 par décision de campagne : aucun second achat n’est projeté.'},
+ {c:7,status:'Compagnon',essentials:[
+   {name:'Sens empathique',label:'Sens empathiqueᴰ'}
+ ],benefit:'Défense : +1 Défense physique.'},
+ {c:8,status:'Compagnon',essentials:[
+   {name:'Commandement',label:'Commandement'},{name:'Guide élémentaire',label:'Guide élémentaireᴰ'}
+ ],benefit:'Défense : +1 Défense magique.'},
+ {c:9,status:'Gardien',essentials:[
+   {name:'Détection du poison',label:'Détection du poisonᴰ'},{name:'Endurance au froid',label:'Endurance au froidᴰ'}
+ ],benefit:'Karma sur les tests de récupération ; +1 au niveau d’Initiative.'},
+ {c:10,status:'Gardien',essentials:[
+   {name:'Vision véritable',label:'Vision véritableᴰ'}
+ ],aptitude:{id:'camouflage',name:'Camouflage',damage:2,detail:'Aptitude optionnelle : l’apprendre coûte 2 points de dommages permanents.'}},
+ {c:11,status:'Gardien',essentials:[
+   {name:'Défense améliorée',label:'Défense amélioréeᴰ'}
+ ],benefit:'Défense : +1 Défenses physique et sociale.'},
+ {c:12,status:'Gardien',essentials:[
+   {name:'Détection des mensonges',label:'Détection des mensongesᴰ'}
+ ],benefit:'Défense : +1 Défenses magique et sociale.'},
+ {c:13,status:'Maître',essentials:[
+   {name:'Localisation par écho',label:'Localisation par échoᴰ'},{name:'Trame de talent',label:'Trame de talent'}
+ ],benefit:'Défense : +1 Défense physique ; réserve maximale de Karma +25.'},
+ {c:14,status:'Maître',essentials:[
+   {name:'Caméléon',label:'Caméléonᴰ'}
+ ],benefit:'Défense : +1 Défenses magique et physique ; +1 au niveau d’Initiative.'},
+ {c:15,status:'Maître',essentials:[
+   {name:'Deuxième chance',label:'Deuxième chanceᴰ'},{name:'Trame d’attribut',label:'Trame d’attribut'}
+ ],benefit:'Défense : +1 Défense physique ; +1 Initiative ; +1 test de récupération par jour.'}
+];
+
+const scoutCircle=row=>SCOUT_CIRCLES.find(x=>x.c===row);
+const optionEffect=name=>{
+ for(const pool of ARCHER_OPTIONAL_POOLS){
+   const item=(pool.items||[]).find(x=>x[0]===name);
+   if(item)return item[1];
+ }
+ return '';
+};
+const optionalCatalog=[];
+for(const pool of ARCHER_OPTIONAL_POOLS){
+ for(const name of pool.names){
+   if(optionalCatalog.some(x=>x.name===name))continue;
+   optionalCatalog.push({name,status:pool.status,minCircle:pool.minCircle,effect:optionEffect(name)});
+ }
+}
+const extras=[];
+for(const row of SCOUT_CIRCLES){
+ for(const t of row.essentials){
+   if(t.projectable===false||t.alreadyMoved||base.talentsKnown.some(x=>x.name===t.name)||extras.some(x=>x.name===t.name))continue;
+   extras.push({name:t.name,label:t.label,circle:row.c,rank:0,optional:false});
+ }
+}
+const optional=optionalCatalog
+ .filter(t=>!base.talentsKnown.some(x=>x.name===t.name)&&!ARCHER_OPTIONAL_CHOSEN.has(t.name))
+ .map(t=>({name:t.name,minCircle:t.minCircle,rank:0,optional:true,status:t.status,effect:t.effect}));
+
+const allTalents=()=>[
+ ...base.talentsKnown,
+ ...extras,
+ ...optional.filter(t=>data.plan.optional[t.name]).map(t=>({...t,circle:n(data.plan.optional[t.name])}))
+];
+
+const cost=(kind,from,to,circle=1)=>{
+ const band=circle<=4?'1-4':circle<=8?'5-8':circle<=12?'9-12':'13-15';
+ const table=kind==='talent'?PR6.talentCosts[band]:kind==='skill'?PR6.skillCosts:PR6.attributeCosts;
+ let sum=0;
+ for(let r=from+1;r<=to;r++)sum+=table[r-1]??Infinity;
+ return sum;
+};
+
+function calculate(){
+ const p=data.plan,changes=[],issues=[],decisions=[];
+ const talents=allTalents().map(t=>({...t,rank:Math.max(t.rank,n(p.talents[t.name])||t.rank)}));
+ let spent=0;
+
+ for(const [kind,items,map] of [['talent',talents,p.talents],['skill',base.skills,p.skills]]){
+   for(const t of items){
+     const before=(kind==='talent'?base.talentsKnown:base.skills).find(x=>x.name===t.name)?.rank||0;
+     const to=Math.max(before,n(map[t.name])||before);
+     const c=cost(kind,before,to,t.circle);
+     if(to>before){
+       spent+=c;
+       changes.push({kind,name:t.name,from:before,to,cost:c});
+       if(kind==='talent'&&t.circle>p.circle)issues.push(t.name+' nécessite le Cercle '+t.circle+'.');
+     }
+   }
+ }
+
+ for(const name of Object.keys(base.attributes)){
+   const count=n(p.attributes[name]),before=confirmedAttributeAdv(name);
+   if(count){
+     const c=cost('attribute',before,before+count);
+     spent+=c;changes.push({kind:'attribute',name,from:base.attributes[name].value,to:base.attributes[name].value+count,cost:c});
+   }
+ }
+
+ const rank=name=>talents.find(t=>t.name===name)?.rank||0;
+ for(const name of p.specializations){
+   const s=ARCHER_SPECIALIZATIONS.find(x=>x.name===name);if(!s)continue;
+   const parent=talents.find(t=>t.name===s.talent);
+   const currentParent=base.talentsKnown.find(t=>t.name===s.talent);
+   const minimum=s.min+(currentParent?.discipline?0:2);
+   const parentCircle=parent?.circle||s.parentCircle||1;
+   const c=cost('talent',minimum-1,minimum,parentCircle);
+   spent+=c;changes.push({kind:'specialization',name,from:0,to:1,cost:c});
+   if(rank(s.talent)<minimum)issues.push(name+' : '+s.talent+' au rang '+minimum+' requis.');
+ }
+
+ const steps=[];
+ for(let c=base.circle+1;c<=p.circle;c++){
+   const minRank=c<=11?c:c<=13?c-1:c-2,required=c+3;
+   const eligible=talents.filter(t=>t.circle<c&&t.rank>=minRank);
+   const prior=eligible.some(t=>t.circle===c-1),ok=eligible.length>=required&&prior;
+   steps.push({circle:c,minRank,required,count:eligible.length,prior,ok});
+   if(!ok)issues.push('Cercle '+c+' : '+required+' talents de rang '+minRank+'+, dont un du Cercle '+(c-1)+'.');
+ }
+
+ const slots={};
+ for(const t of talents.filter(t=>t.optional&&!base.talentsKnown.some(x=>x.name===t.name)&&t.rank>0)){
+   slots[t.circle]=(slots[t.circle]||0)+1;
+   if(t.circle<=base.circle)issues.push(t.name+' : les choix optionnels des Cercles actuels sont déjà attribués.');
+ }
+ for(const [c,count] of Object.entries(slots))if(count>1)issues.push('Cercle '+c+' : un seul nouveau choix optionnel prévu.');
+
+ for(let c=base.circle+1;c<=p.circle;c++){
+   const selected=Object.entries(p.optional).filter(([,circle])=>n(circle)===c);
+   if(selected.length===0)decisions.push('Cercle '+c+' : choisir le talent optionnel de ce Cercle.');
+   if(selected.length>1)issues.push('Cercle '+c+' : plusieurs talents optionnels sont affectés au même Cercle.');
+   const aptitude=scoutCircle(c)?.aptitude;
+   if(aptitude&&!['yes','no'].includes(p.aptitudes[aptitude.id]))decisions.push('Cercle '+c+' : décider pour l’aptitude '+aptitude.name+'.');
+ }
+
+ const selectedAptitudes=SCOUT_CIRCLES
+   .filter(row=>row.c<=p.circle&&row.aptitude&&p.aptitudes[row.aptitude.id]==='yes')
+   .map(row=>row.aptitude);
+ const permanentDamage=selectedAptitudes.reduce((sum,a)=>sum+a.damage,0);
+
+ const available=p.target-base.legend.spent,remaining=available-spent;
+ if(p.target<base.legend.total)issues.push('Le total cible doit être au moins égal aux PL déjà acquis.');
+ if(remaining<0)issues.push('Budget dépassé de '+(-remaining)+' PL.');
+
+ const projected=window.KalFutureProject(base,p);
+ for(const t of talents.filter(t=>!base.talentsKnown.some(x=>x.name===t.name)&&t.rank>0)){
+   projected.talentsKnown.push({...t,step:null,dice:'Attribut et effet à confirmer dans le Recueil'});
+ }
+
+ // Gains automatiques de Cercle vérifiés dans la progression d’Éclaireur.
+ // Les aptitudes optionnelles avec dommages permanents ne modifient pas automatiquement la fiche projetée.
+ for(let c=base.circle+1;c<=p.circle;c++){
+   if([7,11,13,14,15].includes(c))projected.combat.defenses.physical++;
+   if([8,12,14].includes(c))projected.combat.defenses.magical++;
+   if([11,12].includes(c))projected.combat.defenses.social++;
+   if([9,14,15].includes(c))projected.combat.initiative.step++;
+   if(c===13)projected.combat.karma.max+=25;
+   if(c===15)projected.combat.recovery.maxPerDay++;
+ }
+ projected.halfMagic.rank=Math.ceil(p.circle/2);
+ projected.halfMagic.step+=projected.halfMagic.rank-base.halfMagic.rank;
+ projected.halfMagic.dice=edStepDiceLabel(projected.halfMagic.step);
+ projected.combat.initiative.dice=edStepDiceLabel(projected.combat.initiative.step);
+ projected.circle=p.circle;
+ projected.legend={total:p.target,spent:base.legend.spent+spent,available:remaining};
+ return {spent,available,remaining,changes,issues,decisions,steps,projected,selectedAptitudes,permanentDamage};
+}
+
+function optionForCircle(circle){
+ const entries=Object.entries(data.plan.optional).filter(([,c])=>n(c)===circle);
+ return entries.length?entries[0][0]:'';
+}
+function isOptionAssignedElsewhere(name,circle){
+ const c=n(data.plan.optional[name]);return c&&c!==circle;
+}
+function optionGroupsForCircle(circle,current){
+ return ARCHER_OPTIONAL_POOLS.filter(pool=>pool.minCircle<=circle).map(pool=>{
+   const names=pool.names.filter(name=>{
+     if(ARCHER_OPTIONAL_CHOSEN.has(name))return false;
+     if(base.talentsKnown.some(t=>t.name===name))return false;
+     return !isOptionAssignedElsewhere(name,circle)||name===current;
+   });
+   if(!names.length)return '';
+   return `<optgroup label="${e(pool.status)}">${names.map(name=>`<option value="${e(name)}" ${name===current?'selected':''}>${e(name)}</option>`).join('')}</optgroup>`;
+ }).join('');
+}
+function renderEssentialLine(t,row){
+ if(t.alreadyMoved){
+   return `<li class="kf-essential moved"><span>${e(t.label)}</span><em>Validé au C3 — pas de second achat</em></li>`;
+ }
+ if(t.uncertain){
+   return `<li class="kf-essential uncertain"><span>${e(t.label)}</span><em>Incertain — rang non documenté</em></li>`;
+ }
+ const known=base.talentsKnown.some(x=>x.name===t.name);
+ return `<li class="kf-essential ${known?'known':''}"><span>${e(t.label)}</span>${known?'<em>Acquis</em>':'<em>Progression de référence</em>'}</li>`;
+}
+function renderCircleNode(row){
+ const p=data.plan,currentChoice=optionForCircle(row.c),effect=currentChoice?optionEffect(currentChoice):'';
+ const current=row.c===base.circle;
+ const aptitude=row.aptitude;
+ const aptitudeValue=aptitude?(p.aptitudes[aptitude.id]||''):'';
+ const selectedCurrent=row.c<=base.circle
+   ? 'Choix joués : Armes de tir, Déplacement silencieux, Esquive (C1) ; Armes de mêlée (C2) ; Sprint (C3).'
+   : '';
+ return `<article class="kf-node ${current?'current':''}">
+   <div class="kf-node-spine"><span>C${row.c}</span><small>${e(row.status)}</small></div>
+   <div class="kf-node-main">
+     <header><b>Cercle ${row.c}</b>${current?'<span class="kf-badge valid">Actuel</span>':'<span class="kf-badge ref">Référence</span>'}</header>
+     ${row.continuity?`<div class="kf-continuity"><b>Continuité</b>${e(row.continuity)}</div>`:''}
+     <div class="kf-branches">
+       <section>
+         <h4>Talents essentiels</h4>
+         <ul>${row.essentials.map(t=>renderEssentialLine(t,row)).join('')}</ul>
+       </section>
+       <section>
+         <h4>${current?'Choix déjà joués':'Choix optionnel'}</h4>
+         ${current
+           ? `<p class="kf-muted">${e(selectedCurrent)}</p>`
+           : `<label class="kf-option-label">Talent pour le C${row.c}
+               <select data-kf-option-circle="${row.c}">
+                 <option value="">À décider…</option>
+                 ${optionGroupsForCircle(row.c,currentChoice)}
+               </select>
+             </label>
+             ${currentChoice?`<p class="kf-selected"><b>${e(currentChoice)}</b>${effect?`<small>${e(effect)}</small>`:''}</p>`:'<p class="kf-open">Branche encore ouverte.</p>'}`
+         }
+       </section>
+       <section>
+         <h4>Gain / aptitude</h4>
+         ${row.benefit?`<p>${e(row.benefit)}</p>`:'<p class="kf-muted">Pas de gain automatique supplémentaire indiqué.</p>'}
+         ${aptitude?`<label class="kf-aptitude">
+           <b>${e(aptitude.name)}</b>
+           <small>${e(aptitude.detail)}</small>
+           <select data-kf-aptitude="${e(aptitude.id)}">
+             <option value="" ${aptitudeValue===''?'selected':''}>À décider</option>
+             <option value="yes" ${aptitudeValue==='yes'?'selected':''}>Oui — accepter ${aptitude.damage} dommage${aptitude.damage>1?'s':''} permanent${aptitude.damage>1?'s':''}</option>
+             <option value="no" ${aptitudeValue==='no'?'selected':''}>Non — ne pas l’apprendre</option>
+           </select>
+         </label>`:''}
+       </section>
+     </div>
+   </div>
+ </article>`;
+}
+function renderFutureTree(){
+ const p=data.plan;
+ const rows=SCOUT_CIRCLES.filter(row=>row.c>=base.circle&&row.c<=p.circle);
+ return `<div class="kf-tree-head">
+   <div><span class="eyebrow">Arborescence de la Discipline</span><h3>Choisir une voie, Cercle par Cercle</h3></div>
+   <p>Les talents essentiels et gains de Cercle viennent de la progression d’Éclaireur. Les choix optionnels sont des <b>propositions de futur</b> : rien ici ne modifie la fiche réelle.</p>
+ </div>
+ <div class="kf-source-note"><b>Repère de continuité :</b> Vision astrale reste acquise au C3 pour Kal’Zakath, même si la progression de référence la situe au C6. Orientation au C3 reste non documentée et n’est pas ajoutée automatiquement.</div>
+ <div class="kf-tree">${rows.map(renderCircleNode).join('')}</div>`;
+}
+
+function exportText(){
+ const r=calculate(),p=r.projected;
+ const route=[];
+ for(const row of SCOUT_CIRCLES.filter(x=>x.c>base.circle&&x.c<=data.plan.circle)){
+   const option=optionForCircle(row.c)||'à décider';
+   const aptitude=row.aptitude
+     ? ' ; '+row.aptitude.name+' : '+({yes:'oui',no:'non'}[data.plan.aptitudes[row.aptitude.id]]||'à décider')
+     : '';
+   route.push('- Cercle '+row.c+' ('+row.status+') — option : '+option+aptitude);
+ }
+ const lines=[
+   '# '+data.plan.name,
+   'Projection uniquement — aucune dépense ni modification de la fiche réelle.',
+   'Discipline : Éclaireur ; Cercle visé : '+p.circle,
+   'PL totaux visés : '+p.legend.total,
+   'PL déjà acquis : '+base.legend.total+' ; déjà dépensés : '+base.legend.spent,
+   'Améliorations projetées : '+r.spent+' PL ; solde cible : '+r.remaining+' PL',
+   'Statut : '+(r.issues.length?'Projet à corriger':r.decisions.length?'Choix encore ouverts':'Budget, prérequis et choix renseignés'),
+   '',
+   '## Arborescence choisie',
+   ...route,
+   '- Continuité : Vision astrale acquise au C3 par validation de campagne ; pas de second achat au C6.',
+   '- Incertain : Orientation au C3 reste sans rang documenté.',
+   '- Dommages permanents prévus par aptitudes retenues : '+r.permanentDamage,
+   '',
+   '## Améliorations',
+   ...r.changes.map(c=>'- '+c.name+' : '+c.from+' → '+c.to+' ('+c.cost+' PL)'),
+   '',
+   '## Attributs',
+   ...Object.entries(p.attributes).map(([k,v])=>'- '+k+' : '+v.value+' ; niveau '+v.step+' / '+v.dice),
+   '',
+   '## Talents',
+   ...p.talentsKnown.map(t=>'- '+t.name+' : rang '+t.rank+' ; '+(t.step!=null?'niveau '+t.step+' / '+t.dice:t.dice||'Sans jet standard')),
+   '',
+   '## Compétences',
+   ...p.skills.map(t=>'- '+t.name+' : rang '+t.rank+' ; '+(t.step!=null?'niveau '+t.step+' / '+t.dice:'Sans jet standard')),
+   '',
+   '## Valeurs dérivées',
+   'Défenses physique / magique / sociale : '+Object.values(p.combat.defenses).slice(0,3).join(' / '),
+   'Initiative : '+p.combat.initiative.step+' / '+p.combat.initiative.dice,
+   'Seuils mort / inconscience / blessure : '+p.combat.health.death+' / '+p.combat.health.unconscious+' / '+p.combat.health.woundThreshold,
+   'Récupérations : '+p.combat.recovery.maxPerDay+' ; niveau '+p.combat.recovery.step,
+   'Déplacement / course : '+p.combat.movement.combat+' / '+p.combat.movement.run+' m',
+   'Transport / levage : '+p.carryCapacity+' / '+p.liftCapacity+' kg',
+   'Demi-magie : rang '+p.halfMagic.rank+' ; niveau '+p.halfMagic.step+' / '+p.halfMagic.dice,
+   'Réserve maximale de Karma : '+p.combat.karma.max,
+   '',
+   '## Décisions encore ouvertes',
+   ...(r.decisions.length?r.decisions.map(x=>'- '+x):['- Aucune dans l’horizon choisi.']),
+   '',
+   '## Conditions / blocages',
+   ...(r.issues.length?r.issues.map(x=>'- '+x):['- Aucun blocage chiffré détecté.']),
+   '- Maître, entraînement, argent et validation du MJ restent nécessaires.',
+   '- Les aptitudes à dommages permanents sont seulement notées : leurs dommages ne sont pas appliqués automatiquement.',
+   '- Nouveaux talents sans attribut documenté : niveau et effets non calculés.',
+   '- Réserves consommables, santé actuelle et monnaie restent celles de la fiche réelle ; elles ne sont pas augmentées par cette simulation.'
+ ];
+ return lines.join('\n');
+}
+
+function renderSim(){
+ const expanded=new Map(Array.from(sim.querySelectorAll('details'),d=>[d.querySelector('summary')?.textContent||'',d.open]));
+ const scroll=projectDialog.scrollTop;
+ data.plan=normaliseFuturePlan(data.plan);
+ const p=data.plan,r=calculate();
+ const futureSlots=Math.max(0,p.circle-base.circle);
+ const choicesFilled=Object.values(p.optional).filter(c=>n(c)>base.circle&&n(c)<=p.circle).length;
+ const aptitudeDecisions=SCOUT_CIRCLES.filter(row=>row.c<=p.circle&&row.aptitude).length;
+ const aptitudeAnswered=SCOUT_CIRCLES.filter(row=>row.c<=p.circle&&row.aptitude&&['yes','no'].includes(p.aptitudes[row.aptitude.id])).length;
+
+ sim.innerHTML=`<h2>Imaginer le futur de Kal’Zakath</h2>
+ <p>Ce projet sert à choisir une trajectoire dans l’arborescence d’Éclaireur, puis à chiffrer les rangs et les coûts. Il reste entièrement séparé de la progression réelle.</p>
+ <div class="kw-grid">
+   <label>Nom du projet<input id="kfName" value="${e(p.name)}" maxlength="100"></label>
+   <label>Atteindre ce total de PL<input id="kfTarget" type="number" min="${base.legend.total}" step="1" value="${p.target}"></label>
+   <label>Horizon de la voie<select id="kfCircle">${SCOUT_CIRCLES.filter(x=>x.c>=base.circle).map(x=>`<option value="${x.c}" ${x.c===p.circle?'selected':''}>Cercle ${x.c} — ${e(x.status)}</option>`).join('')}</select></label>
+ </div>
+ <div class="kw-stats">
+   <div>Déjà acquis<b>${base.legend.total} PL</b></div>
+   <div>Budget à la cible<b>${r.available} PL</b></div>
+   <div>Projet chiffré<b>${r.spent} PL</b></div>
+   <div>Reste<b>${r.remaining} PL</b></div>
+   <div>Choix de Cercle<b>${choicesFilled}/${futureSlots}</b></div>
+   <div>Aptitudes décidées<b>${aptitudeAnswered}/${aptitudeDecisions}</b></div>
+ </div>
+ ${r.issues.length?`<div class="kw-status kw-bad"><b>Blocages à corriger</b><br>${r.issues.map(e).join('<br>')}</div>`:''}
+ ${r.decisions.length?`<div class="kw-status kw-warn"><b>Branches encore ouvertes</b><br>${r.decisions.map(e).join('<br>')}</div>`:''}
+ ${!r.issues.length&&!r.decisions.length?`<div class="kw-status kw-good">L’horizon choisi est renseigné. Entraînement, maître et accord du MJ restent nécessaires.</div>`:''}
+
+ ${renderFutureTree()}
+
+ <div class="kw-grid kf-projected">
+   <div class="kw-card"><b>Défenses projetées</b><p>Physique ${r.projected.combat.defenses.physical} · Magique ${r.projected.combat.defenses.magical} · Sociale ${r.projected.combat.defenses.social}</p></div>
+   <div class="kw-card"><b>Santé et initiative projetées</b><p>Mort ${r.projected.combat.health.death} · Inconscience ${r.projected.combat.health.unconscious}<br>Initiative ${r.projected.combat.initiative.step} / ${e(r.projected.combat.initiative.dice)}</p></div>
+   <div class="kw-card"><b>Aptitudes de sang retenues</b><p>${r.selectedAptitudes.length?r.selectedAptitudes.map(a=>e(a.name)).join(' · '):'Aucune'}</p><small>Dommages permanents prévus : ${r.permanentDamage}. Non appliqués à la fiche.</small></div>
+ </div>
+
+ <details open><summary>Chiffrer les talents de l’horizon</summary>
+   <div class="kw-scroll"><table><thead><tr><th>Talent</th><th>Cercle</th><th>Actuel</th><th>Visé</th></tr></thead><tbody>
+   ${allTalents().filter(t=>t.circle<=p.circle).map(t=>`<tr><td>${e(t.label||t.name)}${!base.talentsKnown.some(x=>x.name===t.name)?'<small>Nouveau dans le projet : niveau et effet détaillé à vérifier avant validation.</small>':''}</td><td>${t.circle}</td><td>${t.rank}</td><td><input aria-label="Rang projeté ${e(t.name)}" type="number" min="${t.rank}" max="15" value="${Math.max(t.rank,n(p.talents[t.name])||t.rank)}" data-kf="talents" data-name="${e(t.name)}"></td></tr>`).join('')}
+   </tbody></table></div>
+   <small>Le talent optionnel est choisi dans l’arborescence ci-dessus. Un choix de statut inférieur reste affecté au Cercle où Kal’Zakath le prend.</small>
+ </details>
+
+ <details><summary>Attributs et compétences actuelles</summary>
+   <div class="kw-grid">
+     ${Object.entries(base.attributes).map(([name,a])=>`<label>${e(name)} : ${a.value} → ${a.value+n(p.attributes[name])}<input type="number" min="0" max="${Math.min(5-confirmedAttributeAdv(name),21-a.value)}" value="${n(p.attributes[name])}" data-kf="attributes" data-name="${e(name)}" aria-label="Augmentations ${e(name)}"></label>`).join('')}
+     ${base.skills.map(t=>`<label>${e(t.name)} — rang actuel ${t.rank}<input type="number" min="${t.rank}" max="10" value="${Math.max(t.rank,n(p.skills[t.name])||t.rank)}" data-kf="skills" data-name="${e(t.name)}" aria-label="Compétence projetée ${e(t.name)}"></label>`).join('')}
+   </div>
+ </details>
+
+ <details><summary>Spécialisations de la discipline</summary>
+   ${ARCHER_SPECIALIZATIONS.filter(s=>!(base.specializations||[]).some(x=>(x.name||x)===s.name)).map(s=>`<label><input type="checkbox" data-spec="${e(s.name)}" ${p.specializations.includes(s.name)?'checked':''}> ${e(s.name)} — ${e(s.talent)}</label>`).join('')}
+ </details>
+
+ <details><summary>Photo du personnage projeté et détail des coûts</summary><pre>${e(exportText())}</pre></details>
+ <div class="kf-actions"><button id="kfSave">Conserver ce projet</button><button id="kfReset" class="secondary">Nouveau projet</button><button id="kfTxt">Exporter en texte</button><button id="kfMd">Exporter en Markdown</button></div>
+ <label>Projets conservés<select id="kfLoad"><option value="">Choisir…</option>${data.projects.map((x,i)=>`<option value="${i}">${e(x.name)} — C${x.circle} — ${x.target} PL</option>`).join('')}</select></label>
+ <small>La progression de référence sert de carte. Les faits déjà joués et les décisions du MJ gardent priorité.</small>`;
+
+ sim.querySelectorAll('details').forEach(d=>{const name=d.querySelector('summary')?.textContent||'';if(expanded.has(name))d.open=expanded.get(name);});
+ projectDialog.scrollTop=scroll;
+
+ $('kfName').onchange=()=>{p.name=$('kfName').value.trim()||'Mon projet';persist();};
+ $('kfTarget').onchange=()=>{p.target=Math.max(base.legend.total,Math.min(100000000,Math.floor(n($('kfTarget').value))));persist();renderSim();};
+ $('kfCircle').onchange=()=>{p.circle=n($('kfCircle').value);persist();renderSim();};
+
+ sim.querySelectorAll('[data-kf]').forEach(input=>input.onchange=()=>{
+   p[input.dataset.kf][input.dataset.name]=Math.max(n(input.min),Math.min(n(input.max),Math.floor(n(input.value))));
+   persist();renderSim();
+ });
+ sim.querySelectorAll('[data-spec]').forEach(input=>input.onchange=()=>{
+   p.specializations=p.specializations.filter(x=>x!==input.dataset.spec);
+   if(input.checked)p.specializations.push(input.dataset.spec);
+   persist();renderSim();
+ });
+ sim.querySelectorAll('[data-kf-option-circle]').forEach(select=>select.onchange=()=>{
+   const circle=n(select.dataset.kfOptionCircle);
+   for(const [name,c] of Object.entries(p.optional)){
+     if(n(c)===circle){
+       delete p.optional[name];
+       // Supprime aussi le rang caché de l’ancien choix, sauf si le talent est par ailleurs acquis.
+       if(!base.talentsKnown.some(t=>t.name===name))delete p.talents[name];
+     }
+   }
+   const name=select.value;
+   if(name){
+     p.optional[name]=circle;
+     p.talents[name]=Math.max(1,n(p.talents[name]));
+   }
+   persist();renderSim();
+ });
+ sim.querySelectorAll('[data-kf-aptitude]').forEach(select=>select.onchange=()=>{
+   p.aptitudes[select.dataset.kfAptitude]=select.value;
+   persist();renderSim();
+ });
+
+ $('kfSave').onclick=()=>{
+   const clean=normaliseFuturePlan(p);
+   const index=data.projects.findIndex(x=>x.name===clean.name);
+   if(index>=0)data.projects[index]=copy(clean);else data.projects.push(copy(clean));
+   persist();renderSim();
+ };
+ $('kfReset').onclick=()=>{data.plan=blank();persist();renderSim();};
+ $('kfLoad').onchange=()=>{if($('kfLoad').value==='')return;data.plan=normaliseFuturePlan(copy(data.projects[n($('kfLoad').value)]));persist();renderSim();};
+ $('kfTxt').onclick=()=>download('KalZakath_projection.txt',exportText());
+ $('kfMd').onclick=()=>download('KalZakath_projection.md',exportText(),'text/markdown');
+}
+function entry(id){return data.herbs.stock[id] ||= {raw:0,ready:0};}
+const naturalRecipeDefaults={"arnica":{"search":9,"harvest":9,"prepare":6,"units":1,"duration":"2 heures par dose","method":"Autre","note":"Règle maison v1 : feuilles séchées conditionnées. Montagne et landes ; prairie secondaire (+2). Été. Brut 3 jours ; dose 90 jours. Consommables 1 PA/dose. Simple : automatique avec artisanat acquis, recette connue et bonnes conditions. Feuilles fraîches utilisables directement. Un seul test de recherche et récolte."},"queue":{"search":9,"harvest":9,"prepare":6,"units":1,"duration":"1 heure par dose","method":"Autre","note":"Règle maison v1 : mélange pour fumigation. Marais et berges ; forêt humide secondaire (+2). Printemps à automne. Brut 7 jours ; dose 30 jours. Consommables 1 PA/dose. Simple : automatique avec artisanat acquis, recette connue et bonnes conditions. Un seul test de recherche et récolte."},"couture":{"search":9,"harvest":9,"prepare":6,"units":1,"duration":"30 minutes par dose","method":"Autre","note":"Règle maison v1 : feuilles conditionnées. Forêt ; marais secondaire (+2). Printemps à automne. Une unité = 3 feuilles. Brut 3 jours ; dose 7 jours. Consommables 1 PA/dose. Simple : automatique avec artisanat acquis et bonnes conditions. Feuilles fraîches applicables directement. Un seul test de recherche et récolte."},"oeil":{"search":9,"harvest":9,"prepare":9,"units":2,"duration":"2 heures par dose","method":"Teinture","note":"Règle maison v1. Prairie ; montagne secondaire (+2). Été à automne. Brut 3 jours ; dose 30 jours. Consommables 2 PA/dose. Test de fabrication requis. Un seul test de recherche et récolte."},"souffle":{"search":9,"harvest":9,"prepare":9,"units":2,"duration":"2 heures par dose","method":"Autre","note":"Règle maison v1 : lotion à vaporiser. Jardins ; prairie secondaire (+2). Printemps à été. Brut 1 jour ; dose 14 jours. Consommables 2 PA/dose. Test de fabrication requis. Un seul test de recherche et récolte."}};
+function rule(id){const r=data.herbs.rules[id] ||= {};const defaults=naturalRecipeDefaults[id]||{};if(!r.defaultsV1){for(const [k,v]of Object.entries(defaults))if(r[k]===undefined||r[k]===null||r[k]==='')r[k]=v;r.defaultsV1=true;persist();}return r;}
+function log(text){data.herbs.log.push({at:new Date().toISOString(),text});persist();}
+const naturalKnowledge='Connaissance : Substances naturelles',naturalCraft='Artisanat : Préparation des substances naturelles';
+let currentHerb=herbs[0].id;
+function renderHerbs(){const h=herbs.find(x=>x.id===currentHerb),r=rule(h.id),s=entry(h.id),skills=[naturalKnowledge,naturalCraft].map(name=>P.skills.find(x=>x.name===name)||{name,unlearned:true});herbHost.innerHTML=`<div class="kw"><h2>Herboristerie</h2><p>Cinq usages de plantes connus. La connaissance des propriétés d’une plante ne donne pas automatiquement le savoir-faire de fabrication. Les effets restent à résoudre avec le MJ.</p><p><b>Connaissance : Substances naturelles (Perception)</b> : recherche, identification et récolte. <b>Artisanat : Préparation des substances naturelles (Dextérité)</b> : transformation et conservation, selon notre règle de table. ${P.skills.some(x=>x.name===naturalCraft)?'':'Cet artisanat n’est pas encore acquis par Kal’Zakath.'}</p><div class="kw-grid">${herbs.map(x=>`<article class="kw-card kw-recipe"><h3>${e(x.name)}</h3><small>${e(x.en)} · usage connu</small><p>${e(x.effect)}</p><button data-herb="${x.id}">Ouvrir la fiche</button></article>`).join('')}</div><h3>${e(h.name)} <small>(${e(h.en)})</small></h3><div class="kw-grid"><div class="kw-card"><b>Usage décrit dans le document</b><p>${e(h.part)} · ${e(h.method)}.</p><p>${e(h.effect)}</p><p>Application : ${['Fumigation','Application'].includes(h.method)?'10 − niveau de Dextérité rounds, soit '+(10-P.attributes.Dextérité.step)+' rounds actuellement':'1 round'}. Effet au round suivant.</p><small>Herbs and Plants of Barsaive, p. ${h.page} ; méthode p. 2. Prix indicatif : ${h.cost} PA/dose. Poids avec contenant : ${h.weight} livre (≈ ${(h.weight*.453592).toFixed(3)} kg).</small></div><div class="kw-card"><b>Réserves enregistrées dans le carnet</b><p>Plante brute : <strong>${s.raw}</strong> unité(s)<br>Préparation : <strong>${s.ready}</strong> dose(s)</p><small>Une unité de récolte doit être définie à la table. Aucune récolte de départ n’est présumée. Les fioles déjà présentes dans Équipement sont distinctes de ce stock.</small></div></div><details><summary>Cueillette générale ou recherche ciblée</summary><p>Une sortie dure 2 heures. En cueillette générale, les ressources communes connues du bon milieu et de saison donnent 2 unités au total sans jet en bonnes conditions ; un test peut ajouter une trouvaille. En recherche ciblée, seule la ressource désignée est récoltée.</p><p>Peu commune : 9 ; rare : 12 ; exceptionnelle accessible : 15. Milieu secondaire ou bordure de saison : +2 chacun. Une commune soumise à une contrainte a une base de 7. Une recherche de 4 heures réduit le seuil de 2 (minimum 5). Hors milieu ou saison : aucune récolte sans exception du MJ.</p><p>Unité supplémentaire par tranche de 5 au-dessus du seuil, maximum 3 pour la trouvaille testée. Pas de nouveau jet dans la même zone le même jour. Les douze ressources supplémentaires figurent dans le dossier du MJ, à découvrir ; elles ne sont pas acquises automatiquement.</p><small>Le carnet ne calcule pas les modificateurs, les récoltes, les dates de conservation ni les coûts : consigner les opérations résolues à la table.</small></details><details open><summary>Recette et difficultés retenues à la table</summary><p class="kw-note">Valeurs initiales issues de nos règles maison « Substances naturelles », version 1. Vos décisions déjà enregistrées sont conservées. Recherche et récolte constituent un seul test ; les deux champs ne demandent pas deux jets. Fabrication simple (6) : automatique uniquement avec artisanat acquis, recette connue et bonnes conditions. Les modificateurs de milieu et de saison se résolvent avec le MJ.</p><div class="kw-grid">${[['search','Difficulté de recherche'],['harvest','Difficulté de récolte'],['prepare','Difficulté de préparation'],['units','Unités de plante pour une dose']].map(([k,label])=>`<label>${label}<input data-rule="${k}" type="number" min="1" max="9999" placeholder="À fixer avec le MJ" value="${e(r[k])}"></label>`).join('')}<label>Durée de préparation<input data-rule="duration" value="${e(r.duration)}" placeholder="À fixer avec le MJ"></label><label>Forme préparée<select data-rule="method"><option value="">À définir</option>${['Onguent','Décoction','Teinture','Cataplasme','Poudre','Autre'].map(v=>`<option ${r.method===v?'selected':''}>${v}</option>`).join('')}</select></label></div><label>Ingrédients complémentaires, matériel, conservation<textarea data-rule="note" rows="3">${e(r.note)}</textarea></label><button id="khSaveRules">Enregistrer les décisions de table</button></details><details open><summary>Rechercher, récolter, préparer</summary><div class="kw-grid"><label>Étape<select id="khPhase"><option value="search">Recherche</option><option value="harvest">Récolte</option><option value="prepare">Préparation</option></select></label><label>Compétence utilisée<select id="khSkill" disabled>${skills.map((x,i)=>`<option value="${i}">${e(x.name)} — ${x.unlearned?'non acquise':'niveau '+x.step+', '+e(x.dice)}</option>`).join('')}</select></label><label>Lieu, conditions, ingrédients<input id="khContext" placeholder="Ex. forêt humide, une heure…"></label><label>Modificateur de niveau<input id="khModifier" type="number" min="-30" max="30" value="0"></label></div><small>Inclure les malus applicables (blessures, conditions, terrain). Aucun Karma ni Effort n’est consommé par ce lanceur.</small><p id="khSkillNote" class="kw-note" role="status"></p><button id="khRoll">Lancer le test</button><label>Résultat de dés physiques<input id="khManual" type="number" min="0" step="1"></label><button id="khRecord" class="secondary">Noter le résultat physique</button><p id="khResult" role="status"></p><div class="kw-grid"><label>Quantité résolue à la table<input id="khQuantity" type="number" min="1" step="1" value="1"></label><label>Opération de stock<select id="khStockAction"><option value="harvest">Ajouter une récolte validée</option><option value="prepare">Transformer les ingrédients en doses validées</option><option value="use">Utiliser des doses</option></select></label></div><button id="khStock">Enregistrer l’opération résolue</button><p class="kw-note">Ce suivi enregistre uniquement les opérations déjà résolues avec le MJ, y compris une préparation réalisée par un tiers. Il ne donne aucune compétence au personnage. Le jet seul ne crée aucun objet. La préparation retire les unités prévues par la recette et ajoute les doses ; l’utilisation retire les doses. Les effets sur les personnages ne sont pas automatisés.</p></details><details><summary>Fioles déjà portées</summary>${GEAR_BASE_ITEMS.filter(x=>x.category==='Fiole').map(x=>`<p><b>${e(x.name)}</b> — ${e(x.effect||'Effet à préciser avec le MJ')}</p>`).join('')}</details><details open><summary>Journal d’herboristerie</summary><div class="kw-log">${data.herbs.log.slice().reverse().map(x=>`<p><small>${e(new Date(x.at).toLocaleString('fr-FR'))}</small>${e(x.text)}</p>`).join('')||'<p>Aucune opération enregistrée.</p>'}</div><button id="khExport">Exporter le carnet en texte</button><button id="khBackup" class="secondary">Sauvegarder projets et carnet</button><label>Restaurer une sauvegarde de cet atelier<input id="khRestore" type="file" accept="application/json,.json"></label></details></div>`;
+ herbHost.querySelectorAll('[data-herb]').forEach(b=>b.onclick=()=>{currentHerb=b.dataset.herb;renderHerbs();});
+ $('khSaveRules').onclick=()=>{herbHost.querySelectorAll('[data-rule]').forEach(input=>{r[input.dataset.rule]=input.value;});persist();renderHerbs();};
+ function record(total,detail){if(skills[n($('khSkill').value)].unlearned)return;const phase=$('khPhase').value,skill=skills[n($('khSkill').value)],dc=n(r[phase]),text=h.name+' — '+({search:'recherche',harvest:'récolte',prepare:'préparation'}[phase])+' ; '+skill.name+' ; résultat '+total+(dc?' contre '+dc+(total>=dc?' : seuil atteint':' : seuil non atteint'):' ; difficulté non définie, résultat à arbitrer')+' ; '+detail+' ; '+$('khContext').value;log(text);$('khResult').textContent=text;}
+ function syncHerbSkill(){const index=$('khPhase').value==='prepare'?1:0;$('khSkill').value=String(index);const missing=skills[index].unlearned;$('khRoll').disabled=!!missing;$('khRecord').disabled=!!missing;$('khManual').disabled=!!missing;$('khSkillNote').textContent=missing?'Compétence non acquise : aucun test de fabrication personnel disponible. Les usages et recettes restent consultables.':'Test fondé sur '+skills[index].name+'.';}
+ $('khPhase').onchange=syncHerbSkill;syncHerbSkill();
+ $('khRoll').onclick=()=>{const skill=skills[n($('khSkill').value)];if(skill.unlearned)return;const result=edRollStep(Math.max(1,skill.step+n($('khModifier').value)));record(result.total,result.detail);};
+ $('khRecord').onclick=()=>{const value=$('khManual').value;if(value===''||n(value)<0||!Number.isInteger(n(value)))return;record(n(value),'dés physiques');};
+ $('khStock').onclick=()=>{const q=n($('khQuantity').value),action=$('khStockAction').value;if(!Number.isInteger(q)||q<1){$('khResult').textContent='Indiquer une quantité entière positive.';return;}if(action==='harvest')s.raw+=q;else if(action==='prepare'){if(!Number.isInteger(n(r.units))||n(r.units)<1||!r.duration||!r.method||!n(r.prepare)){$('khResult').textContent='Compléter la recette retenue : unités par dose, forme, durée et difficulté.';return;}const used=q*n(r.units);if(s.raw<used){$('khResult').textContent='Réserve de plante insuffisante.';return;}s.raw-=used;s.ready+=q;}else{if(s.ready<q){$('khResult').textContent='Nombre de doses insuffisant.';return;}s.ready-=q;}log(h.name+' : '+({harvest:'récolte validée +',prepare:'préparation validée +',use:'utilisation −'}[action])+q+(action==='prepare'?' dose(s), '+q*n(r.units)+' unité(s) consommée(s)':'')+'.');renderHerbs();};
+ $('khExport').onclick=()=>download('KalZakath_herboristerie.txt',['Carnet d’herboristerie de Kal’Zakath','Recherche et récolte : '+naturalKnowledge,'Fabrication : '+naturalCraft+(P.skills.some(x=>x.name===naturalCraft)?'':' — non acquise'),...herbs.flatMap(h=>[h.name+' ('+h.en+')',h.effect,'Stock : '+JSON.stringify(entry(h.id)),'Recette de table : '+JSON.stringify(rule(h.id))]),'Journal',...data.herbs.log.map(x=>x.at+' — '+x.text)].join('\n\n'));
+ $('khBackup').onclick=()=>download('KalZakath_atelier.json',JSON.stringify(data,null,2),'application/json');
+ $('khRestore').onchange=async ev=>{try{const x=JSON.parse(await ev.target.files[0].text());if(x.version!==1||!x.plan||!Array.isArray(x.projects)||!x.herbs||!Array.isArray(x.herbs.log))throw Error('Format incompatible');localStorage.setItem(key+':avant-restauration',JSON.stringify(data));data=validateNotebook(x);persist();renderSim();renderHerbs();}catch(err){$('khResult').textContent='Restauration impossible : '+err.message;}};
+}
+function validateNotebook(x){
+ if(x?.version!==1||!x.plan||!Array.isArray(x.projects)||x.projects.length>100||!x.herbs||!Array.isArray(x.herbs.log)||x.herbs.log.length>10000)throw Error('Format d’atelier incompatible');
+ const number=(v,min,max)=>{if(!Number.isInteger(v)||v<min||v>max)throw Error('Valeur hors limites');return v;};
+ const plan=p=>{const out={...blank(),name:String(p.name||'Projet').slice(0,100),target:number(p.target,0,100000000),circle:number(p.circle,3,15)};for(const field of ['talents','skills','attributes','optional']){out[field]={};for(const [key,v]of Object.entries(p[field]||{})){if(['__proto__','constructor','prototype'].includes(key))throw Error('Clé invalide');out[field][key]=number(v,0,field==='attributes'?5:field==='skills'?10:15);}}out.specializations=(p.specializations||[]).filter(name=>ARCHER_SPECIALIZATIONS.some(s=>s.name===name));out.aptitudes={};for(const id of ['enhanced_senses','camouflage']){const v=String(p.aptitudes?.[id]||'');if(v&&!['yes','no'].includes(v))throw Error('Décision d’aptitude invalide');if(v)out.aptitudes[id]=v;}return normaliseFuturePlan(out);};
+ const out={version:1,plan:plan(x.plan),projects:x.projects.map(plan),herbs:{stock:{},rules:{},log:x.herbs.log.map(row=>({at:String(row.at),text:String(row.text).slice(0,3000)}))}};
+ for(const h of herbs){const st=x.herbs.stock?.[h.id]||{raw:0,ready:0};out.herbs.stock[h.id]={raw:number(st.raw,0,1000000),ready:number(st.ready,0,1000000)};out.herbs.rules[h.id]={};for(const [k,v]of Object.entries(x.herbs.rules?.[h.id]||{}))if(['search','harvest','prepare','units','duration','method','note'].includes(k))out.herbs.rules[h.id][k]=String(v).slice(0,3000);}
+ return out;
+}
+window.KalWorkbench={calculate,exportText,getData:()=>copy(data)};
+renderSim();renderHerbs();if(location.hash==='#herbs')button.click();
+})();
+
+</script>
 </body></html>
