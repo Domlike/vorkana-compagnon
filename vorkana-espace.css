@@ -1,0 +1,20 @@
+/* Navigation commune aux joueurs et à l’aperçu MJ. */
+[hidden]{display:none!important}
+.primary-nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 10px}
+.primary-nav .btn{flex:1;min-width:170px;text-align:left;padding:15px 18px}
+.primary-nav .btn strong,.primary-nav .btn small{display:block}
+.primary-nav .btn small{color:var(--muted);margin-top:3px}
+.primary-nav [aria-current=page]{background:#356a47;border-color:var(--gold)}
+.tabs{margin:8px 0 22px}.tabs [aria-current=page]{border-color:var(--gold)}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+a.btn{text-decoration:none;display:inline-block}.context-strip{border-left:3px solid var(--gold);padding:10px 14px;margin:16px 0;background:#20362b}
+.context-strip p{margin:4px 0}.hub-status{min-height:1.5em;color:var(--muted)}
+.hub-status.error{color:#ffd4ce}.request-meta{font-size:13px;color:var(--muted)}
+.request-list{display:grid;gap:12px}.request-list .proposal{margin:0}
+.hub-summary{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0}
+.hub-summary span{padding:8px 12px;background:#20362b;border-radius:8px}
+.market-table .btn{white-space:nowrap}.market-table{min-width:600px}
+.card p:last-child{margin-bottom:0}.request-list h3{margin-bottom:8px}
+.identity-bar{justify-content:space-between}.preview-bar{padding:12px;border:1px dashed var(--gold);border-radius:8px;margin:12px 0}
+.view h2[tabindex]{outline:none}.view h2[tabindex]:focus-visible{outline:3px solid var(--gold)}
+@media(max-width:650px){.primary-nav{display:grid;grid-template-columns:1fr}.primary-nav .btn{min-width:0}.identity-bar{display:block}.tabs{gap:6px}.tabs button{padding:8px 10px}.market-table{min-width:0}.market-table thead{display:none}.market-table tr,.market-table td{display:block}.market-table tr{padding:10px 0;border-bottom:1px solid var(--line)}.market-table td{border:0;padding:4px}.market-table td:before{content:attr(data-label);display:inline-block;color:var(--muted);margin-right:8px}.market-table td:first-child:before{display:none}}

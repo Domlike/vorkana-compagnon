@@ -221,62 +221,84 @@
   }
 
   const MARKET_REVISION="crete-griffe-arrivee-20260918";
-  const fresh=()=>({revision:MARKET_REVISION,revisionNumber:0,context:{"date":"Arrivée dans l’après-midi, après deux jours de marche — Riag 1448 TH","location":"Crête-Griffe — marché des routes et des contreforts des Delaris","note":"L’escorte des survivants jusqu’à Crête-Griffe est jouée. Dan et Bogrunt ont pris en charge la nourriture et les besoins du trajet ; une dette non chiffrée reste reconnue envers Vorkana. Dan cherche maintenant un abri et une escorte ou une caravane vers Jerris. Aucun prix supplémentaire ni achat n’est encore conclu. Les montants et quantités du marché sont à négocier sur place."},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
-  function migrate(saved){if(saved?.revision===MARKET_REVISION&&Array.isArray(saved.catalog))return saved;const next=fresh();if(saved){next.marketArchives=[...(saved.marketArchives||[]),{revision:saved.revision,context:saved.context,catalog:saved.catalog,updatedAt:saved.updatedAt}];next.proposals=(saved.proposals||[]).map(p=>({...p,marketRevision:p.marketRevision||saved.revision||'ancien-marche',status:['accepted','rejected'].includes(p.status)?p.status:'needs_review'}));}return next;}
+  const WORKFLOW=1;
+  const fresh=()=>({revision:MARKET_REVISION,revisionNumber:0,workflowVersion:WORKFLOW,context:{date:'Dernier marché renseigné : séjour du 7 au 21 Riag 1448 TH',location:'Crête-Griffe — ancien marché',archived:true,note:'Le groupe a quitté Crête-Griffe le 22 Riag. Reprise le 28 Riag à l’aube sur la route de Keltanap ; arrivée prévue à midi. Les offres ci-dessous sont celles du précédent séjour, pas des disponibilités confirmées à Keltanap.'},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
+  function migrate(saved){
+    let next;
+    if(saved?.revision===MARKET_REVISION&&Array.isArray(saved.catalog))next=JSON.parse(JSON.stringify(saved));
+    else {next=fresh();if(saved){next.marketArchives=[...(saved.marketArchives||[]),{revision:saved.revision,context:saved.context,catalog:saved.catalog,updatedAt:saved.updatedAt}];next.proposals=(saved.proposals||[]).map(p=>({...p,marketRevision:p.marketRevision||saved.revision||'ancien-marche',status:['accepted','rejected'].includes(p.status)?p.status:'needs_review'}));}}
+    next.proposals ||= [];next.commands ||= [];next.revisionNumber ||= 0;
+    if(saved?.workflowVersion!==WORKFLOW){
+      next.proposals=next.proposals.map(p=>p.status==='accepted'?{...p,integrationStatus:p.integrationStatus||'legacy_review'}:p);
+      if(/cr[eê]te.griffe/i.test(next.context?.location||''))next.context={...next.context,...fresh().context};
+    }
+    next.workflowVersion=WORKFLOW;return next;
+  }
   const key=()=>`vorkana_circle_${Sync.status().room}_v033`;
   let data,authority=false,started=false;
-  function load(){try{const x=JSON.parse(localStorage.getItem(key())||'null');data=migrate(x);}catch(_){data=fresh();}data.proposals ||= [];data.commands ||= [];data.revisionNumber ||= 0;}
+  function load(){try{data=migrate(JSON.parse(localStorage.getItem(key())||'null'));}catch(_){data=fresh();}}
   function emit(){window.dispatchEvent(new CustomEvent('vorkana-campaign-changed',{detail:{state:data}}));}
-  function save(){try{localStorage.setItem(key(),JSON.stringify(data));}catch(_){window.dispatchEvent(new CustomEvent('vorkana-storage-error'));}emit();}
+  function save(){try{localStorage.setItem(key(),JSON.stringify(data));}catch(_){window.dispatchEvent(new CustomEvent('vorkana-storage-error'));throw Error('Sauvegarde impossible : décision non enregistrée.');}emit();}
   function publicState(){return {revision:data.revision,revisionNumber:data.revisionNumber,context:data.context,catalog:data.catalog,updatedAt:data.updatedAt};}
   function broadcast(){Sync.send({type:'vorkana-hub-state',state:publicState()},{targets:['all']});Sync.send({type:'vorkana-gm-hub-state',state:data},{targets:['gm']});}
-  function commit(){data.revisionNumber++;data.updatedAt=new Date().toISOString();save();broadcast();}
+  function receipt(p){return {type:'vorkana-market-decision',proposalId:p.id,status:p.status,decidedAt:p.decidedAt,proposal:{...p},proposalVersion:p.proposalVersion||0};}
+  function notify(p){Sync.send(receipt(p),{targets:[p.playerId,'gm']});}
+  // Persist before announcing a decision. Nothing here modifies an Adept dossier.
+  function transaction(change){const before=JSON.parse(JSON.stringify(data));try{change();data.revisionNumber++;data.updatedAt=new Date().toISOString();save();}catch(e){data=before;throw e;}broadcast();}
   function decision(id,status){
     const p=data.proposals.find(p=>p.id===id);if(!p)throw Error('Cette demande n’est plus disponible.');
-    if(['accepted','rejected'].includes(p.status))return;
-    if(p.marketRevision!==MARKET_REVISION)throw Error('Demande d’un ancien marché : la reformuler à Crête-Griffe avant acceptation.');
+    if(['accepted','rejected'].includes(p.status)){notify(p);return;}
+    if(status==='accepted'&&p.marketRevision!==MARKET_REVISION)throw Error('Demande d’un ancien marché : la reformuler avant acceptation.');
     if(!['accepted','rejected'].includes(status))throw Error('Décision invalide.');
-    if(status==='accepted'&&p.kind==='Achat'){
-      const item=data.catalog.find(x=>x.id===p.itemId);
-      if(item&&(item.status==='unavailable'||item.status==='unknown'))throw Error('Confirme d’abord la disponibilité de cet objet dans Vie de campagne.');
-      if(item&&item.stock!==null){if(Number(item.stock)<Number(p.quantity))throw Error('Le stock disponible est insuffisant.');item.stock-=Number(p.quantity);if(item.stock===0)item.status='unavailable';}
-    }
-    p.status=status;p.decidedAt=new Date().toISOString();commit();
-    Sync.send({type:'vorkana-market-decision',proposalId:p.id,status,decidedAt:p.decidedAt},{targets:[p.playerId,'gm']});
+    if(status==='accepted'&&data.context.archived)throw Error('Ce marché est archivé. Confirmez les offres et ouvrez le marché dans Disponibilités MJ.');
+    transaction(()=>{
+      if(status==='accepted'&&p.kind==='Achat'){
+        const item=data.catalog.find(x=>x.id===p.itemId);
+        if(item&&(item.status==='unavailable'||item.status==='unknown'))throw Error('Confirmez d’abord la disponibilité de cet objet.');
+        if(item&&item.stock!==null){if(Number(item.stock)<p.quantity)throw Error('Le stock disponible est insuffisant.');item.stock-=p.quantity;if(item.stock===0)item.status='unavailable';}
+      }
+      p.status=status;p.decidedAt=new Date().toISOString();p.proposalVersion=(p.proposalVersion||0)+1;
+      if(status==='accepted'){p.integrationStatus='pending_publication';p.integrationNote='Argent et inventaire à intégrer dans le dossier maître, puis à publier par le MJ.';}
+    });notify(p);
   }
-  function command(action,values){
-    const p={type:'vorkana-market-command',marketRevision:MARKET_REVISION,id:'market-command-'+Date.now()+'-'+Math.random().toString(36).slice(2),action,...values};
-    if(authority)return applyCommand(p);
-    Sync.send(p,{targets:['gm']});return 'pending';
+  function markPublished(id,reference){
+    const p=data.proposals.find(p=>p.id===id);if(!p||p.status!=='accepted')throw Error('Seul un accord peut être rapproché du dossier publié.');
+    if(p.integrationStatus==='published'){notify(p);return;}
+    const ref=String(reference||'').trim();if(ref.length<4||ref.length>500)throw Error('Indiquez la version ou la date du dossier déjà modifié et transféré (4 à 500 caractères).');
+    transaction(()=>{p.integrationStatus='published';p.publicationReference=ref;p.publishedAt=new Date().toISOString();p.proposalVersion=(p.proposalVersion||0)+1;});notify(p);
   }
+  function command(action,values){const p={type:'vorkana-market-command',marketRevision:MARKET_REVISION,id:'market-command-'+Date.now()+'-'+Math.random().toString(36).slice(2),action,...values};if(authority)return applyCommand(p);Sync.send(p,{targets:['gm']});return 'pending';}
   function applyCommand(p){
-    if(p.marketRevision!==MARKET_REVISION)throw Error('Marché ancien : recharger le cockpit et Vie de Campagne.');
+    if(p.marketRevision!==MARKET_REVISION)throw Error('Marché ancien : recharger le cockpit et l’espace joueurs.');
     if(data.commands.includes(p.id))return;
     if(p.action==='decision')decision(p.proposalId,p.status);
+    else if(p.action==='published')markPublished(p.proposalId,p.reference);
     else if(p.action==='publish'){
-      if(Number(p.expectedRevision)!==Number(data.revisionNumber))throw Error('Les disponibilités ont changé. Recharge les valeurs avant de publier.');
+      if(Number(p.expectedRevision)!==Number(data.revisionNumber))throw Error('Les disponibilités ont changé. Rechargez les valeurs avant de publier.');
       if(!p.context||!Array.isArray(p.catalog)||p.catalog.length>200)throw Error('Catalogue invalide.');
       if(p.catalog.some(x=>!x.id||!['available','limited','unavailable','unknown'].includes(x.status)||(x.stock!==null&&(!Number.isInteger(x.stock)||x.stock<0))))throw Error('Stock ou disponibilité invalide.');
-      data.context=p.context;data.catalog=p.catalog;commit();
+      transaction(()=>{data.context=p.context;data.catalog=p.catalog;});
     }else return;
     data.commands.push(p.id);save();
   }
   function receive(e){
     if(!started)return;const p=e.detail?.payload||{};
     if(['vorkana-gm-hub-state','vorkana-hub-state'].includes(p.type)&&p.state?.revision!==MARKET_REVISION)return;
-    if(p.type==='vorkana-gm-hub-state'&&p.state&&(Number(p.state.revisionNumber)>Number(data.revisionNumber)||!authority&&Number(p.state.revisionNumber)===Number(data.revisionNumber))) {data=p.state;data.commands ||= [];save();return;}
+    // Only the cockpit is authoritative; a delayed peer snapshot cannot overwrite it.
+    if(p.type==='vorkana-gm-hub-state'&&p.state&&!authority&&Number(p.state.revisionNumber)>=Number(data.revisionNumber)){data=migrate(p.state);save();return;}
     if(p.type==='vorkana-hub-state'&&!authority&&p.state&&Number(p.state.revisionNumber)>Number(data.revisionNumber)){Object.assign(data,p.state);save();return;}
     if(!authority)return;
     if(p.type==='vorkana-hub-request'){
       if(p.asGM)Sync.send({type:'vorkana-gm-hub-state',state:data},{targets:['gm']});
-      else if(names[p.playerId]){Sync.send({type:'vorkana-hub-state',state:publicState()},{targets:[p.playerId]});data.proposals.filter(x=>x.playerId===p.playerId).forEach(x=>Sync.send({type:'vorkana-market-decision',proposalId:x.id,status:x.status,decidedAt:x.decidedAt},{targets:[p.playerId]}));}
+      else if(names[p.playerId]){Sync.send({type:'vorkana-hub-state',state:publicState()},{targets:[p.playerId]});data.proposals.filter(x=>x.playerId===p.playerId).forEach(x=>Sync.send(receipt(x),{targets:[p.playerId]}));}
     }else if(p.type==='vorkana-market-proposal'&&p.proposal){
-      const x=p.proposal;
-      if(x.marketRevision!==MARKET_REVISION)return;
-      if(!names[x.playerId]||!x.id||!['Achat','Vente'].includes(x.kind)||!Number.isInteger(x.quantity)||x.quantity<1||x.quantity>10000)return;
+      const x=p.proposal;if(x.marketRevision!==MARKET_REVISION||!names[x.playerId]||!x.id||!['Achat','Vente'].includes(x.kind)||!Number.isInteger(x.quantity)||x.quantity<1||x.quantity>10000)return;
       let known=data.proposals.find(v=>v.id===x.id);
-      if(!known){known={...x,playerName:names[x.playerId],status:'received'};data.proposals.push(known);commit();}
-      Sync.send({type:'vorkana-market-decision',proposalId:known.id,status:known.status,decidedAt:known.decidedAt},{targets:[known.playerId]});
+      if(known&&known.playerId!==x.playerId)return;
+      if(!known){
+        known={id:String(x.id),marketRevision:x.marketRevision,playerId:x.playerId,playerName:names[x.playerId],kind:x.kind,itemId:String(x.itemId||''),itemName:String(x.itemName||'Offre libre').slice(0,250),quantity:x.quantity,price:String(x.price||'').slice(0,250),note:String(x.note||'').slice(0,6000),sentAt:x.sentAt,status:'received',proposalVersion:1};
+        transaction(()=>data.proposals.push(known));
+      }notify(known);
     }else if(p.type==='vorkana-market-command'){
       try{applyCommand(p);}catch(error){const detail={message:error.message,commandId:p.id};window.dispatchEvent(new CustomEvent('vorkana-campaign-error',{detail}));Sync.send({type:'vorkana-market-error',...detail},{targets:['gm']});}
     }
@@ -284,5 +306,6 @@
   window.addEventListener('earthdawn-sync-message',receive);
   window.addEventListener('earthdawn-sync-message',e=>{const p=e.detail?.payload;if(started&&!authority&&p?.type==='vorkana-market-error')window.dispatchEvent(new CustomEvent('vorkana-campaign-error',{detail:p}));});
   window.addEventListener('vorkana-room-changed',()=>{if(started){load();emit();}});
-  window.VorkanaCampaign={start(isAuthority){authority=!!isAuthority;started=true;load();if(!authority)Sync.sendToGM({type:'vorkana-hub-request',asGM:true});return this;},state(){if(!data)load();return data;},reference,fresh,migrate,decide:(id,status)=>command('decision',{proposalId:id,status}),publish:(context,catalog,expectedRevision)=>command('publish',{context,catalog,expectedRevision}),broadcast};
+  function pendingIntegration(){return (data||{proposals:[]}).proposals.filter(p=>p.status==='accepted'&&p.integrationStatus!=='published');}
+  window.VorkanaCampaign={start(isAuthority){authority=!!isAuthority;started=true;load();if(!authority)Sync.sendToGM({type:'vorkana-hub-request',asGM:true});return this;},state(){if(!data)load();return data;},reference,fresh,migrate,decide:(id,status)=>command('decision',{proposalId:id,status}),markPublished:(id,reference)=>command('published',{proposalId:id,reference}),pendingIntegration,integrationExport:()=>({type:'vorkana-market-integration-review',version:1,room:Sync.status().room,exportedAt:new Date().toISOString(),notice:'Liste de contrôle uniquement. Aucun argent ni inventaire modifié automatiquement.',proposals:JSON.parse(JSON.stringify(pendingIntegration()))}),publish:(context,catalog,expectedRevision)=>command('publish',{context,catalog,expectedRevision}),broadcast};
 })();
