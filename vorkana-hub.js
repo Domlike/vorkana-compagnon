@@ -75,7 +75,7 @@ function renderAvailability(){
   try{Campaign.publish(context,catalog,availabilityRevision);availabilityDirty=false;message('Marché transmis. Attente de confirmation par le cockpit.');}catch(e){message(e.message,true);}
  };
 }
-const publicViews=['resources','aides','market','entourage','library','memory','calendar','requests'];
+const publicViews=['resources','aides','market','entourage','library','memory','calendar','requests','songs'];
 function showView(next,historyMode='push'){
  if(!publicViews.includes(next)&&!(gm&&!preview&&next==='availability'))next='resources';view=next;
  document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+next));
