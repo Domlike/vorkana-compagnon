@@ -4,148 +4,94 @@
   const names={pj_0:'Zra’Ul',pj_1:'Kalha',pj_2:'Kal’Zakath',pj_3:'Barbak',pj_4:'Ogunta',pj_5:'Jaskar',pj_6:'Gul’Rak'};
   const catalog=[
   {
-    "id": "rations",
-    "name": "Vivres et rations",
-    "category": "Voyage",
+    "id": "keltanap-meals",
+    "name": "Repas et provisions fraîches",
+    "category": "Se ravitailler",
     "status": "available",
     "stock": null,
-    "price": "À négocier",
-    "note": "Viande et produits des exploitations locales ; conditionnement pour la route à convenir."
+    "price": "À convenir",
+    "note": "Riniris Ossamur et exploitations locales. Petites quantités ; grosse commande à discuter."
   },
   {
-    "id": "waterskins",
-    "name": "Outres",
-    "category": "Voyage",
-    "status": "available",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Vues chez un marchand à l’entrée ; contenance et état à choisir."
-  },
-  {
-    "id": "torches",
-    "name": "Torches et huile",
-    "category": "Voyage",
+    "id": "keltanap-rations",
+    "name": "Rations de route — une journée-personne",
+    "category": "Se ravitailler",
     "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "À demander aux échoppes ; assortiment et quantité à vérifier."
+    "stock": 21,
+    "price": "À convenir",
+    "note": "Niptorek Lazember, via Riniris. Préparables pour le lendemain : 21 journées-personnes, soit trois jours pour sept PJ. Équipage à compter séparément."
   },
   {
-    "id": "rope",
-    "name": "Cordes et matériel de bât",
-    "category": "Voyage",
-    "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Présence de bêtes de bât et de caravanes ; pièces adaptées à rechercher."
-  },
-  {
-    "id": "arrows",
-    "name": "Flèches et traits",
-    "category": "Projectiles",
-    "status": "available",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Marchand aperçu à l’arrivée. Type de projectile et quantité à préciser."
-  },
-  {
-    "id": "bows",
-    "name": "Arcs",
-    "category": "Armement",
-    "status": "available",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Marchand aperçu à l’entrée. Modèle, puissance et état à examiner."
-  },
-  {
-    "id": "weapons",
-    "name": "Autres armes courantes",
-    "category": "Armement",
-    "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Forgerons et voyageurs armés présents ; offre exacte à vérifier."
-  },
-  {
-    "id": "armor",
-    "name": "Armures et protections",
-    "category": "Armement",
-    "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Occasion, ajustement ou commande à discuter ; aucune pièce précise garantie."
-  },
-  {
-    "id": "repairs",
-    "name": "Réparation et entretien à la forge",
-    "category": "Service",
-    "status": "available",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Forgeron au travail sous un auvent. Devis et délai selon la pièce."
-  },
-  {
-    "id": "lodging",
-    "name": "Repas et couchage",
-    "category": "Service",
-    "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Grande tente près de l’entrée et odeurs de cuisine. Places pour les survivants à négocier avec Dan."
-  },
-  {
-    "id": "healing",
-    "name": "Fournitures de soigneur",
-    "category": "Soins",
+    "id": "keltanap-lodging",
+    "name": "Couchage",
+    "category": "Demander un service",
     "status": "unknown",
     "stock": null,
-    "price": "À établir",
-    "note": "Chercher un vendeur ; le matériel disponible n’a pas été établi."
+    "price": "À convenir",
+    "note": "Riniris Ossamur. Places et confort à confirmer."
   },
   {
-    "id": "silvermoss",
-    "name": "Mousse d’argent",
-    "category": "Soins",
+    "id": "keltanap-fodder",
+    "name": "Fourrage",
+    "category": "Se ravitailler",
+    "status": "available",
+    "stock": null,
+    "price": "À convenir",
+    "note": "Niptorek et exploitations locales. Petites quantités selon les animaux et la durée."
+  },
+  {
+    "id": "keltanap-clothing",
+    "name": "Vêtements simples et raccommodage",
+    "category": "Entretenir son équipement",
+    "status": "limited",
+    "stock": null,
+    "price": "À convenir",
+    "note": "Achane Phelegas. Vêtements aux coupes et teintes austères ; ajustements et réparations."
+  },
+  {
+    "id": "keltanap-tools",
+    "name": "Outils et petites pièces de fer",
+    "category": "Entretenir son équipement",
+    "status": "limited",
+    "stock": null,
+    "price": "À convenir",
+    "note": "Osukanur Têtefroide. Clous, ferrures et quelques outils agricoles ou de fouille. Choix exact au comptoir ; grosses pièces sur commande."
+  },
+  {
+    "id": "keltanap-repairs",
+    "name": "Entretien du chariot et réparations",
+    "category": "Entretenir son équipement",
     "status": "unknown",
     "stock": null,
-    "price": "À établir",
-    "note": "Aucun vendeur identifié ; disponibilité à enquêter, pas de stock annoncé."
+    "price": "Sur devis",
+    "note": "Osukanur Têtefroide. Armes, outils et chariot : délai selon les pièces et le travail."
   },
   {
-    "id": "mounts",
-    "name": "Montures et bêtes de bât",
-    "category": "Transport",
+    "id": "keltanap-jewelry",
+    "name": "Bijoux modestes et change",
+    "category": "Demander un service",
     "status": "limited",
     "stock": null,
-    "price": "À négocier",
-    "note": "Chevaux et troupeaux visibles. Vente ou location, prix et garanties à négocier."
+    "price": "À convenir",
+    "note": "Sarum Mazel. Os, plumes, verre, quartz, pierres semi-précieuses et un peu d’argent. Réserve de monnaie limitée."
   },
   {
-    "id": "escort",
-    "name": "Escorte vers Jerris",
-    "category": "Service",
-    "status": "limited",
-    "stock": null,
-    "price": "À négocier",
-    "note": "Des cavaliers expérimentés sont présents près des enclos. Dan peut négocier ; aucun engagement conclu."
-  },
-  {
-    "id": "caravan",
-    "name": "Place dans une caravane vers Jerris",
-    "category": "Transport",
+    "id": "keltanap-potions",
+    "name": "Potions et charmes",
+    "category": "Demander un service",
     "status": "unknown",
     "stock": null,
-    "price": "À établir",
-    "note": "Lieu de passage propice aux contacts ; destination, départ et places restent à trouver."
+    "price": "Sur demande",
+    "note": "Umiboth Sebal. Préparations, effets, quantités et délais à discuter en jeu."
   },
   {
-    "id": "resale",
-    "name": "Revente et troc",
-    "category": "Commerce",
-    "status": "limited",
+    "id": "keltanap-labor",
+    "name": "Porteurs, aide de fouille et transport",
+    "category": "Demander un service",
+    "status": "unknown",
     "stock": null,
-    "price": "À négocier",
-    "note": "Présenter les biens et leur état aux marchands ; aucun prix de reprise garanti."
+    "price": "Sur devis",
+    "note": "Contacts du village via Riniris ou Osukanur. Salaire, durée, danger et transport à négocier en jeu."
   }
 ];
   // Référentiel de campagne : valeurs stables, séparées des disponibilités locales.
@@ -220,9 +166,9 @@
     return JSON.parse(JSON.stringify({equipment:equipmentReference,carrying:carryingReference,rules:rulesReference}));
   }
 
-  const MARKET_REVISION="crete-griffe-arrivee-20260918";
+  const MARKET_REVISION="keltanap-1448-28-riag-20261013";
   const WORKFLOW=1;
-  const fresh=()=>({revision:MARKET_REVISION,revisionNumber:0,workflowVersion:WORKFLOW,context:{date:'Dernier marché renseigné : séjour du 7 au 21 Riag 1448 TH',location:'Crête-Griffe — ancien marché',archived:true,note:'Le groupe a quitté Crête-Griffe le 22 Riag. Reprise le 28 Riag à l’aube sur la route de Keltanap ; arrivée prévue à midi. Les offres ci-dessous sont celles du précédent séjour, pas des disponibilités confirmées à Keltanap.'},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
+  const fresh=()=>({revision:MARKET_REVISION,revisionNumber:0,workflowVersion:WORKFLOW,context:{date:'28 Riag 1448 TH',location:'Keltanap',archived:false,note:'Keltanap fournit surtout de quoi vivre, repartir et entretenir son matériel. Les réserves sont modestes. Pour une commande importante ou un objet particulier, parlez aux habitants. Les prix restent à convenir ; les demandes sont transmises au MJ. Une commande acceptée peut nécessiter un délai de préparation.'},catalog:JSON.parse(JSON.stringify(catalog)),proposals:[],commands:[],updatedAt:''});
   function migrate(saved){
     let next;
     if(saved?.revision===MARKET_REVISION&&Array.isArray(saved.catalog))next=JSON.parse(JSON.stringify(saved));
