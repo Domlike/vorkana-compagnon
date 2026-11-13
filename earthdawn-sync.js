@@ -69,7 +69,8 @@
   function makeEnvelope(payload, options) {
     const opts = options || {};
     return {
-      version: VERSION,
+      roomLabel: (room = state.room) => room === "cale-chaos" ? "Table de Vorkana" : room,
+    version: VERSION,
       eventId: (crypto && crypto.randomUUID) ? crypto.randomUUID() : `evt-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       room: state.room,
       sentAt: new Date().toISOString(),
@@ -340,6 +341,7 @@
     return url.href;
   }
   const api = {
+    roomLabel: (room = state.room) => room === "cale-chaos" ? "Table de Vorkana" : room,
     version: VERSION,
     configure,
     start,

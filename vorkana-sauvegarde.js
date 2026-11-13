@@ -17,7 +17,7 @@
     try{
       const b=JSON.parse(await file.text());
       if(b.type!=='vorkana-player-backup'||b.version!==1||b.playerId!==P.playerId||!b.local||typeof b.local!=='object'||Array.isArray(b.local)||!Array.isArray(b.local.proposals)||!b.local.draft||!b.local.notes)throw Error('Ce fichier n’est pas une sauvegarde valide de ce personnage.');
-      if(b.room!==sync?.status().room)throw Error('Ouvrez la salle « '+String(b.room||'inconnue')+' » avant de reprendre cette sauvegarde.');
+      if(b.room!==sync?.status().room)throw Error('Ouvrez la salle « '+(sync?.roomLabel(b.room)||'inconnue')+' » avant de reprendre cette sauvegarde.');
       if(b.mail&&(b.mail.room!==b.room||b.mail.identity!==P.playerId))throw Error('La file d’envoi ne correspond pas à cette sauvegarde.');
       if(!confirm('Reprendre cette sauvegarde de '+P.name+' ? Une copie de votre dossier actuel sera téléchargée avant son remplacement. Les données de référence du personnage restent celles de la fiche.'))return;
       exportBackup();

@@ -12,5 +12,5 @@ function open(id,scroll=true){const p=sessionHistory?.id===id?sessionHistory:pag
 if(sessionHistory)document.getElementById("librarySessions").onclick=()=>{const u=new URL(location);u.searchParams.set("document",sessionHistory.id);u.hash="library";history.replaceState(null,"",u);open(sessionHistory.id);};
 reader.addEventListener("click",e=>{const a=e.target.closest("a[data-document]");if(!a||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0)return;e.preventDefault();history.replaceState(null,"",a.href);open(a.dataset.document);});
 list.onclick=e=>{const b=e.target.closest('[data-document]');if(!b)return;const u=new URL(location);u.searchParams.set('document',b.dataset.document);u.hash='library';history.replaceState(null,'',u);open(b.dataset.document);};
-document.getElementById('librarySearch').oninput=render;document.getElementById('libraryCategory').onchange=render;render();const initial=new URL(location).searchParams.get('document');if(initial){document.querySelector('[data-view="library"]')?.click();open(initial,false);}
+document.getElementById('librarySearch').oninput=render;document.getElementById('libraryCategory').onchange=render;render();const initial=new URL(location).searchParams.get('document');if(initial){document.querySelector('[data-view="library"]')?.click();open(initial,true);}
 })();

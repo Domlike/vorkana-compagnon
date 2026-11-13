@@ -25,7 +25,7 @@
     const st = syncState(), online = st.status === "online";
     const badge = document.getElementById("cockpitStatus"), mode = document.getElementById("playerModeStatus"), exportButton = document.getElementById("exportProposal");
     if (badge) { badge.className = `badge ${online && st.memory==='ready' && !storageFailed ? "connected" : "waiting"}`; badge.textContent = storageFailed?'Sauvegarde locale impossible':!online?'Salle : mode local':st.memory==='ready'?(st.pending?'En ligne · envois en attente':'En ligne · mémoire disponible'):'En ligne · mémoire indisponible'; }
-    if (mode) mode.textContent = `Salle ${st.room}`;
+    if (mode) mode.textContent = `Salle ${Sync.roomLabel(st.room)}`;
     if (exportButton) exportButton.textContent = "Transmettre les propositions au MJ";
   };
   playerPost = function (payload) { return Sync.sendToGM({ ...payload, playerId: P.playerId, protocolVersion: "1.2" }); };
