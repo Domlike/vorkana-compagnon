@@ -2218,7 +2218,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
         <div class="circle-title">Objectif <strong>Cercle 4</strong></div>
         <div class="circle-state" id="circleState">Pas encore éligible</div>
       </div>
-      <div class="circle-cost"><span>Entraînement</span><b>500 PA</b></div>
+      <div class="circle-cost"><span>Entraînement</span><b>Gratuit</b></div>
     </div>
   </div>
 
@@ -2266,7 +2266,7 @@ body{background:#0d1511}.content{background:#0d1511}.identity-page{box-shadow:0 
       </div>
 
       <div class="training-grid">
-        <div><span>Coût</span><b>500 PA</b></div>
+        <div><span>Coût</span><b>Gratuit</b></div>
         <div><span>Durée</span><b>40 h</b></div>
         <div><span>Délai max.</span><b>3 semaines</b></div>
         <div><span>Résolution</span><b>Jouée en séance</b></div>
@@ -5445,12 +5445,12 @@ function currentSpend(){
   }
   if(d==="skill"){
     const s=P.skills[Number(v)],calc=nextSkillCost(s);
-    const weeks=calc.rank,pa=calc.rank*25*weeks;
+    const weeks=calc.rank;
     return {
       domain:d,label:`${s.name} : rang ${calc.rank-1} → ${calc.rank}`,
       targetName:s.name,fromRank:calc.rank-1,toRank:calc.rank,
-      legendCost:calc.cost||0,silverCost:pa,
-      note:`Entraînement : ${weeks} semaine${weeks>1?"s":""}. Coût indicatif : ${fmt(pa)} PA.`,
+      legendCost:calc.cost||0,silverCost:0,
+      note:`Entraînement : ${weeks} semaine${weeks>1?"s":""}.`,
       blocked:calc.cost==null
     };
   }
@@ -5458,12 +5458,12 @@ function currentSpend(){
     const name=v,a=P.attributes[name],baseAdv=PR6.attrAdv[name]||0;
     const pending=progressionList().filter(p=>p.domain==="attribute"&&p.targetName===name&&isProposalActiveForBudget(p)).length;
     const inc=baseAdv+pending+1,cost=PR6.attributeCosts[inc-1]??null;
-    const days=Number(a.step)||0,pa=days*days*10;
+    const days=Number(a.step)||0;
     return {
       domain:d,label:`${name} : ${improvementOrdinal(inc)} amélioration`,
       targetName:name,fromRank:inc-1,toRank:inc,
-      legendCost:cost||0,silverCost:pa,
-      note:`${improvementOrdinal(inc)} amélioration de ${name}. Entraînement : ${days} jours en bonne santé. Coût indicatif : ${fmt(pa)} PA.`,
+      legendCost:cost||0,silverCost:0,
+      note:`${improvementOrdinal(inc)} amélioration de ${name}. Entraînement : ${days} jours en bonne santé.`,
       blocked:cost==null
     };
   }
@@ -5618,7 +5618,7 @@ function updateRefCalculator(){
   }else if(type==="skill"){
     const n=Number($id("refRank").value)||1;
     cost=PR6.skillCosts[n-1]??null;
-    explain=`Compétence : coût du rang ${n}. L’entraînement dure ${n} semaine${n>1?"s":""} et coûte chaque semaine rang × 25 PA.`;
+    explain=`Compétence : coût du rang ${n}. L’entraînement dure ${n} semaine${n>1?"s":""}.`;
   }else{
     const name=$id("refAttribute").value;
     const already=PR6.attrAdv[name]||0;
@@ -5662,7 +5662,7 @@ function initProgression(){
   $id("proposeCircle").addEventListener("click",()=>{
     if(!circle4Readiness().ready)return;
     addUtilityProposal("circle4","circle","Préparer le passage au Cercle 4",
-      "Prérequis mécaniques remplis ; maître Troubadour C4+ requis ; 40 h sur 3 semaines maximum ; passage joué en séance.",500);
+      "Prérequis mécaniques remplis ; maître Troubadour C4+ requis ; 40 h sur 3 semaines maximum ; passage joué en séance.");
   });
   fillSpendOptions();
   populateRefRanks();
