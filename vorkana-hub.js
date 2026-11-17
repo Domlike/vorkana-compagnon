@@ -12,20 +12,66 @@ let state=load(),draft=playerId&&!gm?read(draftKey(),{}):{},filterText='',filter
 function message(text,error=false){$('hubStatus').textContent=text;$('hubStatus').classList.toggle('error',error);}
 function save(){if(gm)return true;try{localStorage.setItem(key(),JSON.stringify(state));return true;}catch{message('Sauvegarde impossible sur cet appareil. Gardez cette page ouverte et réessayez.',true);return false;}}
 function sheet(page){const u=new URL((/\/Poste_MJ\//i.test(location.pathname)?'../Site_Joueurs/':'')+(files[playerIndex]||'index')+(playerIndex>=0?'_Dossier_Adepte.html':'.html'),location.href);u.searchParams.set('room',room());if(playerId)u.searchParams.set('player',playerId);u.hash=page||'';return u.href;}
+function choosePlayer(destination,label){
+ return '<details><summary>'+esc(label)+'</summary><div class="actions">'+names.map((name,i)=>{
+  const u=new URL(destination,location.href);u.searchParams.set('player','pj_'+i);u.searchParams.set('room',room());return '<a class="btn" href="'+esc(u.href)+'">'+esc(name)+'</a>';
+ }).join('')+'</div></details>';
+}
+function activityLink(title){
+ if(gm)return '';
+ if(!playerId)return choosePlayer('Vorkana_Cercle.html?activity='+encodeURIComponent(title)+'#resources','Choisir mon personnage pour cette activité');
+ const u=new URL(sheet('notes'));u.searchParams.set('activity',title);
+ return '<a class="btn" href="'+esc(u.href)+'">Préparer cette action</a>';
+}
 function sheetLink(page,label){return gm?'<span class="muted">'+esc(label)+' : depuis le dossier du joueur</span>':'<a class="btn" href="'+esc(sheet(page))+'">'+esc(playerId?label:'Choisir mon personnage')+'</a>';}
 function flag(p){if(p.status==='accepted')return p.integrationStatus==='published'?'Dossier publié':p.integrationStatus==='legacy_review'?'Ancien accord — à rapprocher':'À intégrer au dossier maître';return {pending:'Envoi en attente de réception',received:'Reçue par le MJ',rejected:'Refusée',needs_review:'Ancien marché — à reformuler'}[p.status]||'À examiner';}
 function marketCard(p){return `<article class="proposal ${esc(p.status)}"><div><h3>${esc(p.kind)} — ${esc(p.itemName||'Offre libre')}</h3><p class="request-meta">${esc(p.playerName)} · quantité ${esc(p.quantity)} · ${esc(p.price||'Prix à préciser')}</p>${p.note?'<p>'+esc(p.note)+'</p>':''}<span class="state">${esc(flag(p))}</span>${p.status==='accepted'?'<p class="request-meta">'+(p.integrationStatus==='published'?'Publication confirmée par le MJ : '+esc(p.publicationReference||''):'L’accord ne débite pas votre argent et ne modifie pas votre inventaire. Le MJ doit modifier le dossier maître et le transférer.')+'</p>':''}</div></article>`;}
 function localRequests(){if(!playerId||gm)return {proposals:[],progressionLedger:{}};return read(stores[playerIndex],{proposals:[],progressionLedger:{}});}
+function isPersonalReply(m){return playerId&&!gm&&m?.fromId==='gm'&&m.to===playerId&&typeof m.text==='string';}
+const replyKey=()=>key()+'_retours';
+function rememberReply(event){
+ const m=event.detail.payload,sourceRoom=event.detail.envelope?.room||m?.__earthdawnEnvelope?.room;
+ if(!isPersonalReply(m)||!m.messageId||sourceRoom!==room())return;
+ const cache=read(replyKey(),[]);
+ if(cache.some(row=>row.messageId===m.messageId))return;
+ cache.push({messageId:m.messageId,fromId:m.fromId,to:m.to,text:m.text,sentAt:m.sentAt,room:sourceRoom,proposalId:m.proposalId});
+ try{localStorage.setItem(replyKey(),JSON.stringify(cache));}catch{message('Espace insuffisant pour conserver ce retour sur cet appareil.',true);}
+ renderRequests();
+}
+function renderReplies(host,local,personal){
+ const messages=new Map();
+ for(const m of [...(local.messages||[]),...read(replyKey(),[])])if(isPersonalReply(m)&&m.room===room()&&m.messageId)messages.set(m.messageId,m);
+ const ordered=[...messages.values()].sort((a,b)=>String(b.sentAt||'').localeCompare(String(a.sentAt||'')));
+ const card=document.createElement('article');card.className='card';
+ const replyUrl=new URL(sheet('home'));replyUrl.searchParams.set('composer','mj');
+ card.innerHTML='<h2>Mes retours MJ</h2>';
+ for(const [i,m] of ordered.entries()){
+  const details=document.createElement('details');details.open=i===0;
+  const lines=m.text.split(/\r?\n/),title=lines[0].replace(/^Interlude\s*[—–-]\s*/i,'');
+  const matches=personal.filter(p=>p.kind==='interlude'&&p.label===title);
+  const request=personal.find(p=>p.id===m.proposalId)||(matches.length===1?matches[0]:null);
+  const date=new Date(m.sentAt),stamp=Number.isNaN(date.getTime())?'':date.toLocaleString('fr-FR');
+  details.innerHTML='<summary>'+esc(title.slice(0,100))+' · '+esc(stamp)+'</summary>'+(request?.note?'<p><b>Ma demande</b></p><p style="white-space:pre-wrap">'+esc(request.note)+'</p>':'')+'<p style="white-space:pre-wrap">'+esc(m.text)+'</p>';
+  card.append(details);
+ }
+ if(!ordered.length)card.insertAdjacentHTML('beforeend','<p>Aucun message personnel du MJ retrouvé sur cet appareil. Vous pouvez rechercher les échanges précédents dans la mémoire partagée.</p>');
+ const recover=document.createElement('button');recover.className='btn';recover.textContent='Retrouver mes retours';recover.onclick=async()=>{recover.disabled=true;try{await Sync.recoverMessages();renderRequests();message('Recherche terminée.');}catch(e){message(e.message,true);}finally{recover.disabled=false;}};
+ const reply=document.createElement('a');reply.className='btn';reply.href=replyUrl.href;reply.textContent='Répondre au MJ';
+ card.append(recover,document.createTextNode(' '),reply);host.prepend(card);
+}
+window.addEventListener('earthdawn-sync-message',rememberReply);
+window.addEventListener('vorkana-history-message',rememberReply);
 function renderRequests(){
  const host=$('view-requests');if(gm){host.innerHTML=preview?'<article class="card"><h2>Mes demandes</h2><p>Dans son espace, le joueur retrouve ici ses achats, sa progression et ses interludes. Ses brouillons personnels ne sont pas chargés dans cet aperçu.</p></article>':`<article class="card"><h2>À intégrer aux dossiers maîtres</h2><p>Les accords restent ici jusqu’à votre confirmation du dossier modifié et transféré.</p><p>Utilisez la file « À intégrer » du cockpit pour exporter la liste et confirmer chaque publication.</p><div class="request-list">${state.proposals.filter(p=>p.status==='accepted'&&p.integrationStatus!=='published').map(marketCard).join('')||'<p>Aucun accord commercial à intégrer.</p>'}</div></article>`;return;}
- if(!playerId){host.innerHTML='<article class="card"><h2>Mes demandes</h2><p>Choisissez votre personnage pour retrouver vos demandes personnelles.</p>'+sheetLink('','Ouvrir mon dossier')+'</article>';return;}
+ if(!playerId){host.innerHTML='<article class="card"><h2>Mes demandes</h2><p>Choisissez votre personnage pour retrouver vos demandes personnelles.</p>'+choosePlayer('Vorkana_Cercle.html#requests','Choisir mon personnage')+'</article>';return;}
  const local=localRequests(),personal=(local.proposals||[]).filter(p=>['progression','interlude'].includes(p.kind));
  const mine=state.proposals.filter(p=>p.playerId===playerId),pending=mine.filter(p=>p.status==='accepted'&&p.integrationStatus!=='published').length;
  const draftText=Object.values(draft).some(Boolean)?'<p>Un brouillon commercial vous attend dans <button class="btn small" data-open-view="market">Acheter et vendre</button>.</p>':'';
  host.innerHTML=`<article class="card"><h2>Mes demandes</h2><p>Vos achats, votre progression et vos interludes, sans double déclaration.</p><button class="btn" data-refresh-requests>Actualiser le suivi et réessayer les envois</button><div class="hub-summary"><span>${mine.filter(p=>['pending','received'].includes(p.status)).length} achat(s) en attente</span><span>${pending} accord(s) à intégrer ou rapprocher</span></div>${draftText}<h3>Achats et ventes</h3><div class="request-list">${mine.slice().reverse().map(marketCard).join('')||'<p>Aucune demande commerciale.</p>'}</div></article><article class="card" style="margin-top:16px"><h2>Progression et interludes</h2><p class="muted">Demandes du dossier conservé sur cet appareil. Ouvrez votre dossier pour actualiser les réponses du MJ et poursuivre un brouillon.</p><div class="actions">${sheetLink('progression','Ma progression')}${sheetLink('notes','Mes interludes')}</div><div class="request-list" style="margin-top:14px">${personal.slice().reverse().map(p=>{
  const applied=(local.progressionLedger?.appliedProposalIds||[]).includes(p.id),label=applied?'Intégrée dans la fiche':p.status==='approved'?(p.kind==='interlude'?'Réponse du MJ reçue':'Accord MJ — à intégrer'):({draft:'Brouillon',sent:'Transmise au MJ',rejected:'À revoir avec le MJ'}[p.status]||'À examiner');
- return '<article class="card"><span class="tag">'+(p.kind==='interlude'?'Interlude':'Progression')+'</span><h3>'+esc(p.label||p.kind)+'</h3><p>'+esc(label)+'</p>'+sheetLink(p.kind==='interlude'?'notes':'progression','Voir dans mon dossier')+'</article>';
+ return '<article class="card"><span class="tag">'+(p.kind==='interlude'?'Interlude':'Progression')+'</span><h3>'+esc(p.label||p.kind)+'</h3><p>'+esc(label)+'</p>'+(p.decisionNote?'<p>'+esc(p.decisionNote)+'</p>':'')+sheetLink(p.kind==='interlude'?'notes':'progression','Voir dans mon dossier')+'</article>';
  }).join('')||'<p>Aucune demande de progression ou d’interlude retrouvée sur cet appareil.</p>'}</div></article>`;
+ renderReplies(host,local,personal);
 }
 function renderCalendar(){
  const months=["Strassa","Veltom","Charassa","Rua","Mawag","Gahmil","Raquas","Sollus","Riag","Teayu","Borrum","Doddul"];
@@ -98,6 +144,7 @@ function resend(){if(!gm&&playerId){Sync.sendToGM({type:'vorkana-hub-request',pl
 Sync.configure({role:gm?'gm':'player',playerId:gm?'':playerId,name:gm?'MJ':names[playerIndex]||'Visiteur'}).start();
 if(gm){Campaign.start(false);state=JSON.parse(JSON.stringify(Campaign.state()));}
 $('hubIdentity').textContent=gm?(preview?'Aperçu joueur : '+(names[playerIndex]||'vue générale'):'Vue MJ — espace commun'):(playerId?'Personnage : '+names[playerIndex]:'Consultation des aides · choisissez un personnage pour vos demandes');
+$('currentInterlude').textContent=R.interlude;
 $('campaignNow').textContent=R.date+' · '+R.location;
 if(gm){$('previewTools').hidden=false;$('previewPlayer').innerHTML=names.map((n,i)=>'<option value="pj_'+i+'" '+(playerId==='pj_'+i?'selected':'')+'>'+esc(n)+'</option>').join('');$('previewButton').onclick=()=>{const u=new URL(location);u.searchParams.set('preview',$('previewPlayer').value);location.href=u.href;};$('previewExit').hidden=!preview;$('previewExit').onclick=()=>{const u=new URL(location);u.searchParams.delete('preview');location.href=u.href;};}
 window.addEventListener('vorkana-campaign-changed',()=>{if(!gm)return;state=JSON.parse(JSON.stringify(Campaign.state()));renderMarket();renderAvailability();renderRequests();message('État confirmé par le cockpit.');});
@@ -115,6 +162,6 @@ window.addEventListener('earthdawn-sync-message',e=>{
 window.addEventListener('storage',e=>{if(stores.includes(e.key))renderRequests();});
 window.addEventListener('focus',()=>{renderRequests();resend();});
 window.addEventListener('beforeunload',e=>{if(availabilityDirty){e.preventDefault();e.returnValue='';}});
-window.VorkanaHub={showView,renderRequests,sheetLink,flag,resend};
+window.VorkanaHub={showView,renderRequests,sheetLink,activityLink,flag,resend};
 render();showView(location.hash.slice(1)||'resources','replace');const connection=Sync.status();$('syncStatus').classList.toggle('online',connection.status==='online');$('syncStatus').querySelector('span').textContent=(connection.status==='online'?'En ligne':'Mode local')+' · salle '+Sync.roomLabel(connection.room);resend();
 })();
